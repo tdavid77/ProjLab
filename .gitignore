@@ -3,3 +3,4 @@ DOK/*.aux
 DOK/*fdb_latexmk
 DOK/*.fls
 DOK/*.out
+DOK/*.synctex.gz
