@@ -59,23 +59,6 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
 
 \section{Követelmények}
 \subsection{Funkcionális követelmények}
-\comment{Az alábbi táblázat kitöltésével készítendő. Dolgozzon ki követelmény azonosító rendszert! Az ellenőrzés módja szokásosan bemutatás és/vagy kiértékelés. Prioritás lehet alapvető, fontos, opcionális. Az alapvető követelmények nem teljesítése végzetes. Forrás alatt a követelményt előíró anyagot, szervezetet kell érteni. Esetünkben forrás lehet maga a csapat is, mikor ő talál ki követelményt. Use-case-ek alatt az adott követelményt megvalósító használati esete(ke)t kell megadni.}
-%\begin{funkovetelmeny}
-%	%Azonosító 
-%	{Proba1}
-%	%Prioritás
-%	{Alapvető}
-%	%Forrás
-%	{Leírás}
-%	%Use-case
-%	{Use-case}
-%	%Ellenőrzés
-%	{Ellenőrzés}
-%	%Leírás
-%	{Leírás}
-%	Megjegyzés (opcionális)
-%\end{funkovetelmeny}
-
 
 \begin{longtable}{| p{2cm} | p{4cm} | p{2.7cm} | p{2cm} | p{1.5cm} | p{2.0cm}|}
     \hline
@@ -94,7 +77,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Egy kör elteltével pontosan egy egységgel nő a hó vastagsága & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    Valami \\ %Use-case
+    Időjárás \\ %Use-case
     \hline
     
     RULE2 & %Azonosító
@@ -102,7 +85,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Egy kör elteltével a felüljáró alatti utakon egységesen nő a hó vastagsága egy egységgel & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Időjárás \\ %Use-case
     \hline
 	
     RULE3 & %Azonosító
@@ -110,7 +93,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A föld alatti utaknak minden körben nulla a hó és jég-vastagsága & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Időjárás \\ %Use-case
     \hline
 
     RULE4 & %Azonosító
@@ -118,15 +101,15 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Az úton lévő hó vastagsága az elakadási határérték alatt van-e & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Jármű mozgatása \\ %Use-case
     \hline
     
     RULE5 & %Azonosító
     Az úton összecsúszhatnak a járművek & %Leírás
-    Nehézségi módtól függ & %Ellenőrzés
+    Nehézségi módtól függően nagy esélye van, minél nagyobb a nehézség, annál valószínűbb. & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Időjárás \\ %Use-case
     \hline
     
     RULE6 & %Azonosító
@@ -134,7 +117,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A havas úton pontosan autó/busz haladt át, a jég vastagságának ellenőrzése, a hó eltűnése & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Autók vezérlése \\ %Use-case
     \hline
 
 	
@@ -144,7 +127,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A hó/ a feltört jég pontosan egy sávval kerül jobbrább, de ha jég van az nem változik & %Ellenőrzés
     SHOULD & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Hókotró mozgatása \\ %Use-case
     \hline
 	
     TOOLS2 & %Azonosító
@@ -152,7 +135,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A hó/a feltört jég eltűnt az úttestről de a jeget ez a fej sem módosítja  & %Ellenőrzés
     SHOULD & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Hókotró mozgatása \\ %Use-case
     \hline
 	
     TOOLS3 & %Azonosító
@@ -160,7 +143,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A jég fel lett törve, de nem tűnt el. & %Ellenőrzés
     SHOULD & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Hókotró mozgatása \\ %Use-case
     \hline
 
     TOOLS4 & %Azonosító
@@ -168,7 +151,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A hó/jég eltűnt, és a só hatásának elmúlásáig nem is jelenik meg újra. & %Ellenőrzés
     SHOULD & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Hókotró mozgatása \\ %Use-case
     \hline
 
     TOOLS5 & %Azonosító
@@ -176,15 +159,15 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A hó és a jég is eltűnik az útról. Ha nincs biokerozin, akkor nem tűnik el az útról semmi. & %Ellenőrzés
     SHOULD & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Hókotró mozgatása \\ %Use-case
     \hline
 
     PLAYERS1 & %Azonosító
-    A játékos lehet buszvezető csak takarító.  & %Leírás
+    A játékos lehet buszvezető és takarító.  & %Leírás
     A felhasználó nem választhat más szerepet, de választhatja a kettő közül bármelyiket.  & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Járműválasztás \\ %Use-case
     \hline
 
     PLAYERS2 & %Azonosító
@@ -192,7 +175,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Az úton nem tud a játékos újratöltést végezni. & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Fotyóeszköz vásárlása \\ %Use-case
     \hline
 
     PLAYERS3 & %Azonosító
@@ -200,7 +183,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A játékos nem tud az úton fejcserét végrehajtani. & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Fejcsere \\ %Use-case
     \hline
 
     PLAYERS4 & %Azonosító
@@ -208,7 +191,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A hókotrók közötti fejcsere végrehajtása akkor és csak akkor megy végbe, ha a játékos a telephelyen van MINDKÉT hókotróval.  & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Fejcsere \\ %Use-case
     \hline
 
     PLAYERS5 & %Azonosító
@@ -216,7 +199,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A játékos pontosan csak ez a két fej közül tud választani. & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Fej vásárlása \\ %Use-case
     \hline
 
     RULE7 & %Azonosító
@@ -224,7 +207,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Ha a játékos végzett a körével, akkor már nem mozoghat többet a következő körig. A játékosok egymás után kapják meg a mozgás jogát. & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Jármű mozgatása \\ %Use-case
     \hline
 
     LOGIC8 & %Azonosító
@@ -232,7 +215,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Csak akkor és csak akkor indulnak meg, amikor már mindkét játékos befejezte a körét. & %Ellenőrzés
     MUST & %Prioritás
     CSAPAT & %Forrás
-    valami \\ %Use-case
+    Autók vezérlése \\ %Use-case
     \hline
     
     
@@ -241,7 +224,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Nem tesznek kerülőt, akkor se, ha el fognak akadni, hiszen azt ők nem tudhatják előre. & %Ellenőrzés
     MUST & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Autók vezérlése \\ %Use-case
     \hline
 
     LOGIC10 & %Azonosító
@@ -249,7 +232,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Akkor és csak akkor akadnak el, ha a hó vastagsága megüti a kritikus szintet. & %Ellenőrzés
     MUST & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Autók vezérlése \\ %Use-case
     \hline
 
     LOGIC11 & %Azonosító
@@ -257,7 +240,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Nem fordulnak vissza, nem "repülnek át" az eltorlaszolt úton, nem tűnnek el. & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Autók vezérlése \\ %Use-case
     \hline
 
     RULE12 & %Azonosító
@@ -265,7 +248,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Akkor és csak akkor válnak újra mozgóképessé, ha a hókotró a megfelelő fejjel eltakarította az akadályt.  & %Ellenőrzés
     SHOULD & %Prioritás
     Leírás & %Forrás
-    valami \\ %Use-case
+    Autók vezérlése \\ %Use-case
     \hline
 
     RULE13 & %Azonosító
@@ -273,7 +256,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Nem érheti semmi probléma, ami az autókra és buszokra viszont veszélyes. & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Hókotró mozgatása \\ %Use-case
     \hline
 
     RULE14 & %Azonosító
@@ -281,7 +264,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Ezt a fajta végzetet csak a túl sok összecsúszott jármű okozhatja, más nem.  & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Játék leállítása \\ %Use-case
     \hline
 
     RULE15 & %Azonosító
@@ -289,7 +272,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Csak akkor, ha az összes busz elakadt, vagy összecsúszott egy másik busszal/ autóval.  & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Játék leállítása \\ %Use-case
     \hline
 
     RULE16 & %Azonosító
@@ -297,7 +280,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Minél nagyobb a nehézség, annál több az autó és a baleset.  & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    valami \\ %Use-case
+    Nehézségi szint választása \\ %Use-case
     \hline
     
 
@@ -367,9 +350,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
 \end{kovetelmeny}
 
 \section{Lényeges use-case-ek}
-\comment{Funkcionális követelmények részben felsorolt követelmények közül az alapvető és fontos követelményekhez tartozó használati esetek megadása az alábbi táblázatos formában.}
 \subsection{Use-case leírások}
-\comment{Minden use-case-hez külön}
 \begin{use-case}
 	%név
 	{Use-case Neve}
@@ -390,7 +371,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: A játékos a körében kiválaszt egy telephelyen tartózkodó hókotrót (vagy a közös raktárat), és valamilyen menedzsment akciót kezdeményez. A rendszer ellenőrzi a jogosultságot, az egyenleget és a gépjármű pozícióját. 
+    A játékos a körében kiválaszt egy telephelyen tartózkodó hókotrót (vagy a közös raktárat), és valamilyen menedzsment akciót kezdeményez. A rendszer ellenőrzi a jogosultságot, az egyenleget és a gépjármű pozícióját. 
 \end{use-case}
 
 \begin{use-case}
@@ -401,7 +382,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: A játékos kiválasztja az új hókotró vásárlása opciót. A rendszer levonja a gépjármű árát a játékos egyenlegéből. A játékos felszereli a járművet az ingyenes alapértelmezett fejjel (Söprő vagy Jégtörő). Az új hókotró a telephely csomópontján játékba lép.
+    A játékos kiválasztja az új hókotró vásárlása opciót. A rendszer levonja a gépjármű árát a játékos egyenlegéből. A játékos felszereli a járművet az ingyenes alapértelmezett fejjel (Söprő vagy Jégtörő). Az új hókotró a telephely csomópontján játékba lép.
 \end{use-case}
 
 \begin{use-case}
@@ -412,7 +393,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: A játékos kiválaszt egy megvásárolni kívánt új fejet (Hányó, Jégtörő, Söprő, Sószóró, Sárkány). A rendszer ellenőrzi az egyenletet, levonja a vételárat, az új eszköz pedig a telephely raktárába vagy közvetlenül a kiválasztott hókotróra kerül.
+    A játékos kiválaszt egy megvásárolni kívánt új fejet (Hányó, Jégtörő, Söprő, Sószóró, Sárkány). A rendszer ellenőrzi az egyenletet, levonja a vételárat, az új eszköz pedig a telephely raktárába vagy közvetlenül a kiválasztott hókotróra kerül.
 \end{use-case}
 
 \begin{use-case}
@@ -423,7 +404,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: A játékos megadja a megvásárolni kívánt só vagy biokerozin mennyiségét. A rendszer kiszámolja az árat, levonja az összeget a játékos egyenlegéből, és jóváírja a nyersanyagot a készletben.
+    A játékos megadja a megvásárolni kívánt só vagy biokerozin mennyiségét. A rendszer kiszámolja az árat, levonja az összeget a játékos egyenlegéből, és jóváírja a nyersanyagot a készletben.
 \end{use-case}
 
 \begin{use-case}
@@ -434,7 +415,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: A játékos kiválaszt egy, a raktárban már birtokolt takarítófejet, és felszereli azt a telephelyen lévő hókotróra. A korábban a járművön lévő fej visszakerül a raktárba. A művelet ingyenes.
+    A játékos kiválaszt egy, a raktárban már birtokolt takarítófejet, és felszereli azt a telephelyen lévő hókotróra. A korábban a járművön lévő fej visszakerül a raktárba. A művelet ingyenes.
 \end{use-case}
 
 \begin{use-case}
@@ -445,7 +426,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: Fogyóeszközös fej (Sószóró vagy Sárkány) esetén a játékos a lépés előtt eldöntheti és átállíthatja, hogy a fej be legyen-e kapcsolva, így spórolva a nyersanyaggal.
+   	Fogyóeszközös fej (Sószóró vagy Sárkány) esetén a játékos a lépés előtt eldöntheti és átállíthatja, hogy a fej be legyen-e kapcsolva, így spórolva a nyersanyaggal.
 \end{use-case}
 
 \begin{use-case}
@@ -456,7 +437,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: A rendszer felkínálja a választható ingyenes alapfejeket (Söprő fej vagy Jégtörő fej). A játékos kiválasztja az egyiket. A rendszer rögzíti a választást, és a hókotró ezzel a felszereléssel jön létre, illetve lép be a játéktérre.
+	Forgatókönyv: A rendszer felkínálja a választható ingyenes alapfejeket (Söprő fej vagy Jégtörő fej). A játékos kiválasztja az egyiket. A rendszer rögzíti a választást, és a hókotró ezzel a felszereléssel jön létre, illetve lép be a játéktérre.
 \end{use-case}
 
 \begin{use-case}
@@ -536,7 +517,7 @@ A Játékos a térképen kijelöli az aktuális pozíciójával szomszédos csom
     %aktorok
     {Buszvezető}
     %forgatókönyv
-    Forgatókönyv: A rendszer felkínálja a lehetséges útvonalakat. A játékos kiválasztja a számára megfelelőt, amelyen a busz közlekedni fog a játék során.
+    A rendszer felkínálja a lehetséges útvonalakat. A játékos kiválasztja a számára megfelelőt, amelyen a busz közlekedni fog a játék során.
 \end{use-case}
 
 \begin{use-case}
@@ -547,7 +528,7 @@ A Játékos a térképen kijelöli az aktuális pozíciójával szomszédos csom
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-    Forgatókönyv: A játékos a térképen kijelöli a szomszédos csomópontot. A gépjármű átmozog rajta, miközben a felszerelt fej automatikusan manipulálja a havat és a jeget. A rendszer kiszámítja az útszakasz súlya alapján járó jutalmat.
+	A játékos a térképen kijelöli a szomszédos csomópontot. A gépjármű átmozog rajta, miközben a felszerelt fej automatikusan manipulálja a havat és a jeget. A rendszer kiszámítja az útszakasz súlya alapján járó jutalmat.
 \end{use-case}
 
 \begin{use-case}
@@ -558,11 +539,44 @@ A Játékos a térképen kijelöli az aktuális pozíciójával szomszédos csom
     %aktorok
     {Buszvezető}
     %forgatókönyv
-    Forgatókönyv: A játékos a térképen kijelöli a szomszédos csomópontot a menetrendje szerint. A busz átmozog rajta, közeledve a célállomás felé.
+    A játékos a térképen kijelöli a szomszédos csomópontot a menetrendje szerint. A busz átmozog rajta, közeledve a célállomás felé.
+\end{use-case}
+
+\begin{use-case}
+%név
+{Időjárás vezérlése}
+%rövid leírás
+{A játék során az időjárással kapcsolatos dolgok.}
+%aktorok
+{Rendszer}
+%forgatókönyv
+A hó egyenletesen hullik a pályán. A hó tömörödése következtében jéggé válik.
+\end{use-case}
+
+\begin{use-case}
+%név
+{Autók vezérlése}
+%rövid leírás
+{Az NPC autók irányítását és generálását végzi.}
+%aktorok
+{Rendszer}
+%forgatókönyv
+Létrejönnek autóka majd azok a kezdőpontjukból a céljukba haladnak.
+\end{use-case}
+
+\begin{use-case}
+%név
+{Játék leállítása}
+%rövid leírás
+{Figyeli a balesetek számát.}
+%aktorok
+{Rendszer}
+%forgatókönyv
+Leállítja a játékot ha túl sok baleset történik.
 \end{use-case}
 
 \subsection{Use-case diagram}
-\diagram{docs/img/BMElogo}{Demó}{4cm}
+\diagram{docs/img/use_case_uml}{Use-case diagram}{16cm}
 
 \section{Szótár}
 %szotar.sh script, lsd. a dokumentációt!!!
@@ -593,11 +607,7 @@ A fejlesztés során felhasznált segédeszközök:
 \begin{itemize}
 	\item Dokumentáció: LaTeX
 	\item Kommunikáció: Discord, Messenger
-	\item Modellező eszköz: \dots
+	\item Modellező eszköz: PlantUML
 	\item Fejlesztő környezetek: Visual Studio Code
 	\item Forráskód megosztás, verziókezelés: GitHub, Git
-	\item Egyéb \dots
 \end{itemize}
-
-\comment{Még szabadon felvehető releváns idetartozó dolgok...}
-
