@@ -3,95 +3,367 @@
 \section{Bevezetés}
 
 \subsection{Cél}
-\comment{A dokumentum célja.}
+\par{A dokumentum célja az elkészítendő projekt funkcióinak, korlátozásainak és magas szintű, nem szakmai definiálása, illetve a specifikációban esetlegesen felmerülő kétesen értelmezhető követelmények egyértelműsítése. Kitérünk továbbá a követelményekre és a lényeges use casekre, valamint a csapat munkájának naplószerű leírására. }
 
 \subsection{Szakterület}
-\comment{A kialakítandó szoftver milyen területen használható, milyen célra.}
+\par{A szoftver egy játék, szórakoztató célokra készül, így a szakterület a játékfejlesztés.}
 
 \subsection{Definíciók, rövidítések}
-\comment{A dokumentumban használt definíciók, rövidítések magyarázata.}
-\begin{defi} 
-	Példa defi: egy demó a defi használatára
-\end{defi}
 \begin{rov}
-    PR: példa rövidítés
+    JDK: Java Development Kit rövidítése, a Java programozási nyelvhez szükséges fejlesztői környezet.
 \end{rov}
 
 \subsection{Hivatkozások}
 \urlref{http://iit.bme.hu/}{BME IIT - Programozás alapjai 3. segédanyagok, Szoftvertechnikák segédanyagok, Szoftver projekt laboratórium feladatok}
 
 \subsection{Összefoglalás}
-\comment{A dokumentum további részeinek rövid ismertetése}
+\par{A dokumentum további részeiben részletesenkifejtjük a projekt követelményeit, a játék funkcióit, a felhasználók jellemzőit, valamint a projekt ütemtervét és a csapat által használt eszközöket.}
 
 \section{Áttekintés}
 \subsection{Általános áttekintés}
-\comment{A kialakítandó szoftver legmagasabb szintű architekturális képe. A fontosabb alrendszerek felsorolása, a közöttük kialakítandó interfészek lényege, a felhasználói kapcsolatok alapja. Esetleges hálózati és adattárolási elvárások.}
+\par{A játék egy ablakban fut, amelyet a játékosok egy gépen keresztül használnak. Billentyűzet és egér segítségével irányítják a játékot, amelynek során különböző feladatokat kell megoldaniuk.  Az adatok tárolása helyi fájlokban történik, amelyek a játék könyvtárában helyezkednek el.}
 
 \subsection{Funkciók}
-\comment{A feladat kb. 4000 karakteres (kb 1,5 oldal) részletezettségű magyar nyelvű leírása. Nem szerepelhetnek informatikai kifejezések.}
+\par{A játék egy városban játszódik, melynek utcáit egy gráf élei reprezentálják, a kereszteződések pedig az említett gráf pontjai, így kiküszöbölve Zúzmaváros területének tektonikusan aktív mivoltát.
+Az utaknak számos fajtája létezik. Lehetnek többsávosak, és különböző típusúak is. Léteznek tehát sima utak, hidak és alagutak. A havazás folyamatos és egyenletes, azaz a hóvastagság az utakon és a hidakon konstans emelkedik. Zúzmaraváros szeles éghajlata miatt a felüljárók alatti pár méteres útszakasz sem menekül meg a hótakarótól, azonban az alagutakban természetesen nem hull a csapadék.}
+\par{Az utak állapota a hó- és jégréteg vastagságától függ. Vékony hórétegben még zavartalanul halad a forgalom, az autók és a buszok nem csúsznak meg és nem is akadnak el.
+Ugyanakkor a csapadék mellett a közlekedés hatására is dinamikusan változik az utak felülete. A hó és a jég mennyiségét belső egységekben mérjük, ahol az átszámítás alapja a sűrűség és a tömörödés mértéke. Az úttesten lévő hóréteg a rajta áthaladó forgalom hatására válik jéggé. Amennyiben egy adott útszakaszon (sávon) 5 autó áthalad, a teljes ott lévő hómennyiség jégpáncéllá áll össze. A fizikai modellezés során egy egységnyi hómennyiségből pontosan egy egységnyi jégmennyiség keletkezik. Bár a belső mennyiségi egységek megmaradnak, a hó és a jég egysége centiméterben kifejezve eltérő fizikai vastagságot takar.
+Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autók, buszok) hatására jön létre, a közút hókotrói pedig önmagukban nem tömörítik a havat, csak a felszerelt fej típusától függően módosítják azt.}
+\par{A takarító játékosok hókotrókat irányítanak, amelyek célja az utak tisztítása és a pénzkeresés. Egy hókotró egyszerre egy sávot tud takarítani. A tisztításért járó jutalom az útszakasz súlyától függ. A hókotrók telephelyeken tudnak új eszközöket vásárolni vagy fejet cserélni. A vásárolható fejek hierarchiája és működése a következőképp alakul:}
+\begin{itemize}
+	\item Söprő fej: A havat és a feltört jeget a közvetlen szomszédos sávba tolja. A szomszédos sáv mindig a hókotrótól eggyel jobbra található útrészt jelenti, legyen az a külső sáv, vagy már az út széle. A söprő fej a jeget nem tördeli.
+	\item Hányó fej: Ez az eszköz a havat és a feltört jeget messzire szórja. Teljesítménye igen impresszív, hiszen messzebbre tudja szórni az említett út akadályokat, mint Zúzmaraváros legtöbb sávból álló útja. 
+	\item Jégtörő fej: A jégpáncélt feltöri, de nem takarítja el, így akár annak is fennáll a veszélye, hogy amennyiben a törmelék nem kerül eltávolításra egy sörpő, vagy hányófejjel (esetleg sárkánnyal) felszerelt hókotró által, akkor az autók visszatömörítik a feltört jeget tömény, veszélyes jéggé.
+	\item Sószóró fej: Elolvasztja a havat és a jeget. Az olvadási idő a rétegvastagságtól függ. A sózott úton pár körig nem marad meg a hó. Működéséhez fogyóeszközként sót igényel, amit a hókotró a telephelyén tud vételezni. A szóróval felszerelt hókotró a sózás két módját különbözteti meg: sóz, nem sóz.
+	\item Sárkány fej: Gázturbinával azonnal elolvasztja a havat és a jeget. Működéséhez biokerozin szükséges, amit szintén a telephelyen tud feltölteni a játékos. Természetesen ezen eszköz sem működik szükségszerűen mindig, amikor a hókotró mozog, ezzel megakadályozva a drága biokerozin elpazarlását.
+\end{itemize}
+\par{A játék alapvetően körökre osztott társasjáték jellegű. A játékos két szerepkör közül választhat:}
+\begin{itemize}
+	\item Buszvezetők: Céljuk, hogy a buszokkal a két végállomás között a lehető legtöbb kört tegyék meg.
+	\item Takarítók: Irányítják a hókotró flottát, menedzselik az üzemanyagot (só, kerozin) és fejlesztik az eszközöket. Egy játékoshoz tartozhat akár több hókotró is. A hókotró flotta tagjai között van lehetőség cserélgetni a takarítófejeket, viszont csak a telephelyen. 
+\end{itemize}
+\par{Új hókotró vásárlásakor a játékos választhat egy alapértelmezett fejet. Ez lehet a söprő vagy jégtörő.}
+\par{A játékosok Pass 'N Play módon osztoznak a játékot futtató számítógépen: amint az egyik játékos végzett, azaz például az összes hókotrójával lépett, ő már befejezte az adott kört, és következik a társ. Amennyiben ő is megtette a jónak gondolt lépéseket, az autók (NPC-k) is elvégzik lépéseiket. a lakásuk és munkahelyük között próbálnak közlekedni a legrövidebb úton. Ha az út elzáródik, a legutolsó csomópontnál várakoznak, amíg a takarítók fel nem szabadítják az utat. Szerencsére a hókotró nem tud elakadni és megcsúszni sem, így előbb utóbb minden autós eljut a munkahelyére.}
+\par{A játék akkor ér véget, ha túl sok baleset történik, tehát túl sok jármű csúszott össze a jeges utakon. Ekkor az extrém időjárás következményei miatt a városban vészhelyzetet és kijárási tilalmat hirdetnek. Továbbá akkor is véget ér a játék, ha a játékban résztvevő semelyik busz sem tud lépni egy adott körben.}
+\par{A játék nehézsége ízlés szerint változtatható. A játék nehézségi fokait az tükrözi, hogy azok növekedésével több autó és nagyobb baleseti ráta (összecsúszás valószínűbb) van a városban. }
 
 \subsection{Felhasználók}
-\comment{A felhasználók jellemzői, tulajdonságai}
+\par{A felhasználók jellemzői, tulajdonságai. Bárki játszhat a játékkal, de elsődlegesen a projekt készítői fogják használni. Két fajta felhasználó van, buszvezető és takarító szerepük szerint. }
 
 \subsection{Korlátozások}
-\comment{Az elkészítendő szoftverre vonatkozó – általában nem funkcionális - előírások, korlátozások.}
+\par{A játék futtatásához JDK futtatókörnyezet szükséges, amelynek a telepítése a felhasználó felelőssége. A játékhoz egy mindennapi számítógép szükséges.}
 
 \subsection{Feltételezések, kapcsolatok}
-\comment{A Hivatkozásokban felsoroltanyagok, web-oldalak kapcsolódása a feladathoz, melyik milyen szempontból érdekes, milyen inputot ad.}
+\par{A projekt nem tartalmaz ilyeneket.}
 
 
 \section{Követelmények}
 \subsection{Funkcionális követelmények}
 \comment{Az alábbi táblázat kitöltésével készítendő. Dolgozzon ki követelmény azonosító rendszert! Az ellenőrzés módja szokásosan bemutatás és/vagy kiértékelés. Prioritás lehet alapvető, fontos, opcionális. Az alapvető követelmények nem teljesítése végzetes. Forrás alatt a követelményt előíró anyagot, szervezetet kell érteni. Esetünkben forrás lehet maga a csapat is, mikor ő talál ki követelményt. Use-case-ek alatt az adott követelményt megvalósító használati esete(ke)t kell megadni.}
-\begin{funkovetelmeny}
-	%Azonosító
-	{Azonosító}
-	%Prioritás
-	{Pioritás}
-	%Forrás
-	{Forrás}
-	%Use case
-	{Használati eset}
-	%Ellenőrzés
-	{llenőrzés}
-	%Leírás
-	{Leírás}
-    Megjegyzés (opcionális)
-\end{funkovetelmeny}
+%\begin{funkovetelmeny}
+%	%Azonosító 
+%	{Proba1}
+%	%Prioritás
+%	{Alapvető}
+%	%Forrás
+%	{Leírás}
+%	%Use-case
+%	{Use-case}
+%	%Ellenőrzés
+%	{Ellenőrzés}
+%	%Leírás
+%	{Leírás}
+%	Megjegyzés (opcionális)
+%\end{funkovetelmeny}
 
+
+\begin{longtable}{| p{2cm} | p{4cm} | p{2.7cm} | p{2cm} | p{1.5cm} | p{2.0cm}|}
+    \hline
+    \textbf{Azonosító} & \textbf{Leírás} & \textbf{Ellenőrzés} & \textbf{Prioritás} & \textbf{Forrás} & \textbf{Use case}\\ 
+    \hline
+    \endfirsthead
+
+    \hline
+    \textbf{Azonosító} & \textbf{Leírás} & \textbf{Ellenőrzés} & \textbf{Prioritás} & \textbf{Forrás} & \textbf{Use case}\\ 
+    \hline
+    \endhead
+
+    
+    RULE1 & %Azonosító
+    Hó vastagságának növekedése& %Leírás
+    Egy kör elteltével pontosan egy egységgel nő a hó vastagsága & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    Valami \\ %Use-case
+    \hline
+    
+    RULE2 & %Azonosító
+    Felüljáró alatt is hullik a hó a szél miatt& %Leírás
+    Egy kör elteltével a felüljáró alatti utakon egységesen nő a hó vastagsága egy egységgel & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+	
+    RULE3 & %Azonosító
+    Az alagutakban nem hull csapadék& %Leírás
+    A föld alatti utaknak minden körben nulla a hó és jég-vastagsága & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    RULE4 & %Azonosító
+    Az úton való elakadás vizsgálata & %Leírás
+    Az úton lévő hó vastagsága az elakadási határérték alatt van-e & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+    
+    RULE5 & %Azonosító
+    Az úton összecsúszhatnak a járművek & %Leírás
+    Nehézségi módtól függ & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+    
+    RULE6 & %Azonosító
+    A hó jéggé tömörül & %Leírás
+    A havas úton pontosan autó/busz haladt át, a jég vastagságának ellenőrzése, a hó eltűnése & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+	
+    % Második sor (példa)
+    TOOLS1 & %Azonosító
+    A söprő fej a havat és a feltört jeget a jobbra szomszédos útrészre tolja.& %Leírás
+    A hó/ a feltört jég pontosan egy sávval kerül jobbrább, de ha jég van az nem változik & %Ellenőrzés
+    SHOULD & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+	
+    TOOLS2 & %Azonosító
+    A hányó fej a havat és a feltört jeget kihányja az út legszélére.& %Leírás
+    A hó/a feltört jég eltűnt az úttestről de a jeget ez a fej sem módosítja  & %Ellenőrzés
+    SHOULD & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+	
+    TOOLS3 & %Azonosító
+    A jégtörő fej feltöri a jégpáncélt, de az így kialakult tört jeget nem takarítja el. & %Leírás
+    A jég fel lett törve, de nem tűnt el. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    TOOLS4 & %Azonosító
+    A sószóró fej elolvasztja a havatt és a jeget, és pár körig megakadályozza annak újboli kialakulását.& %Leírás
+    A hó/jég eltűnt, és a só hatásának elmúlásáig nem is jelenik meg újra. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    TOOLS5 & %Azonosító
+    A sárkány fej a gázturbinával azonnal elolvasztja a havat és a jeget, amíg van biokerozin. & %Leírás
+    A hó és a jég is eltűnik az útról. Ha nincs biokerozin, akkor nem tűnik el az útról semmi. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    PLAYERS1 & %Azonosító
+    A játékos lehet buszvezető csak takarító.  & %Leírás
+    A felhasználó nem választhat más szerepet, de választhatja a kettő közül bármelyiket.  & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    PLAYERS2 & %Azonosító
+    A hókotró só/kerozintartályát csak a telephelyen lehet újratölteni. & %Leírás
+    Az úton nem tud a játékos újratöltést végezni. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    PLAYERS3 & %Azonosító
+    A hókotró takarítófejeit csak a telephelyen lehet cserélni. & %Leírás
+    A játékos nem tud az úton fejcserét végrehajtani. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    PLAYERS4 & %Azonosító
+    A játékos több hókotrója között lehet fejet cserélni, de csak a telephelyen. & %Leírás
+    A hókotrók közötti fejcsere végrehajtása akkor és csak akkor megy végbe, ha a játékos a telephelyen van MINDKÉT hókotróval.  & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    PLAYERS5 & %Azonosító
+    Új hókotró vásárlásakor az alapértelmezett fej a söprő vagy a jégtörő. & %Leírás
+    A játékos pontosan csak ez a két fej közül tud választani. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    RULE7 & %Azonosító
+    A játék turn-based és Pass 'N Play. & %Leírás
+    Ha a játékos végzett a körével, akkor már nem mozoghat többet a következő körig. A játékosok egymás után kapják meg a mozgás jogát. & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    LOGIC8 & %Azonosító
+    Miután mindkét játékos lépett, megindulnak az NPC-k, azaz az autósok. & %Leírás
+    Csak akkor és csak akkor indulnak meg, amikor már mindkét játékos befejezte a körét. & %Ellenőrzés
+    MUST & %Prioritás
+    CSAPAT & %Forrás
+    valami \\ %Use-case
+    \hline
+    
+    
+    LOGIC9 & %Azonosító
+    Az autók a lehető legrövidebb úton próbálnak közlekedni. & %Leírás
+    Nem tesznek kerülőt, akkor se, ha el fognak akadni, hiszen azt ők nem tudhatják előre. & %Ellenőrzés
+    MUST & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    LOGIC10 & %Azonosító
+    Az autók elakadhatnak.  & %Leírás
+    Akkor és csak akkor akadnak el, ha a hó vastagsága megüti a kritikus szintet. & %Ellenőrzés
+    MUST & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    LOGIC11 & %Azonosító
+    Ha az autók előtt elzáródik az út, akkor a legutolsó csomópontnál várakoznak.  & %Leírás
+    Nem fordulnak vissza, nem "repülnek át" az eltorlaszolt úton, nem tűnnek el. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    RULE12 & %Azonosító
+    Az elakadt autók a hókotró takarítása után kiszabadulnak. & %Leírás
+    Akkor és csak akkor válnak újra mozgóképessé, ha a hókotró a megfelelő fejjel eltakarította az akadályt.  & %Ellenőrzés
+    SHOULD & %Prioritás
+    Leírás & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    RULE13 & %Azonosító
+    A hókotró nem tud elakadni és megcsúszni sem. & %Leírás
+    Nem érheti semmi probléma, ami az autókra és buszokra viszont veszélyes. & %Ellenőrzés
+    SHOULD & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    RULE14 & %Azonosító
+    Ha túl sok baleset történik, a játék véget ér.  & %Leírás
+    Ezt a fajta végzetet csak a túl sok összecsúszott jármű okozhatja, más nem.  & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    RULE15 & %Azonosító
+    Ha egy busz sem tud mozdulni, a játék véget ér.  & %Leírás
+    Csak akkor, ha az összes busz elakadt, vagy összecsúszott egy másik busszal/ autóval.  & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+
+    RULE16 & %Azonosító
+    A nehézség növelésével több autó és nagyobb baleseti ráta (összecsúszás valószínűbb) van a városban  & %Leírás
+    Minél nagyobb a nehézség, annál több az autó és a baleset.  & %Ellenőrzés
+    MUST & %Prioritás
+    Csapat & %Forrás
+    valami \\ %Use-case
+    \hline
+    
+
+
+\end{longtable}
 
 \subsection{Erőforrásokkal kapcsolatos követelmények}
-\comment{A szoftver fejlesztésével és használatával kapcsolatos számítógépes, hardveres, alapszoftveres és egyéb architekturális és logisztikai követelmények}
-
 \begin{kovetelmeny}
-	{Azonosító} %Azonosító
-	{Pioritás} %Prioritás
-	{Forrás} %Forrás
-	{Ellenőrzés} %Ellenőrzés
-	{Leírás} %Leírás
-    Megjegyzés (opcionális)
+	{Hardver} %Azonosító
+	{Alapvető} %Prioritás
+	{Leírás} %Forrás
+	{Fizikai} %Ellenőrzés
+	{A futtatáshoz szükséges egy mindennapi, átlagos számítógép.} %Leírás
+\end{kovetelmeny}
+\begin{kovetelmeny}
+	{Grafikus} %Azonosító
+	{Alapvető} %Prioritás
+	{Leírás} %Forrás
+	{Fizikai} %Ellenőrzés
+	{A program egy ablakban fut, tehát elengedhetetlen egy grafikus megjelenítő rendszer(monitor).} %Leírás
+\end{kovetelmeny}
+\begin{kovetelmeny}
+	{Perifériák} %Azonosító
+	{Alapvető} %Prioritás
+	{Leírás} %Forrás
+	{Fizikai} %Ellenőrzés
+	{A játék irányításához szükségesek alapvető beviteli eszközök, mint a billentyűzet és egér.} %Leírás
+\end{kovetelmeny}
+\begin{kovetelmeny}
+	{Java} %Azonosító
+	{Alapvető} %Prioritás
+	{Leírás} %Forrás
+	{Parancssor} %Ellenőrzés
+	{Legalább Java 11-es JDK kell a projekt futtatásához.} %Leírás
 \end{kovetelmeny}
 
 \subsection{Átadással kapcsolatos követelmények}
-\comment{A szoftver átadásával, telepítésével, üzembe helyezésével kapcsolatos követelmények}
 \begin{kovetelmeny}
-    {Azonosító} %Azonosító
-    {Pioritás} %Prioritás
-    {Forrás} %Forrás
-    {Ellenőrzés} %Ellenőrzés
-    {Leírás} %Leírás
-    Megjegyzés (opcionális)
+    {Setup} %Azonosító
+    {Alapvető} %Prioritás
+    {Leírás} %Forrás
+    {Parancssor} %Ellenőrzés
+    {A szoftver futtatásához szükséges JDK 11 környezet letöltése a felhasználó felelőssége.} %Leírás
+\end{kovetelmeny}
+\begin{kovetelmeny}
+    {Letöltés} %Azonosító
+    {Alapvető} %Prioritás
+    {Leírás} %Forrás
+    {Parancssor} %Ellenőrzés
+    {A projekt és maga a játék letölthető a GitHub könyvtárból, ehhez hálózati kapcsolat szükséges.} %Leírás
 \end{kovetelmeny}
 
 \subsection{Egyéb nem funkcionális követelmények}
-\comment{A biztonsággal, hordozhatósággal, megbízhatósággal, tesztelhetőséggel, a felhasználóval kapcsolatos követelmények}
 \begin{kovetelmeny}
-    {Azonosító} %Azonosító
-    {Pioritás} %Prioritás
-    {Forrás} %Forrás
-    {Ellenőrzés} %Ellenőrzés
-    {Leírás} %Leírás
-    Megjegyzés (opcionális)
+    {Hordozható} %Azonosító
+    {Alapvető} %Prioritás
+    {Leírás} %Forrás
+    {Parancssor} %Ellenőrzés
+    {A program minden olyan operációs rendszeren működik, ahol a Java 11 futtatása lehetséges.} %Leírás
+\end{kovetelmeny}
+\begin{kovetelmeny}
+    {Adattárolás} %Azonosító
+    {Alapvető} %Prioritás
+    {Leírás} %Forrás
+    {Parancssor} %Ellenőrzés
+    {A program a saját könyvtárában tárolja az adatokat, nem igényel hálózati kapcsolatot a futtatáshoz.} %Leírás
 \end{kovetelmeny}
 
 \section{Lényeges use-case-ek}
@@ -110,45 +382,221 @@
         \textbf{A.1} Alternatíva
 \end{use-case}
 
+\begin{use-case}
+    %név
+    {Telephelyi művelet}
+    %rövid leírás
+    {Absztrakt ős-eset. Olyan akciókat foglal magába, amelyeket a hókotró vezető kizárólag a telephely csomóponton hajthat végre.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: A játékos a körében kiválaszt egy telephelyen tartózkodó hókotrót (vagy a közös raktárat), és valamilyen menedzsment akciót kezdeményez. A rendszer ellenőrzi a jogosultságot, az egyenleget és a gépjármű pozícióját. 
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Hókotró vásárlása}
+    %rövid leírás
+    {A "Telephelyi művelet" eset leszármazottja. A játékos a telephelyen új gépjárművet vesz, és beállítja az alap fejet.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: A játékos kiválasztja az új hókotró vásárlása opciót. A rendszer levonja a gépjármű árát a játékos egyenlegéből. A játékos felszereli a járművet az ingyenes alapértelmezett fejjel (Söprő vagy Jégtörő). Az új hókotró a telephely csomópontján játékba lép.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Fej vásárlása}
+    %rövid leírás
+    {A "Telephelyi művelet" eset leszármazottja. A játékos új takarítófejet vásárol a raktárba vagy a járműre.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: A játékos kiválaszt egy megvásárolni kívánt új fejet (Hányó, Jégtörő, Söprő, Sószóró, Sárkány). A rendszer ellenőrzi az egyenletet, levonja a vételárat, az új eszköz pedig a telephely raktárába vagy közvetlenül a kiválasztott hókotróra kerül.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Fogyóeszköz vásárlása}
+    %rövid leírás
+    {A "Telephelyi művelet" eset leszármazottja. A játékos só és biokerozin készleteket tölt fel.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: A játékos megadja a megvásárolni kívánt só vagy biokerozin mennyiségét. A rendszer kiszámolja az árat, levonja az összeget a játékos egyenlegéből, és jóváírja a nyersanyagot a készletben.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Fejcsere}
+    %rövid leírás
+    {A "Telephelyi művelet" eset leszármazottja. A játékos a raktáron lévő fejeket cserélgeti a telephelyen álló hókotróján.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: A játékos kiválaszt egy, a raktárban már birtokolt takarítófejet, és felszereli azt a telephelyen lévő hókotróra. A korábban a járművön lévő fej visszakerül a raktárba. A művelet ingyenes.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Fogyasztó fej ki be kapcsolása}
+    %rövid leírás
+    {A "Jármű mozgatása" eset kiterjesztése, a hókotróra specializálva. A Sárkány és Sószóró típusú fejeknél a felhasználó ki be tudja kapcsolni ezeket a fejeket, hogy spóroljon a sóval és biokerozinnal.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: Fogyóeszközös fej (Sószóró vagy Sárkány) esetén a játékos a lépés előtt eldöntheti és átállíthatja, hogy a fej be legyen-e kapcsolva, így spórolva a nyersanyaggal.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Alapértelmezett fej kiválasztása}
+    %rövid leírás
+    {A játékos kiválasztja az induló, vagy az újonnan vásárolt hókotrójának ingyenes, alapértelmezett takarítófejét.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: A rendszer felkínálja a választható ingyenes alapfejeket (Söprő fej vagy Jégtörő fej). A játékos kiválasztja az egyiket. A rendszer rögzíti a választást, és a hókotró ezzel a felszereléssel jön létre, illetve lép be a játéktérre.
+\end{use-case}
+
+\begin{use-case}
+%név
+{Nehézségi szint választása}
+%rövid leírás
+{A játékos a menüben kiválasztja a tetszőleges nehézségi szintet.}
+%aktorok
+{Játékos}
+%forgatókönyv
+A Játékos interaktál a főmenüvel és kiválasztja a kívánt nehézségi szintet ami érvényben lesz a következő játékmenet folyamán.
+\end{use-case}
+
+\begin{use-case}
+%név
+{Járműválasztás}
+%rövid leírás
+{A játékos eldöntheti, hogy hókotróval vagy busszal szeretné teljesíteni a pályát.}
+%aktorok
+{Játékos}
+%forgatókönyv
+A Játékos kiválasztja a főmenüben hogy milyen járművel szeretne lenni a következő játék során. 
+\end{use-case}
+
+\begin{use-case}
+%név
+{Játék indítása}
+%rövid leírás
+{A játékos elindítja a szimulációt a korábban kiválasztott beállításokkal. A rendszer a jármű típusától függően határozza meg a kezdőpozíciót.}
+%aktorok
+{Játékos}
+%forgatókönyv
+1. A Játékos a főmenüben a "Játék indítása" gombra kattint. \newline
+2. Amennyiben a választott jármű hókotró, a rendszer a hókotró állomáson helyezi el a játékost. \newline
+3. Amennyiben a választott jármű busz, a rendszer a buszgarázsban helyezi el a játékost. \newline
+4. A rendszer véletlenszerű pozíciókban generálja le az Autókat a pálya úthálózatán. \newline
+\end{use-case}
+
+\begin{use-case}
+%név
+{Hókotrósként indítás}
+%rövid leírás
+{A Játék indítása során a játékos kiválasztja hogy milyen takarítófejjel szeretné kezdeni a játékot.}
+%aktorok
+{Hókotró vezető}
+%forgatókönyv
+Kiválasztja a tetszőleges fejet.
+\end{use-case}
+
+\begin{use-case}
+%név
+{Buszvezetőként indítás}
+%rövid leírás
+{A Játék indítása során a játékos kiválasztja hogy melyik útvonalon szeretne sofőrködni a játék folyamán.}
+%aktorok
+{Buszvezető}
+%forgatókönyv
+Kiválasztja a tetszőleges útvonalat.
+\end{use-case}
+
+\begin{use-case}
+%név
+{Jármű mozgatása}
+%rövid leírás
+{A játékos a kiválasztott járművet a térkép segítségével tudja mozgatni a pályán.}
+%aktorok
+{Játékos}
+%forgatókönyv
+A Játékos a térképen kijelöli az aktuális pozíciójával szomszédos csomópontok egyikét, meghatározva ezzel a jármű következő úticélját.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Útvonalválasztás}
+    %rövid leírás
+    {A buszvezető kiválasztja a két végállomás közötti útvonalat a játék elején.}
+    %aktorok
+    {Buszvezető}
+    %forgatókönyv
+    Forgatókönyv: A rendszer felkínálja a lehetséges útvonalakat. A játékos kiválasztja a számára megfelelőt, amelyen a busz közlekedni fog a játék során.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Hókotró mozgatása}
+    %rövid leírás
+    {A "Jármű mozgatása" eset leszármazottja. A hókotró áthalad egy szomszédos csomópontba, és megtisztítja az utat.}
+    %aktorok
+    {Hókotró vezető}
+    %forgatókönyv
+    Forgatókönyv: A játékos a térképen kijelöli a szomszédos csomópontot. A gépjármű átmozog rajta, miközben a felszerelt fej automatikusan manipulálja a havat és a jeget. A rendszer kiszámítja az útszakasz súlya alapján járó jutalmat.
+\end{use-case}
+
+\begin{use-case}
+    %név
+    {Busz mozgatása}
+    %rövid leírás
+    {A "Jármű mozgatása" eset leszármazottja. A busz a kijelölt útvonalán halad előre egy szomszédos csomópontba.}
+    %aktorok
+    {Buszvezető}
+    %forgatókönyv
+    Forgatókönyv: A játékos a térképen kijelöli a szomszédos csomópontot a menetrendje szerint. A busz átmozog rajta, közeledve a célállomás felé.
+\end{use-case}
+
 \subsection{Use-case diagram}
 \diagram{docs/img/BMElogo}{Demó}{4cm}
 
 \section{Szótár}
-\comment{A szótár a követelmények alapján készítendő fejezet. Egy szótári bejegyzés definiálásához csak más szótári bejegyzések és köznapi – a feladattól független – fogalmak használhatók fel. A szótár mérete kb. 1-2 oldal legyen. A bejegyzések legyenek ABC sorrendben!}
-
 %szotar.sh script, lsd. a dokumentációt!!!
 \begin{szotar}
-    \szotaritem{Kulcs 1 }{Érték 1}
-    \szotaritem{Hóásás }{Egy réteg hó eltakarítása, azaz törlése az adott jégtábláról. Egy egység munkába kerül.}
+	\input{out.tex}
 \end{szotar}
 
 \section{Projekt terv}
-\comment{Tartalmaznia kell a projekt végrehajtásának lépéseit, a lépések, eredmények határidejét, az egyes feladatok elvégzéséért felelős személyek nevét és beosztását, a szükséges erőforrásokat, stb. Meg kell adni a csoportmunkát támogató eszközöket, a választott technikákat! Definiálni kell, hogy hogyan történik a dokumentumok és a forráskód megosztása!}
-
+\par{A projekt elkészítése során a csapat a következő ütemtervet követi, amelyben a fontosabb mérföldkövek és határidők szerepelnek.}
 
 \subsection{Projektütemterv}
 \begin{terv}
-		\tervitem{febr. 4.}  {Követelmény, projekt, funkcionalitás}{ ?????? }
-        \tervitem{márc. 2. } { Analízis modell kidolgozása 1. - beadás }{ ?????? } 
-        \tervitem{márc. 9. } { Analízis modell kidolgozása 2. - beadás }{ ?????? }
-        \tervitem{márc. 16. }{ Skeleton tervezése - beadás }{ ?????? }
-        \tervitem{márc. 23. }{ Skeleton - beadás és a forráskód herculesre való feltöltése }{ ?????? }
-        \tervitem{márc. 30. }{ Prototípus koncepciója - beadás }{ ?????? }
-        \tervitem{ápr. 6. }{ Részletes tervek - beadás }{ ?????? }
-        \tervitem{ápr. 27. }{ Prototípus - beadás és a forráskód, a tesztbemenetek és az elvárt kimenetek herculesre való feltöltése }{ ?????? }
-        \tervitem{ máj. 4. }{ Grafikus felület specifikációja - beadás }{ ?????? }
-        \tervitem{ máj. 18. }{ Grafikus változat és Összefoglalás - beadás és a forráskód herculesre való feltöltése }{ ?????? } 
+		\tervitem{márc. 2.}  {Követelmény, projekt, funkcionalitás}{ Csapat }
+        \tervitem{márc. 9. } { Analízis modell (I. változat) }{ Csapat } 
+        \tervitem{márc. 16. } { Analízis modell (II. változat) }{ Csapat }
+        \tervitem{márc. 23. }{ Szkeleton tervezése }{ Csapat }
+        \tervitem{márc. 30. }{ Szkeleton elkészítése }{ Csapat }
+        \tervitem{ápr. 13. }{ Prototípus koncepciója }{ Csapat }
+        \tervitem{ápr. 20. }{ Részletes tervek }{ Csapat }
+        \tervitem{máj. 4. }{ Prototípus elkészítése }{ Csapat }
+        \tervitem{máj. 11. }{ Grafikus változat tervei }{ Csapat }
+        \tervitem{máj. 27. }{ Grafikus változat elkészítése }{ Csapat } 
+		\tervitem{máj. 29. }{ Egyesített dokumentáció }{ Csapat }
 \end{terv}
 
 \subsection{Erőforrások, eszközök}
 A fejlesztés során felhasznált segédeszközök:
 \begin{itemize}
-	\item Dokumentáció: dokumentáló eszközök felsorlása
-	\item Kommunikáció: kommunikációs platformok...
-	\item Modellező eszköz: modellezési eszközök
-	\item Fejlesztő környezetek: ...
-	\item Forráskód megosztás, verziókezelés: ...
-	\item Egyéb ....
+	\item Dokumentáció: LaTeX
+	\item Kommunikáció: Discord, Messenger
+	\item Modellező eszköz: \dots
+	\item Fejlesztő környezetek: Visual Studio Code
+	\item Forráskód megosztás, verziókezelés: GitHub, Git
+	\item Egyéb \dots
 \end{itemize}
 
 \comment{Még szabadon felvehető releváns idetartozó dolgok...}
