@@ -17,7 +17,7 @@
 \urlref{http://iit.bme.hu/}{BME IIT - Programozás alapjai 3. segédanyagok, Szoftvertechnikák segédanyagok, Szoftver projekt laboratórium feladatok}
 
 \subsection{Összefoglalás}
-\par{A dokumentum további részeiben részletesenkifejtjük a projekt követelményeit, a játék funkcióit, a felhasználók jellemzőit, valamint a projekt ütemtervét és a csapat által használt eszközöket.}
+\par{A dokumentum további részeiben részletesen kifejtjük a projekt követelményeit, a játék funkcióit, a felhasználók jellemzőit, valamint a projekt ütemtervét és a csapat által használt eszközöket.}
 
 \section{Áttekintés}
 \subsection{Általános áttekintés}
@@ -43,7 +43,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
 	\item Takarítók: Irányítják a hókotró flottát, menedzselik az üzemanyagot (só, kerozin) és fejlesztik az eszközöket. Egy játékoshoz tartozhat akár több hókotró is. A hókotró flotta tagjai között van lehetőség cserélgetni a takarítófejeket, viszont csak a telephelyen. 
 \end{itemize}
 \par{Új hókotró vásárlásakor a játékos választhat egy alapértelmezett fejet. Ez lehet a söprő vagy jégtörő.}
-\par{A játékosok Pass 'N Play módon osztoznak a játékot futtató számítógépen: amint az egyik játékos végzett, azaz például az összes hókotrójával lépett, ő már befejezte az adott kört, és következik a társ. Amennyiben ő is megtette a jónak gondolt lépéseket, az autók (NPC-k) is elvégzik lépéseiket. a lakásuk és munkahelyük között próbálnak közlekedni a legrövidebb úton. Ha az út elzáródik, a legutolsó csomópontnál várakoznak, amíg a takarítók fel nem szabadítják az utat. Szerencsére a hókotró nem tud elakadni és megcsúszni sem, így előbb utóbb minden autós eljut a munkahelyére.}
+\par{A játékosok Pass 'N Play módon osztoznak a játékot futtató számítógépen: amint az egyik játékos végzett, azaz például az összes hókotrójával lépett, ő már befejezte az adott kört, és következik a társ. Amennyiben ő is megtette a jónak gondolt lépéseket, az autók (NPC-k) is elvégzik lépéseiket. A lakásuk és munkahelyük között próbálnak közlekedni a legrövidebb úton. Ha az út elzáródik, a legutolsó csomópontnál várakoznak, amíg a takarítók fel nem szabadítják az utat. Szerencsére a hókotró nem tud elakadni és megcsúszni sem, így előbb utóbb minden autós eljut a munkahelyére.}
 \par{A játék akkor ér véget, ha túl sok baleset történik, tehát túl sok jármű csúszott össze a jeges utakon. Ekkor az extrém időjárás következményei miatt a városban vészhelyzetet és kijárási tilalmat hirdetnek. Továbbá akkor is véget ér a játék, ha a játékban résztvevő semelyik busz sem tud lépni egy adott körben.}
 \par{A játék nehézsége ízlés szerint változtatható. A játék nehézségi fokait az tükrözi, hogy azok növekedésével több autó és nagyobb baleseti ráta (összecsúszás valószínűbb) van a városban. }
 
@@ -147,7 +147,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     \hline
 
     TOOLS4 & %Azonosító
-    A sószóró fej elolvasztja a havatt és a jeget, és pár körig megakadályozza annak újboli kialakulását.& %Leírás
+    A sószóró fej elolvasztja a havat és a jeget, és pár körig megakadályozza annak újboli kialakulását.& %Leírás
     A hó/jég eltűnt, és a só hatásának elmúlásáig nem is jelenik meg újra. & %Ellenőrzés
     SHOULD & %Prioritás
     Leírás & %Forrás
@@ -167,7 +167,8 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     A felhasználó nem választhat más szerepet, de választhatja a kettő közül bármelyiket.  & %Ellenőrzés
     MUST & %Prioritás
     Csapat & %Forrás
-    Járműválasztás \\ %Use-case
+    Jármű-
+    választás \\ %Use-case
     \hline
 
     PLAYERS2 & %Azonosító
@@ -175,7 +176,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     Az úton nem tud a játékos újratöltést végezni. & %Ellenőrzés
     SHOULD & %Prioritás
     Csapat & %Forrás
-    Fotyóeszköz vásárlása \\ %Use-case
+    Fogyóeszköz vásárlása \\ %Use-case
     \hline
 
     PLAYERS3 & %Azonosító
@@ -212,9 +213,9 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
 
     LOGIC8 & %Azonosító
     Miután mindkét játékos lépett, megindulnak az NPC-k, azaz az autósok. & %Leírás
-    Csak akkor és csak akkor indulnak meg, amikor már mindkét játékos befejezte a körét. & %Ellenőrzés
+    Csak akkor és csak akkor indulnak meg, amikor már minden játékos befejezte a körét. & %Ellenőrzés
     MUST & %Prioritás
-    CSAPAT & %Forrás
+    Csapat & %Forrás
     Autók vezérlése \\ %Use-case
     \hline
     
@@ -351,17 +352,6 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
 
 \section{Lényeges use-case-ek}
 \subsection{Use-case leírások}
-\begin{use-case}
-	%név
-	{Use-case Neve}
-	%rövid leírás
-	{Az eset rövid leírása}
-	%aktorok
-	{Aktorok}
-	%forgatókönyv
-	Forgatókönyv \newline 
-        \textbf{A.1} Alternatíva
-\end{use-case}
 
 \begin{use-case}
     %név
@@ -437,7 +427,7 @@ Fontos kiemelni, hogy a jegesedés csak az utat használó gépjárművek (autó
     %aktorok
     {Hókotró vezető}
     %forgatókönyv
-	Forgatókönyv: A rendszer felkínálja a választható ingyenes alapfejeket (Söprő fej vagy Jégtörő fej). A játékos kiválasztja az egyiket. A rendszer rögzíti a választást, és a hókotró ezzel a felszereléssel jön létre, illetve lép be a játéktérre.
+	A rendszer felkínálja a választható ingyenes alapfejeket (Söprő fej vagy Jégtörő fej). A játékos kiválasztja az egyiket. A rendszer rögzíti a választást, és a hókotró ezzel a felszereléssel jön létre, illetve lép be a játéktérre.
 \end{use-case}
 
 \begin{use-case}
