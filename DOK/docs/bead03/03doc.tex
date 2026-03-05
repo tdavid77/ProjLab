@@ -1,63 +1,245 @@
 \chapter{Analízis modell kidolgozása 1.}
 
+%---------------------------------------------------------------------------------
+%---------------------------------OBJEKTUMKATALÓGUS-------------------------------
+%---------------------------------------------------------------------------------
+
 \section{Objektum katalógus}
 
-\comment{Minden, a feladatban szereplő objektum rövid, egy-két bekezdés hosszú ismertetése. Meg kell jelenjen minden objektumhoz, hogy mi a felelőssége. Informális leírás, ezért nem kell foglalkozni az örökléssel, az interfészekkel, az absztrakt osztályokkal, a segédosztályokkal.}
+\subsection{Úthálózat}
+\par{Ez az objektum a várost reprezentáló gráfstruktúra, amely összefogja a csomópontokat és az utakat. Lényegében tehát a város teljes térképéért felel, koordináták használata nélkül. }
 
-\subsection{Objektum1}
-\comment{Felelősség informális leírása}
+\subsection{Csomópont}
+\par{Ez az objektum a város térképén található csomópontot reprezentálja, amely az utak találkozási helye. Felelőssége a forgalom várakoztatása (amennyiben az adott jármű útvonalán következő útszakasz járhatatlannak bizonyul) és az utak összekapcsolása.}
 
-\subsection{Objektum2}
-\comment{Felelősség informális leírása}
+\subsection{Út/él}
+\par{Az Út objektum reprezentálja a két csomópont közötti kapcsolatot. Felelőssége a sávok kezelése, valamint az úttípus (normál, híd vagy alagút) szerinti speciális viselkedés, például az alagút esetében a hómentesség biztosítása.}
 
-\comment{Az objektumkatalógus alapján kiindulva kell megalkotni az objektumorientált analízis modellt. A 3.2, 3.3, 3.4, 3.5 alfejezetek ugyanannak a modellnek a különböző nézetei, ezért egyidőben, egymással összefüggésben készülnek.Megtörténik az objektumkatalógusbantárgyalt objektumok felelősségének formalizálásaosztályokká,attribútumokká, metódusokká. Csak publikus metódusok szerepelhetnek. Megjelennek az interfészek, az öröklés, az absztrakt osztályok. Segédosztályokra még nincs szükség.}
+\subsection{Sáv}
+\par{Az utak belső felosztását megvalósító objektum. Felelőssége a rajta lévő hó- és jégmennyiség tárolása, valamint a járművek befogadása.}
+
+\subsection{Hó}
+\par{Az utakon felhalmozódó csapadékot reprezentáló objektum. Felelőssége, hogy gátolja a közlekedést és a járművek alatt jéggé tömörödik. Az autók miatt jéggé tömörödött hóra ismételten ráesett csapadék jéggé fagy (tehát a jégre esett hó nem változtat az út csúszósságán). A feltört jég hóvá változik, viselkedése és felelőssége azonos a hóéval. }
+
+\subsection{Jégpáncél}
+\par{A forgalom által letaposott hó. Felelőssége, hogy csúszásveszélyt és baleseteket okozhat. Eltávolítására kizárólag a sárkány és a jégtörő fej alkalmas, az egyéb berendezések nem tudnak mit kezdeni vele. Vastagsága irreleváns abból a szempontból, hogy már a legvékonyabb jég is ugyanolyan csúszós, mint a több rétegű.}
+
+\subsection{Autó (NPC)}
+\par{Önműködő járműveket megvalósító objektum, amely lakás és munkahely között közlekedik a legrövidebb úton. Felelőssége az úthálózaton való haladás és a megcsúszás. Az elindulás pillanatában nem tudja, hogy melyik út járható és melyik nem, így mindig a megszokott, munkahely és lakás közötti legrövidebb úton közlekedik, amelyen vagy elakad, vagy nem.}
+
+\subsection{Busz}
+\par{Speciális jármű, amely végállomások között ingázik. A buszvezető szerepet játszó játékos irányítja. Minden megtett körért pénzt kap. Felelőssége az is, hogy baleset esetén ez a jármű is mozgásképtelenné válik egy időre, illetve képes megcsúszni, elakadni. Előre meghatározott úton közlekedik, ami ha valamely okból járhatatlanná válik, várakozik. Alternatív utat nem keres, a vonala nem fog terelődni.}
+
+\subsection{Hókotró}
+\par{Ez az objektum a takarító játékos által irányított jármű. Felelőssége a felszerelt fej működtetése és a sávok tisztítása. Nem akadhat el és nem csúszhat meg, továbbá nem válhat mozgásképtelenné. Van telephelye, ahol számos (később részletesebben tárgyalt) művelet végezhető. Amennyiben egy másik autó belecsúszuk, az autó egy időre mozgásképtelenné válik, de a masszív munkagép zavartalanul folytatja dolgát.}
+
+\subsection{Kotrófej} 
+\par{A hókotróra szerelhető cserélhető eszköz (Söprő, Hányó, Jégtörő, Sószóró, Sárkány). Felelőssége a sáv állapotának módosítása (tolás, szórás, törés, olvasztás). Egy hókotróra több fejet is lehet vásárolni, de egyszerre csak egy lehet rajta. A csere csak a telephelyen lehetséges.}
+
+\subsection{Söprő fej}
+\par{A Söprő fej objektum felelőssége a hó és a feltört jég oldalra (mindig a szomszédos jobb oldali sávba) tolása. A jégpáncéllal szemben hatástalan.}
+
+\subsection{Hányó fej}
+\par{A hányó fej objektum felelőssége, hogy a havat és a feltört jeget az úttól messzire repíti, így azok véglegesen kikerülnek a rendszerből. }
+
+\subsection{Jégtörő fej}
+\par{A Jégtörő fej objektum feladata a szilárd jégpáncél fizikai felaprítása. Felelőssége a jég állapotának megváltoztatása feltört jégre, de az eltakarítást nem végzi el.}
+
+\subsection{Sószóró fej}
+\par{A Sószóró fej vegyszeres úton szünteti meg a csapadékot. Felel az olvadási folyamat elindításáért és a sáv ideiglenes hómentességének biztosításáért, amíg a sókészlet tart. Felelőssége az is, hogy az só elfogyta után nem működőképes.}
+
+\subsection{Sárkány fej}
+\par{A Sárkány fej objektum a legmagasabb szintű takarítóeszköz. Felelőssége a biokerozin égetésével a hó és jég azonnali elolvasztása a hókotró előtt. Felelőssége az is, hogy az só elfogyta után nem működőképes.}
+
+\subsection{Telephely}
+\par{Ezen objektum olyan bázist jelent, ahol a hókotrók felszereléseit cserélni, újakat vásárolni és üzemanyagot vételezni lehet. Felelőssége, hogy ezen műveletek itt és csak itt valósulhassanak meg. }
+
+\subsection{Végállomás}
+\par{A végállomás objektum a buszjáratok kezdő- és végpontja. Felelőssége a buszok körszámának nyilvántartása.}
+
+%---------------------------------------------------------------------------------
+%--------------------------------------IDK??--------------------------------------
+%---------------------------------------------------------------------------------
 
 \section{Statikus struktúra diagramok}
 \comment{Az előző alfejezet osztályainak kapcsolatait és publikus metódusait bemutató osztálydiagram(ok). Tipikus hibalehetőségek: csillag-topológia, szigetek.}
-
+\par{Ide osztálydiagram!}
 \diagram{docs/img/BMElogo}{Demó}{3cm}
+
+%---------------------------------------------------------------------------------
+%---------------------------------OSZTÁLYLEÍRÁSOK---------------------------------
+%---------------------------------------------------------------------------------
 
 \section{Osztályok leírása}
 \comment{Az előző alfejezetben tárgyalt objektumok felelősségének formalizálása attribútumokká, metódusokká. Csak publikus metódusok szerepelhetnek. Ebben az alfejezetben megjelennek az interfészek, az öröklés, az absztrakt osztályok. Segédosztályokra még mindig nincs szükség. Az osztályok ABC sorrendben kövessék egymást. Interfészek esetén az Interfészek, Attribútumok pontok kimaradnak.}
 
-\subsection{Osztály1}
+\par{ANGOLUL?????}
+\subsection{Úthálózat}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    A város logikai szerkezetének összefogása, koordináták nélkül, gráf (csúcsok és élek) formátumban. 
 \end{class-template-responsibility}
 \begin{class-template-interface}
-    Megvalósított interfészek felsorolása
+    Státusz: Kilistázza azokat a csomópontokat amelyek között az út járhatatlan (összecsúsztak rajta vagy a hó vastagsága miatt elakadnak rajta a járművek)
+    \newline
+    Legrövidebb út meghatározása
 \end{class-template-interface}
 \begin{class-template-baseclass}
-    Ős-Ősosztály \baseclass Ősosztály... láncolat
+    Ős-Ősosztály \baseclass Ősosztály... láncolat NINCS
 \end{class-template-baseclass}
 \begin{class-template-attribute}
-    \classitem{+asszociáció A}{asszociáció jellemzése: ki a túloldali szereplő, mi a kapcsolat célja}
+    \classitem{+Csomópontok}{Az úthálózat azon pontjai, ahol az utak találkoznak.}
+    \classitem{+Utak}{Az Út objektum reprezentálja a két csomópont közötti kapcsolatot.}
 \end{class-template-attribute}
 \begin{class-template-association}
     \classitem{+A [0..*]}{adattag A}
+    Autó Irányítása: Kapcsolatban áll az autókkal, az útvonal meghatározása miatt
 \end{class-template-association}
-\comment{Milyen publikus, protected és privát  metódusokkal rendelkezik. Metódusonként egy-három mondat arról, hogy mit csinál.}
 \begin{class-template-method}
     \classitem{+B(A a) : void}{metódus B}
+    \classitem{+shortestPath(Node start, Node end): \texttt{List<Node>}}{A legrövidebb (járható vagy járhatatlan) útvonal meghatározása az NPC-k számára.}
 \end{class-template-method}
 
-\subsection{Osztály2}
+\subsection{Csomópont}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    A forgalom várakoztatása, utak összekapcsolása.
 \end{class-template-responsibility}
-\begin{class-template-statechart}
-    A belső működéshez tartozó állapotgép
-    \diagram{docs/img/BMElogo}{Az osztály állapotváltozásai}{3cm}
-\end{class-template-statechart}
+\begin{class-template-interface}
+    Autók száma \newline
+    Szomszédos csomópontok lekérdezése
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    N/A
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{+autokSzama}{int}
+    \classitem{+szomszedoCsomopontokListaja}{\texttt{List<Csomopont>}}
+\end{class-template-attribute}
+\begin{class-template-association}
+    N/A
+\end{class-template-association}
+\begin{class-template-method}
+    N/A
+\end{class-template-method}
+
+\subsection{Út}
+\begin{class-template-responsibility}
+    Két csomópont közötti kapcsolat megvalósítása. Kezeli a sávokat és az úttípus (normál, híd, alagút) szerinti speciális környezeti hatásokat.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    N/A
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    N/A
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{+kezdopont}{Csomopont} %egyik csomópont
+    \classitem{+vegpont}{Csomopont} %másik csomópont
+    \classitem{+sávokListaja}{\texttt{List<Sav>}}
+    \classitem{+hossz}{int}
+    \classitem{+tipus}{string}
+\end{class-template-attribute}
+\begin{class-template-association}
+    N/A
+\end{class-template-association}
+\begin{class-template-method}
+    N/A
+\end{class-template-method}
+
+\subsection{Sáv}
+\begin{class-template-responsibility}
+   Az utak belső felosztása. Tárolja a rajta lévő hó- és jégmennyiséget, valamint befogadja az éppen ott tartózkodó járműveket.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    N/A
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    Út
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{+jarhatoe}{bool}
+    \classitem{+tipus}{string}
+    \classitem{+athaladtAutokSzama}{int}
+    \classitem{+szomszedosSav}{\texttt{List<Sav>}}
+    \classitem{+kiszortSoHatralevoIdeje}{int}
+    \classitem{+hovastagsag}{int}
+    \classitem{+jeg}{bool}
+\end{class-template-attribute}
+\begin{class-template-association}
+    \classitem{+A [0..*]}{adattag A}
+    Túloldali szereplő a sószóró fej, a kapcsolat célja a só hatásának fenntartása, tehát hogy nem marad meg a hó a sávon. 
+\end{class-template-association}
+\begin{class-template-method}
+    \classitem{+incrHo(Sáv s, int mennyiseg): void}{A hó vastagsága} 
+    \classitem{+jeg(): bool}{Van-e jég az úton.  ez kell??}
+    \classitem{+jeggeValas(): void}{Kellő mennyiségű áthaladt autó után a hó jéggé tömörödik.}
+\end{class-template-method}
+
+\subsection{Jármű}
+\begin{class-template-responsibility}
+    A járművek mozgásának logikájáért felelős főleg, de a történéseket (baleset, megcsúszás) majd az egyes belőle leszármazó járművek hajtják végre a nekik megfelelő szerepkör szerint (pl. hókotró nem tud megcsúszni, mert lánctalpas, de az autók és buszok igen).
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    N/A
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    Út
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{+elakadt}{bool}
+    \classitem{+mozgaskeptelen}{bool}
+\end{class-template-attribute}
+\begin{class-template-association}
+    \classitem{+A [0..*]}{adattag A}
+    Leszármazik belőle a busz, autó és hókotró osztály
+\end{class-template-association}
+\begin{class-template-method}
+    \classitem{+elakadasVizsgalat(jarmu): bool}{Megnézi, hogy elakad-e a jármű}
+    \classitem{+lep(Csomopont): void}{Mozgás}
+\end{class-template-method}
+
+\subsection{Autó (NPC)}
+\begin{class-template-responsibility}
+    Önműködő jármű, amely a legrövidebb úton közlekedik. Felelős a hó tömörítéséért; túl nagy hóban elakad, jégen megcsúszhat.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    N/A
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    Jármű
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{+celCsomopont : Csomopont}{Ide megy dolgozni az autó tulajdonosa}
+    \classitem{+otthon : Csomopont}{Itt jelenik meg a játék kezdetekor.}
+    \classitem{+utvonal}{\texttt{List<Csomopont>}}
+\end{class-template-attribute}
+\begin{class-template-association}
+    \classitem{+A [0..*]}{adattag A}
+    Leszármazik belőle a busz, autó és hókotró osztály
+\end{class-template-association}
+\begin{class-template-method}
+    \classitem{+elakadasVizsgalat(jarmu): bool}{Megnézi, hogy elakad-e a jármű}
+    \classitem{+lep(Csomopont): void}{Mozgás}
+\end{class-template-method}
+
+%---------------------------------------------------------------------------------
+%---------------------------------OSZTÁLYDIAGRAM----------------------------------
+%---------------------------------------------------------------------------------
 
 \section{Statikus struktúra diagramok}
 \comment{Az előző alfejezet osztályainak kapcsolatait és publikus metódusait bemutató osztálydiagram(ok). Tipikus hibalehetőségek: csillag-topológia, szigetek.}
 \diagram{docs/img/BMElogo}{osztálydiagram}{3cm}
 
+%---------------------------------------------------------------------------------
+%--------------------------------SZEKVENCIADIAGRAM--------------------------------
+%---------------------------------------------------------------------------------
 
 \section{Szekvencia diagramok}
 \comment{Inicializálásra, use-case-ekre, belső működésre. Konzisztens kell legyen az előző alfejezettel. Minden metódus, ami ott szerepel, fel kell tűnjön valamelyik szekvenciában. Minden metódusnak, ami szekvenciában szerepel, szereplnie kell a valamelyik osztálydiagramon.}
 \diagram{docs/img/BMElogo}{Szekvencia1}{3cm}
+
+%---------------------------------------------------------------------------------
+%---------------------------------ÁLLAPOTGÉP????----------------------------------
+%---------------------------------------------------------------------------------
 
 \section{State-chartok}
 \comment{Csak azokhoz az osztályokhoz, ahol van értelme. Egyetlen állapotból álló state-chartok ne szerepeljenek. A játék működését bemutató state-chart-ot készíteni tilos.}
