@@ -205,6 +205,7 @@
     N/A
 \end{class-template-interface}
 \begin{class-template-attribute}
+    \classitem{+ar}{ A hókotró ára}
     \classitem{+aktualisFej}{A hókotróra szerelt aktuális takarítófej.}
 \end{class-template-attribute}
 \begin{class-template-method}
@@ -351,7 +352,7 @@
     \classitem{+athaladtAutokSzama}{A sávon a legutóbbi fagyás óta áthaladt járművek száma.}
     \classitem{+hossz}{A sáv takarítási díját befolyásoló hossza.}
     \classitem{+balesetezettJarmuvek}{A sávon összecsúszott és jelenleg is az utat torlaszoló járművek listája.}
-    \classitem{+ho, jeg, so}{Az aktuális időjárási objektumok referenciái.}
+    \classitem{+jarhatoE}{ A sáv járhatóságát tároló változó.}
 \end{class-template-attribute}
 \begin{class-template-method}
     \classitem{+balesetKalkulacio(int rata): bool}{A paraméterként kapott baleseti ráta és a jégpáncél megléte alapján kiszámolja, hogy történik-e összecsúszás.}
@@ -516,6 +517,9 @@
 \diagram{docs/img/uml_sequence/hanyofej}{Hányófej}{15cm}
 \diagram{docs/img/uml_sequence/sarkanyfej}{Sárkányfej}{15cm}
 \diagram{docs/img/uml_sequence/soszorofej}{Sószórófej}{15cm}
+\diagram{docs/img/uml_sequence/ujhokotro}{Új Hókotró}{15cm}
+\diagram{docs/img/uml_sequence/fejcsere}{Fejcsere}{9.2cm}
+\diagram{docs/img/uml_sequence/osszecsuszas}{Összecsúszás}{15cm}
 \clearpage
 
 %---------------------------------------------------------------------------------
