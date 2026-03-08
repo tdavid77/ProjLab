@@ -62,33 +62,13 @@
 %---------------------------------------------------------------------------------
 
 \section{Osztályok leírása}
-\comment{Az előző alfejezetben tárgyalt objektumok felelősségének formalizálása attribútumokká, metódusokká. Csak publikus metódusok szerepelhetnek. Ebben az alfejezetben megjelennek az interfészek, az öröklés, az absztrakt osztályok. Segédosztályokra még mindig nincs szükség. Az osztályok ABC sorrendben kövessék egymást. Interfészek esetén az Interfészek, Attribútumok pontok kimaradnak.}
-
-\subsection{ClassName}
-\begin{class-template-responsibility}
-    A ClassName felelőssége
-\end{class-template-responsibility}
-\begin{class-template-baseclass}
-    Ős-Ősosztály \baseclass Ősosztály... láncolat NINCS
-\end{class-template-baseclass}
-\begin{class-template-interface}
-    N/A
-\end{class-template-interface}
-\begin{class-template-attribute}
-    \classitem{+A}{Adattag A}
-    \classitem{+B}{Adattag B}
-\end{class-template-attribute}
-\begin{class-template-method}
-    \classitem{+A(A a) : void}{metódus A}
-    \classitem{+B(B b) : void}{metódus B}
-\end{class-template-method}
 
 \subsection{Auto}
 \begin{class-template-responsibility}
     Önműködő (NPC) jármű, amely az otthona és a munkahelye között próbál eljutni a legrövidebb úton. Lépéseivel hozzájárul a hó jéggé tömörítéséhez.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Jarmu -> Auto
+    Jarmu $\rightarrow$ Auto
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -107,7 +87,7 @@
    Kötött útvonalon, végállomások között ingázó, játékos által irányított jármű. 
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Jarmu -> Busz
+    Jarmu $\rightarrow$ Busz
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -126,7 +106,7 @@
     A buszokat irányító játékos reprezentációja, aki a menetrendek betartásával próbálja növelni a vagyonát.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Jatekos -> Buszvezeto
+    Jatekos $\rightarrow$ Buszvezeto
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -150,9 +130,7 @@
     N/A
 \end{class-template-interface}
 \begin{class-template-attribute}
-    \comment{Ezt én írtam, szerintem ezek kellenének???}
-    \classitem{+varakozoAutok}{Az autók száma, amelyek a csomópontban várakoznak.}
-    \classitem{+szomszedosCsomopontok}{A szomszédos csomópontok listája.}
+    N/A
 \end{class-template-attribute}
 \begin{class-template-method}
     N/A
@@ -182,7 +160,7 @@
     A hókotró nyomvonalából a havat és a feltört jeget az út mellé, a pályáról véglegesen eltávolító fej.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Fej -> Hanyofej
+    Fej $\rightarrow$ Hanyofej
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -291,7 +269,7 @@
     A masszív jégpáncél fizikai feltörését végző fej.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Fej -> JegtoroFej
+    Fej $\rightarrow$ JegtoroFej
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -325,7 +303,7 @@
     Biokerozint égetve azonnali jég- és hóolvasztást végző, kapcsolható prémium takarítófej.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Fej -> SarkanyFej
+    Fej $\rightarrow$ SarkanyFej
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -366,7 +344,7 @@
     Az alapértelmezett takarítófej, amely a csapadékot a szomszédos sávba tolja át.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Fej -> SoproFej
+    Fej $\rightarrow$ SoproFej
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -383,7 +361,7 @@
     Só szórásával kémiai úton olvasztja el az akadályokat, és ideiglenes védelmet nyújt a havazás ellen.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Fej -> SoszoroFej
+    Fej $\rightarrow$ SoszoroFej
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -401,7 +379,7 @@
     A hókotró flottát üzemeltető játékos reprezentációja. A telephelyen lévő szolgáltatások igénybevételével tartja karban a gépeit.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Jatekos -> TakaritoJatekos
+    Jatekos $\rightarrow$ TakaritoJatekos
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -424,7 +402,7 @@
     Speciális csomópont, a karbantartási műveletek egyetlen engedélyezett helyszíne.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Csomopont -> Telephely
+    Csomopont $\rightarrow$ Telephely
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -484,7 +462,7 @@
     Speciális csomópont, amely a buszok megfordulásának és a körök regisztrálásának célállomása.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Csomopont -> Vegallomas
+    Csomopont $\rightarrow$ Vegallomas
 \end{class-template-baseclass}
 \begin{class-template-interface}
     N/A
@@ -511,7 +489,6 @@
 %---------------------------------------------------------------------------------
 
 \section{Szekvencia diagramok}
-\comment{Inicializálásra, use-case-ekre, belső működésre. Konzisztens kell legyen az előző alfejezettel. Minden metódus, ami ott szerepel, fel kell tűnjön valamelyik szekvenciában. Minden metódusnak, ami szekvenciában szerepel, szereplnie kell a valamelyik osztálydiagramon.}
 \diagram{docs/img/uml_sequence/soprofej}{Söprőfej}{15cm}
 \diagram{docs/img/uml_sequence/jegtorofej}{Jégtörőfej}{15cm}
 \diagram{docs/img/uml_sequence/hanyofej}{Hányófej}{15cm}
@@ -527,6 +504,5 @@
 %---------------------------------------------------------------------------------
 
 \section{State-chartok}
-\comment{Csak azokhoz az osztályokhoz, ahol van értelme. Egyetlen állapotból álló state-chartok ne szerepeljenek. A játék működését bemutató state-chart-ot készíteni tilos.}
 \diagram{docs/img/uml_state_chart/utszakasz}{Útszakasz}{10cm}
 \diagram{docs/img/uml_state_chart/telephely}{Telephely}{10cm}
