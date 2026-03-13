@@ -531,7 +531,7 @@
                                 \par{A tranzakciót a Játékos aktor indítja el a hokotroVasarlas(h) metódus meghívásával a TakaritoJatekos objektumon.}
                                 \par{A vásárlas megkezdése előtt a rendszer ellenőrzi az aktuális tartózkodási helyet a getAktualisCsomopont() hívässal, mivel a beszerzés kizárólag a Telephelyen engedélyezett.}
                                 \par{Az opcionális (opt) blokkban két kritikus feltételnek kell teljesülnie: a játékosnak rendelkeznie kell a megfelelő anyagi fedezettel, és a gépnek a telephelyen kell állnia.}
-                                \par{Amennyiben a feltételek teljesülnek, a játékos vagyona levonásra kerül, majd a \texttt{<<create>>} üzenet segítségével (kicsit elcsúszva ugyan, a fenti okokból) létrejön az új Hokotro objektum (h uj).}
+                                \par{Amennyiben a feltételek teljesülnek, a játékos vagyona levonásra kerül, majd a \texttt{<<create>>} üzenet segítségével (kicsit elcsúszva ugyan, mivel a használt szoftver nem képes pontosan oda rajzolni a create nyilat, ahova kellene) létrejön az új Hokotro objektum (h uj).}
                                 \par{A folyamat végén az új munkagép bekerül a játékos flottájába a hokotrok.add(h uj) hívással, és az aktor megkapja a visszaigazolást a sikeres tranzakcióról.}}
     \szotaritem{Fejcsere 3.10 }{\par{Ez a szekvencia diagram a hókotró munkaeszközének cseréjét mutatja be. }
                                 \par{A folyamat kezdetén a Takarító Játékos aktor kezdeményezi a fej cseréjét, melynek kritikus első lépése annak ellenőrzése, hogy a hókotró valóban egy Telephelyen tartózkodik-e.}
