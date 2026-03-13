@@ -489,29 +489,74 @@
 %---------------------------------------------------------------------------------
 
 \section{Szekvencia diagramok}
-\diagram{docs/img/uml_sequence/soprofej}{Söprőfej}{15cm}
-\diagram{docs/img/uml_sequence/jegtorofej}{Jégtörőfej}{15cm}
-\diagram{docs/img/uml_sequence/hanyofej}{Hányófej}{15cm}
-\diagram{docs/img/uml_sequence/sarkanyfej}{Sárkányfej}{15cm}
-\diagram{docs/img/uml_sequence/soszorofej}{Sószórófej}{15cm}
-\diagram{docs/img/uml_sequence/ujhokotro}{Új Hókotró}{15cm}
-\diagram{docs/img/uml_sequence/fejcsere}{Fejcsere}{9.2cm}
-\diagram{docs/img/uml_sequence/osszecsuszas}{Összecsúszás}{15cm}
-\diagram{docs/img/uml_sequence/autolep}{Autó haladás}{15cm}
-\diagram{docs/img/uml_sequence/buszlep}{Busz haladás}{15cm}
+\diagram{docs/img/uml_sequence/soprofej}{Söprőfej}{17cm}
+\diagram{docs/img/uml_sequence/jegtorofej}{Jégtörőfej}{17cm}
+\diagram{docs/img/uml_sequence/hanyofej}{Hányófej}{17cm}
+\diagram{docs/img/uml_sequence/sarkanyfej}{Sárkányfej}{17cm}
+\diagram{docs/img/uml_sequence/soszorofej}{Sószórófej}{17cm}
+\diagram{docs/img/uml_sequence/ujhokotro}{Új Hókotró}{17cm}
+\diagram{docs/img/uml_sequence/fejcsere}{Fejcsere}{8cm}
+\diagram{docs/img/uml_sequence/osszecsuszas}{Összecsúszás}{14cm}
+\diagram{docs/img/uml_sequence/autolep}{Autó haladás}{17cm}
+\diagram{docs/img/uml_sequence/buszlep}{Busz haladás}{17cm}
 \clearpage
 
+\section{Szekvecia diagramok leírása}
+
 \begin{szotar}
-    \szotaritem{Söprőfej 3.4}{Ez a diagram a söprő fej működését mutatja be egy útszakasz megtisztítása során. Indítás: A folyamat a Játékos által kezdeményezett járműmozgatással indul, amely egy konkrét célcsomópontot és a hozzá tartozó hókotrót érinti. Koordináció: A Hókotró felelőssége a rászerelt takarítófej működtetése, így ő hívja meg a tisztítási parancsot a fejen. Adatgyűjtés: A Söprő fej első lépésként lekéri az aktuális sávtól a rajta felhalmozódott hóréteg vastagságát. Hó áttolása: Amennyiben létezik jobb oldali szomszédos sáv, a fej a korábban tárgyalt logika alapján átadja a mért hóvastagságot ennek a sávnak. Befejezés: A fej végrehajtja az egyedi tisztítási hatást az eredeti sávon, majd a vezérlés a sikeres munka igazolásával tér vissza a játékoshoz.}
-    \szotaritem{Jégtörőfej 3.5}{Ez a diagram a jégtörő fej működését mutatja be egy útszakasz megtisztítása során. Indítás: A folyamat a Játékos által kezdeményezett járműmozgatással indul, amely egy konkrét célcsomópontot és a hozzá tartozó hókotrót érinti. Koordináció: A Hókotró felelőssége a rászerelt takarítófej működtetése, így ő hívja meg a tisztítási parancsot a fejen. Adatgyűjtés: A Jégtörő fej első lépésként lekéri az aktuális sávtól a rajta felhalmozódott jégpáncél vastagságát. Jég eltávolítása: Amennyiben létezik jobb oldali szomszédos sáv, a fej a korábban tárgyalt logika alapján átadja a mért jégpáncél vastagságot ennek a sávnak. Befejezés: A fej végrehajtja az egyedi tisztítási hatást az eredeti sávon, majd a vezérlés a sikeres munka igazolásával tér vissza a játékoshoz.}
-    \szotaritem{Hányófej 3.6}{Ez a diagram a hányó fej működését mutatja be egy útszakasz megtisztítása során. Indítás: A folyamat a Játékos által kezdeményezett járműmozgatással indul, amely egy konkrét célcsomópontot és a hozzá tartozó hókotrót érinti. Koordináció: A Hókotró felelőssége a rászerelt takarítófej működtetése, így ő hívja meg a tisztítási parancsot a fejen. Adatgyűjtés: A Hányó fej első lépésként lekéri az aktuális sávtól a rajta felhalmozódott hóréteg vastagságát. Hó áttolása: Amennyiben létezik jobb oldali szomszédos sáv, a fej a korábban tárgyalt logika alapján átadja a mért hóvastagságot ennek a sávnak. Befejezés: A fej végrehajtja az egyedi tisztítási hatást az eredeti sávon, majd a vezérlés a sikeres munka igazolásával tér vissza a játékoshoz.}
-    \szotaritem{Sárkányfej 3.7}{Ez a diagram az sárkányfej működését mutatja be egy útszakasz megtisztítása során. Indítás: A folyamat a Játékos által kezdeményezett járműmozgatással indul, amely egy konkrét célcsomópontot és a hozzá tartozó hókotrót érinti. Koordináció: A Hókotró felelőssége a rászerelt takarítófej működtetése, így ő hívja meg a tisztítási parancsot a fejen. Adatgyűjtés: A Sárkány fej első lépésként lekéri az aktuális sávtól the rajta felhalmozódott hóréteg vastagságát. Hó áttolása: Amennyiben létezik jobb oldali szomszédos sáv, the fej the korábban tárgyalt logika alapján átadja the mért hóvastagságot ennek the sávnak. Befejezés: The fej végrehajtja the egyedi tisztítási hatást the eredeti sávon, majd the vezérlés the sikeres munka igazolásával tér vissza the játékoshoz.}
-    \szotaritem{Sószórófej 3.8}{Ez	a diagram	a sószórófej	működését	mutatja	be	egy	útszakasz	megtisztítása	során.	Indítás:	A	folyamat	a	Játékos	által	kezdeményezett	jármymozgatässal	indul,	amely	egy	konkrét	célcsomopontot	és	a	hozzá	tartoz ó	hokotrót	érinti	Koordinác ó:A	Hok otro	felelős ége	a	rászerelt	takarítófe	j	müködtetése,	így	ő	hívja	meg	a	tisztí tási	parancsot	a	fejen.Ad atgy űjt és	A	S ószór ó	fej	e ls ű	l ép ésk ént	lekéri_az aktuál is	sáltól_a	rajta	felhalmozódott	h óréteg	vastagságát.H ó áttolása:Amennyiben	létezik	jobb	oldali	s zoms zédos	s áv,a	fej	a	korábban	tagyalt	logika	alapjan	atadja	a	mért	h óvastagsag ot	enek	a	savnak.Befeje zés:A	fej	végrehajt ja_az	e gyesi	t isztí tási	h atást_az	eredeti	s ávon,majd	a	vezér l és	a	sikeres	munka	igazolás áll	tér	vissza	a	játékosh oz.}
-    \szotaritem{Új hókotró 3.9}{Ez a szekvencia diagram az új hókotró vásárlásának folyamatát mutatja be. A folyamat lépései a következők: A tranzakciót a Játékos aktor indítja el a hokotroVasarlas(h) metódus meghívásával a TakaritoJatekos objektumon. A vásárlás megkezdése előtt a rendszer ellenőrzi az aktuális tartózkodási helyet a getAktualisCsomopont() hívással, mivel a beszerzés kizárólag a Telephelyen engedélyezett. Az opcionális (opt) blokkban két kritikus feltételnek kell teljesülnie: a játékosnak rendelkeznie kell a megfelelő anyagi fedezettel, és a gépnek a telephelyen kell állnia. Amennyiben a feltételek teljesülnek, a játékos vagyona levonásra kerül, majd a <<create>> üzenet segítségével (kicsit elcsúszva ugyan, a fenti okokból) létrejön az új Hokotro objektum (h\_uj). A folyamat végén az új munkagép bekerül a játékos flottájába a hokotrok.add(h_uj) hívással, és az aktor megkapja a visszaigazolást a sikeres tranzakcióról.}
-    \szotaritem{Fejcsere 3.10 }{lol}
-    \szotaritem{Összecsúszás 3.11}{Ez a diagram azt a kritikus eseménysort modellezi, amikor egy jármű a jeges úton balesetet szenved, és ezzel eltorlaszolja az utat a forgalom többi résztvevője előtt. Indítás: A folyamatot az Uthalozat indítja el, amikor kiadja a mozgási parancsot az NPC járműveknek. Kalkuláció: A Sav objektum felelőssége kiszámítani a baleset valószínűségét a globális baleseti ráta és a sávon lévő jégpáncél megléte alapján. Baleset elszenvedése: Ha a kalkuláció eredménye pozitív, a Jarmu elszenvedi a balesetet a megcsuszik() metódus hívásával. Úttorlasz: A Sav rögzíti a balesetet szenvedett járművet a saját listájában, ami innentől kezdve akadályozza a forgalmat. Következmény: Amikor egy második jármű (j2) megpróbál belépni a sávba, a jarhatoEAutoknak() lekérdezés hamis értékkel tér vissza, mivel a sávon elakadt jármű található, így a forgalom 'feltorlódik'.}
-    \szotaritem{Autó haladás 3.12}{Ez a szekvenciadiagram az autók sávokon való áthaladását és az ahhoz kapcsolódó jégképződés folyamatát mutatja be. A folyamat kezdetén az Autó entitás megkísérel lépni egy megadott csomópont felé. Ennek keretében meghívja az érintett Sáv autoAthalad() függvényét. A sáv ekkor első lépésként megnöveli a rajta áthaladt autók számát nyilvántartó változó értékét eggyel. Ezt követően a folyamat egy feltételes blokkhoz érkezik, amely megvizsgálja, hogy az áthaladt autók száma elérte-e a kritikus szintet meghatározó számértéket. Amennyiben ez a feltétel teljesül, a sáv meghívja a saját jegesit() privát függvényét, amely a logikának megfelelően jéggé alakítja az úton lévő csapadékot. A belső folyamatok (és az esetleges jegesítés) lefutása után a vezérlés visszakerül az autóhoz. A műveletsor legvégén a lep metódus egy True értékkel tér vissza önmagához, jelezve, hogy a jármű mozgása az adott körben sikeresen végbement.}
-    \szotaritem{Busz haladás 3.13}{A szekvenciadiagram a buszok haladását és a végállomás elérésekor lefutó logikát mutatja be. A folyamat kezdetén a Buszvezető aktor kezdeményezi a busz  léptetését a lep metódus meghívásával. Ezt követően a folyamat egy feltételes blokkhoz érkezik, amely megvizsgálja, hogy a célként megadott csomópont egy végállomás-e. Amennyiben ez a feltétel teljesül, a busz meghívja a saját utMegteve függvényét. Ennek keretében két dolog történik: Először megnöveli az eddig sikeresen teljesített utak számát nyilvántartó változó értékét eggyel. Ezt követően a busz kifizeti a sofőrt úgy, hogy megnöveli a Buszvezető vagyonát. A műveletsor legvégén a vezérlés visszakerül az aktorhoz, a lep metódus pedig egy True értékkel tér vissza, jelezve, hogy a jármű mozgása az adott körben sikeresen végbement.}
+    \szotaritem{Söprőfej 3.4}{\par{Ez a diagram a söprő fej működését mutatja be egy útszakasz megtisztítása során. }
+                            \par{Indítás: A folyamat a Játékos által kezdeményezett járműmozgatással indul, amely egy konkrét célcsomópontot és a hozzá tartozó hókotrót érinti. }
+                            \par{Koordináció: A Hókotró felelőssége a rászerelt takarítófej működtetése, így ő hívja meg a tisztítási parancsot a fejen. }
+                            \par{Adatgyűjtés: A Söprő fej első lépésként lekéri az aktuális sávtól a rajta felhalmozódott hóréteg vastagságát. }
+                            \par{Hó áttolása: Amennyiben létezik jobb oldali szomszédos sáv, a fej a korábban tárgyalt logika alapján átadja a mért hóvastagságot ennek a sávnak. }
+                            \par{Befejezés: A fej végrehajtja az egyedi tisztítási hatást az eredeti sávon, majd a vezérlés a sikeres munka igazolásával tér vissza a játékoshoz. }}
+    \szotaritem{Jégtörőfej 3.5}{\par{Ez a diagram a jégpáncél fizikai megsemmisítését és állapotváltozását modellezi. }
+                                \par{A folyamat a TakarítoJatekos osztály parancsára indul, ami a hókotró flottát irányítja a tisztítási munkálatok során. 
+                                A Hókotró fogadja a parancsot, majd delegálja a feladatot a rajta lévő Jégtörő fejnek a takaritHatas metódus meghívásával. 
+                                A fej lekérdezi a sávtól a jég vastagságát. Amennyiben van jég, a fej nem eltávolítja azt a pályáról, hanem "feltört jéggé", 
+                                vagyis a modell szerinti hóréteggé alakítja át. Ezért látható a diagramon a jegEltavolitas() és a hoHozzaadas(vastagsag) hívások egymásutánja.}}    
+    \szotaritem{Hányófej 3.6}{\par{Ezen a diagramon bemutatott folyamat a TakarítoJatekos osztály parancsára indul, amely kijelöli a tisztítandó sávot.}
+                            \par{A Hókotró felelőssége a tisztítás koordinálása, de a konkrét fizikai hatást a Hányó fej fejti ki a takaritHatas metóduson keresztül. }
+                            \par{A fej először egy szinkron hívással meggyőződik arról, hogy van-e eltávolítandó hó a sávon. }
+                            \par{A hányó fej speciális tulajdonsága, hogy a havat nem egy másik sávba tolja át, hanem véglegesen eltávolítja a városi úthálózatról, "kitolja az út mellé". }}
+    \szotaritem{Sárkányfej 3.7}{\par{A Sárkány fej működésének folyamata is a TakarítoJatekos osztály parancsára indul. }
+                                \par{Ezen prémium fej csak akkor lép működésbe, ha az állapota aktív  és rendelkezik a működéshez szükséges üzemanyaggal (biokerozinKeszlet > 0). }
+                                \par{Működés közben a fej biokerozint fogyaszt, cserébe azonnal és véglegesen megsemmisíti a sávon található összes havat és jégpáncélt. }}
+    \szotaritem{Sószórófej 3.8}{\par{Most is a TakarítoJatekos osztály parancsára indul the folyamat. }
+                            \par{A Sószóró fej the működése során szinkron módon csökkenti the rendelkezésre álló sokeszlet értékét. }
+                            \par{A takarítási hatás részeként the fej létrehozza the LeszortSo lifeline-t. }
+                            \par{A létrejött só rögzíti the kiszórás idejét, így the sáv logikája később ki tudja számolni, meddig tart the jég, illetve hómentesítő hatás. }}
+    \szotaritem{Új hókotró 3.9}{\par{Ez	a szekvencia diagram az új hókotró vásárlasának folyamatát mutatja be.}
+                                \par{A folyamat lépései	a következők:}
+                                \par{A tranzakciót a Játékos aktor indítja el a hokotroVasarlas(h) metódus meghívásával a TakaritoJatekos objektumon.}
+                                \par{A vásárlas megkezdése előtt a rendszer ellenőrzi az aktuális tartózkodási helyet a getAktualisCsomopont() hívässal, mivel a beszerzés kizárólag a Telephelyen engedélyezett.}
+                                \par{Az opcionális (opt) blokkban két kritikus feltételnek kell teljesülnie: a játékosnak rendelkeznie kell a megfelelő anyagi fedezettel, és a gépnek a telephelyen kell állnia.}
+                                \par{Amennyiben a feltételek teljesülnek, a játékos vagyona levonásra kerül, majd a \texttt{<<create>>} üzenet segítségével (kicsit elcsúszva ugyan, a fenti okokból) létrejön az új Hokotro objektum (h uj).}
+                                \par{A folyamat végén az új munkagép bekerül a játékos flottájába a hokotrok.add(h uj) hívással, és az aktor megkapja a visszaigazolást a sikeres tranzakcióról.}}
+    \szotaritem{Fejcsere 3.10 }{\par{Ez a szekvencia diagram a hókotró munkaeszközének cseréjét mutatja be. }
+                                \par{A folyamat kezdetén a Takarító Játékos aktor kezdeményezi a fej cseréjét, melynek kritikus első lépése annak ellenőrzése, hogy a hókotró valóban egy Telephelyen tartózkodik-e.}
+                                Amennyiben a helyszín megfelelő, a játékos lekérdezi a jelenleg rászerelt tisztítófejet, és ha létezik ilyen, leszereli azt, majd behelyezi a saját raktárába (fejek lista). 
+                                Ezt követően a folyamat megvizsgálja, hogy a felszerelni kívánt új fej rendelkezésre áll-e a játékos birtokában lévő eszközök között. 
+                                Sikeres ellenőrzés után az új munkaeszköz rögzítésre kerül a hókotrón, miközben a raktárkészletből törlődik az adott példány. 
+                                A műveletsor végén a vezérlés visszakerül az aktorhoz egy "kész" üzenettel, jelezve, hogy a gép az új felszereléssel készen áll a munkára.
+                                \par{Zavaró lehet, hogy van egy Játékos nevű aktor, és egy TakaritoJatekos nevű lifeline. Ennek tisztázására szolgál ezen bekezdés. }
+                                \par{A Játékos ezen diagram esetében magát a játékkal játszó embert jelenti, ezért van aktorként jelölve. A TakaritoJatekos ezzel szemben viszont azon jogkörök gyűjteményének megjelenítésére szolgáló osztály, amikkel a takarító szerepet játszó játékos rendelkezik. Ezen osztály gyűjti tehát össze azon metódusokat és attribútumokat, amelyek ahhoz szükségesek, hogy a játékos pontosan azokat a felhasználási eseteket tudja lejátszani, ami egy hókotróvezetőnek lehetséges. Ugyanez érvényes természetesen az Új hókotró vásárlása nevű szekvenciadiagramra. }}
+    \szotaritem{Összecsúszás 3.11}{\par{Ez a diagram azt a kritikus eseménysort modellezi, amikor egy jármű a jeges úton balesetet szenved, és ezzel eltorlaszolja az utat a forgalom többi résztvevője előtt. }
+                                    \par{A folyamat lépései a következők:}
+                                    \par{Indítás: A folyamatot az Uthalozat indítja el, amikor kiadja a mozgási parancsot az NPC járműveknek. }
+                                    \par{Kalkuláció: A Sav objektum felelőssége kiszámítani a baleset valószínűségét a globális baleseti ráta és a sávon lévő jégpáncél megléte alapján. }
+                                    \par{Baleset elszenvedése: Ha a kalkuláció eredménye pozitív, a Jarmu elszenvedi a balesetet a megcsuszik() metódus hívásával. }
+                                    \par{Úttorlasz: A Sav rögzíti a balesetet szenvedett járművet a saját listájában, ami innentől kezdve akadályozza a forgalmat. }
+                                    \par{Következmény: Amikor egy második jármű (j2) megpróbál belépni a sávba, a jarhatoEAutoknak() lekérdezés hamis értékkel tér vissza, mivel a sávon elakadt jármű található, így a forgalom 'feltorlódik'.}}
+    \szotaritem{Autó haladás 3.12}{\par{Ez a szekvenciadiagram az autók sávokon való áthaladását és az ahhoz kapcsolódó jégképződés folyamatát mutatja be. }
+                                    \par{A folyamat kezdetén az Autó entitás megkísérel lépni egy megadott csomópont felé. Ennek keretében meghívja az érintett Sáv autoAthalad() függvényét. A sáv ekkor első lépésként megnöveli a rajta áthaladt autók számát nyilvántartó változó értékét eggyel. }
+                                    \par{Ezt követően a folyamat egy feltételes blokkhoz érkezik, amely megvizsgálja, hogy az áthaladt autók száma elérte-e a kritikus szintet meghatározó számértéket. }
+                                    \par{Amennyiben ez a feltétel teljesül, a sáv meghívja a saját jegesit() privát függvényét, amely a logikának megfelelően jéggé alakítja az úton lévő csapadékot.}
+                                    \par{A belső folyamatok (és az esetleges jegesítés) lefutása után a vezérlés visszakerül az autóhoz. A műveletsor legvégén a lep metódus egy True értékkel tér vissza önmagához, jelezve, hogy a jármű mozgása az adott körben sikeresen végbement.}}
+    \szotaritem{Busz haladás 3.13}{\par{A szekvenciadiagram a buszok haladását és a végállomás elérésekor lefutó logikát mutatja be. }
+                                    \par{A folyamat kezdetén a Buszvezető aktor kezdeményezi a busz  léptetését a lep metódus meghívásával. }
+                                    \par{Ezt követően a folyamat egy feltételes blokkhoz érkezik, amely megvizsgálja, hogy a célként megadott csomópont egy végállomás-e. Amennyiben ez a feltétel teljesül, a busz meghívja a saját utMegteve függvényét. Ennek keretében két dolog történik: Először megnöveli az eddig sikeresen teljesített utak számát nyilvántartó változó értékét eggyel. Ezt követően a busz kifizeti a sofőrt úgy, hogy megnöveli a Buszvezető vagyonát. }
+                                    \par{A műveletsor legvégén a vezérlés visszakerül az aktorhoz, a lep metódus pedig egy True értékkel tér vissza, jelezve, hogy a jármű mozgása az adott körben sikeresen végbement.}}
 \end{szotar}
 
 %---------------------------------------------------------------------------------
