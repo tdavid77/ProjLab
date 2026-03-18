@@ -1,5 +1,7 @@
 \chapter{Szkeleton tervezése}
 
+\section{Fontos változások a korábbi tervekhez képest}
+\par{A korábbi elképzeléseinkkel ellentétben a komplex Csomópont objektumok szerepét egyszerű betűkkel jelölt azonosítók veszik át, amelyeket az Út osztály tárol el attribútumként, meghatározva az adott szakasz kezdő- és végpontját. Erre a változtatásra azért volt szükség, mert a csomópontnak önmagában nem volt elegendő önálló felelőssége a rendszerben. Hosszas megbeszélések után arra jutottunk, hogy a korábbi, túl összetett felépítés a jövőbeni implementáció során súlyos komplikációkhoz, illetve a tantárgy szabályaival való ütközéshez vezetett volna, így az azonosító alapú hivatkozás stabilabb alapot biztosít az úthálózat gráfjának kezeléséhez.}
 
 \section{A szkeleton modell valóságos use-case-ei}
 \comment{A szkeletonnak, mint önálló programnak a működésével kapcsolatos use-case-ek.}
@@ -22,12 +24,38 @@
 \end{use-case}
 
 \section{A szkeleton kezelői felületének terve, dialógusok}
-\comment{A szkeleton által elfogadott bemenetek , valamint a szöveges konzolon megjelenő kimenetek. A kiemenet formátuma olyan kell legyen, ami alapján a működés összevethető a korábbi szekvencia-diagramokkal.}
-
-\comment{Konzol input/output szemléltetésre:}
+\par{A szkeleton program egy konzolos alkalmazásként fog futni. A felhasználó a standard bemeneten keresztül irányítja a teszteseteket, a kimenet pedig a standard kimeneten jelenik meg. A kiírásokért, a beolvasásokért és az bekezdések kezeléséért egy statikus Szkeleton osztály felel.}
+\par{A program elindításakor a képernyőn megjelenik egy főmenü, amely kilistázza a megvalósított use-case-eket. Ahány szekvenciadiagramot tesztelni kell, annyi menüpont lesz elérhető, kiegészítve egy kilépési opcióval. A felhasználó a sorszám begépelésével választhatja ki a futtatni kívánt esetet.}
+\par{Példa a menüre és a bemenetre:}
 \begin{verbatim}
-    move 1 to 3
-    get item
+    Szkeleton program menü:
+    1. Use-case 1
+    2. Use-case 2
+    3. Use-case 3
+    .
+    .
+    .
+    0. Kilépés
+    Válassz egy opciót: 
+\end{verbatim}
+\par{A kiválasztott tesztesetbe lépés után a program elkezdi kiírni a metódushívásokat. Ahogy az objektumok egyre mélyebben hívják meg egymás függvényeit, a kiírt szöveget tabulátorokkal egyre beljebb toljuk, hogy látható legyen a hívások hierarchiája.}
+\par{A hívásokat jobbra mutató nyíl jelöli, amit a hívott objektum azonosítója, típusa és a metódus neve, paraméterei követnek. A visszatéréseket balra mutató nyíl jelöli, amit a visszatérési típus vagy érték követ.}
+\begin{verbatim}
+-> h1: Hokotro.takaritSavot(s_akt)
+    -> f1: SoproFej.getHo()
+    <- mennyiseg: int
+    -> s_jobb: Sav.hoHozzaadas(mennyiseg)
+    <- void
+    -> s_akt: Sav.takaritHatas(sz, h)
+    <- void
+<- void
+\end{verbatim}
+\par{Mivel a szkeleton fázisban az osztályok nem tárolnak belső állapotot, az elágazásoknál és a döntési pontokon a program a felhasználótól kérdez, hogy meghatározza a teszt kimenetelét. Ezeket a kérdéseket a Szkeleton osztály teszi fel, jól látható módon elkülönítve a normál kiírástól.}
+\par{Példa a döntési pontokra:}
+\begin{verbatim}
+Elérte az áthaladt autók száma az 5-öt? (I/N):
+
+Elegendo a játékos vagyona (vagyon >= HOKOTRO_ARA)? (I/N):
 \end{verbatim}
 
 \section{Szekvencia diagramok a belső működésre}
