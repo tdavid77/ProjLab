@@ -4,23 +4,130 @@
 \par{A korábbi elképzeléseinkkel ellentétben a komplex Csomópont objektumok szerepét egyszerű betűkkel jelölt azonosítók veszik át, amelyeket az Út osztály tárol el attribútumként, meghatározva az adott szakasz kezdő- és végpontját. Erre a változtatásra azért volt szükség, mert a csomópontnak önmagában nem volt elegendő önálló felelőssége a rendszerben. Hosszas megbeszélések után arra jutottunk, hogy a korábbi, túl összetett felépítés a jövőbeni implementáció során súlyos komplikációkhoz, illetve a tantárgy szabályaival való ütközéshez vezetett volna, így az azonosító alapú hivatkozás stabilabb alapot biztosít az úthálózat gráfjának kezeléséhez.}
 
 \section{A szkeleton modell valóságos use-case-ei}
-\comment{A szkeletonnak, mint önálló programnak a működésével kapcsolatos use-case-ek.}
-
 \subsection{Use-case diagram}
-\diagram{docs/img/BMElogo}{Demó}{4cm}
+\diagram{docs/img/uml_use_case/uc1}{Biokerozin töltése}{16cm}
+\diagram{docs/img/uml_use_case/uc2}{Biokerozin töltése}{12cm}
+\clearpage
 
 \subsection{Use-case leírások}
-\comment{Minden use-case-hez külön}
+
 \begin{use-case}
-    %név
-    {Use-case Neve}
-    %rövid leírás
-    {Az eset rövid leírása}
-    %aktorok
-    {Aktorok}
-    %forgatókönyv
-    Forgatókönyv \newline 
-    \textbf{A.1} Alternatíva
+    {Biokerozin töltés}
+    {Biokerozin töltés a Sárkány fejbe a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    Hasonlóan a sóhoz, a sárkány fej működtetéséhez szükséges biokerozin is a Telephelyen vételezhető. A takarító szerepet játszó játékos pénzért cserébe tölti fel a munkagép üzemanyagtartályát, biztosítva a gázturbina további működését. A rendszer a tranzakció sikere után frissíti a hókotró biokerozin-készletét, lehetővé téve a takarítás végrehajtását.
+\end{use-case}
+
+\begin{use-case}
+    {Busz haladása és fizetés}
+    {Busz haladása és fizetés a BuszsoforManager által kezdeményezve}
+    {BuszsoforManager}
+    A BuszsoforManager szerepkörben tevékenykedő játékos kezdeményezi a busz léptetését az úthálózaton. A jármű a megadott cél felé halad, miközben a rendszer ellenőrzi, hogy az adott kereszteződés egy Végállomás-e. Amennyiben a busz végállomásra ér, a program regisztrálja a megtett kört, növeli a teljesített utak számát, és a játékos vagyona gyarapodik a menetdíjból származó bevétellel.
+\end{use-case}
+
+\begin{use-case}
+    {Hókotró fejcsere}
+    {Hókotró fejének cseréje a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A TakarítoManager a Telephelyen kezdeményezi a Hókotróra szerelt munkaeszköz cseréjét. A folyamat során a rendszer ellenőrzi, hogy a Jármű a telephelyen tartózkodik-e, majd a régi fejet leszerelik és a raktárba helyezik. Ezt követően, ha a Játékos rendelkezik a felszerelni kívánt új fejjel, az rákerül a gépre, és törlődik a raktárkészletből, hiszen onnantól az lesz az aktív fej a hókotrón.
+\end{use-case}
+
+\begin{use-case}
+    {Fej vásárlása}
+    {Új hókotró fej vásárlása a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A TakarítoManager a Telephelyen speciális takarítóeszközöket (például Sárkány- vagy Sószóró fejet) vásárolhat a hatékonyabb munkavégzés érdekében. A vásárlás során a rendszer ellenőrzi a pénzügyi keretet, majd a vételár kifizetése után az új eszköz bekerül a játékos raktárába. A megvásárolt fejeket a játékos később bármelyik Hókotrójára felszerelheti a telephelyen.
+\end{use-case}
+
+\begin{use-case}
+    {Hányó fej működése}
+    {Hányó fej működése a jármű mozgatása közben}
+    {JátékosManager}
+    A fej először ellenőrzi, hogy található-e hóréteg vagy feltört jég az úton. Amennyiben van eltávolítandó csapadék, a fej azt nagy erővel az út mellé szórja, így a hó véglegesen kikerül a rendszerből, és nem kerül át szomszédos sávokba. A tömör jégpáncél viszont változatlanul marad a sávon. 
+\end{use-case}
+
+\begin{use-case}
+    {Havazás szimulációja}
+    {Havazás szimulációja minden pillanatban}
+    {Tesztelő}
+    A környezeti hatások modellezéséért felelős Úthálózat minden körben végrehajtja a havazás folyamatát. A rendszer egyenletesen növeli a hóvastagságot a város minden útszakaszán, kivéve az alagutakat, amelyeket a kialakításuk megvéd a csapadéktól. 
+\end{use-case}
+
+\begin{use-case}
+    {Játék vége 1 – Elakadt tömegközlekedés}
+    {Játék vége 1 – Elakadt tömegközlekedés a városban}
+    {Tesztelő}
+    A rendszer minden lépés után ellenőrzi a forgalom állapotát és a játék folytathatóságát. Ez a use case akkor következik be, ha a rendszer megállapítja, hogy a városban egyetlen busz sem képes a mozgásra (például balesetek vagy hótorlaszok miatt). Mivel a tömegközlekedés megbénulása a város működésképtelenségét jelenti, a játék ebben a pillanatban vereséggel véget ér.
+\end{use-case}
+
+\begin{use-case}
+    {Játék vége 2 – Kijárási tilalom}
+    {Játék vége 2 – Kijárási tilalom a városban}
+    {Tesztelő}
+    A rendszer szintén folyamatosan monitorozza a városban bekövetkezett balesetek és úttorlaszok számát. Amennyiben az összecsúszott és mozgásképtelenné vált járművek száma elér egy előre meghatározott kritikus határértéket, “kijárási tilalmat hirdetnek”. Ez a vészhelyzet a szimuláció azonnali leállítását és a játék végét vonja maga után.
+\end{use-case}
+
+\begin{use-case}
+    {Autó áthaladása és jéggé tömörülés}
+    {Autó áthaladása és jéggé tömörülés a sávon}
+    {Tesztelő}
+    Amikor egy NPC autó vagy egy busz áthalad egy havas útsávon, súlyával tömöríti az ott lévő havat. A sáv minden áthaladáskor növeli a számlálóját, és amint eléri a kritikus (5 jármű) határt, a sávon lévő teljes hómennyiség azonnal jégpáncéllá tömörödik. Ez a folyamat dinamikusan változtatja az útviszonyokat, növelve a balesetveszélyt a forgalom számára.
+\end{use-case}
+
+\begin{use-case}
+    {Jégtörő fej működése}
+    {Jégtörő fej működése a sávon lévő jégpáncél feltörésére}
+    {JátékosManager}
+    A fej feladata a sávon lévő masszív jégpáncél fizikai feltörése, amelyet “feltört jéggé” (a modellben hóvá) alakít át, de az útról nem távolítja el, így az visszatömörödhet jéggé. 
+\end{use-case}
+
+\begin{use-case}
+    {Leszórt só}
+    {Leszórt só hatása a sáv állapotára}
+    {Tesztelő}
+    A sószóró fej által az útra juttatott só aktív hatást fejt ki a sáv állapotára. Felolvasztja a havat és a jeget, illetve meggátolja azok újboli kialakulását egy bizonyos ideig. 
+\end{use-case}
+
+\begin{use-case}
+    {Jármű megcsúszása}
+    {Jármű megcsúszása a jeges sávon}
+    {Tesztelő}
+    Amikor egy jármű (autó vagy busz) jeges sávra lép, a rendszer baleseti kalkulációt végez a globális nehézségi szint és a jégvastagság alapján. Sikertelen kimenetel esetén a jármű megcsúszik, elszenvedi a balesetet és meghatározott ideig mozgásképtelenné válik. Az ilyen jármű eltorlaszolja az adott sávot, akadályozva a forgalom többi résztvevőjét, amíg a mozgásképtelensége le nem jár.
+\end{use-case}
+
+\begin{use-case}
+    {Sárkány fej működése}
+    {Sárkány fej működése a sávon lévő hó és jég eltávolítására}
+    {JátékosManager}
+    A fej működésének feltétele, hogy a Sárkányfej bekapcsolt állapotban legyen és rendelkezzen elegendő biokerozinnal. Aktív állapotban a gép biokerozint fogyaszt, cserébe az adott sávon minden havat és jégpáncélt azonnal és véglegesen elolvaszt, megtisztítva az utat a forgalom számára.
+\end{use-case}
+
+\begin{use-case}
+    {Söprő fej működése}
+    {Söprő fej működése a sávon lévő hó eltávolítására}
+    {JátékosManager}
+    A fej lekérdezi az aktuális sáv hóvastagságát, majd a havat és a feltört jeget a menetirány szerinti jobb oldali szomszédos sávba továbbítja. Ha a gép a legszélső sávban halad, a csapadék az út mellé kerül, ahol már nem akadályozza tovább a közlekedést.
+\end{use-case}
+
+\begin{use-case}
+    {Sószóró fej működése}
+    {Sószóró fej működése a sávon lévő hó és jég olvasztására és újraképződésének megakadályozására}
+    {JátékosManager}
+    Ez a fej működés közben csökkenti a gép sókészletét, és a sávhoz egy speciális só-objektumot rendel. Ez az anyag nemcsak felolvasztja a meglévő havat és jeget, hanem pár körön keresztül megakadályozza az újabb csapadék megmaradását is az adott sávon. 
+\end{use-case}
+
+\begin{use-case}
+    {Só töltése a sószóró fejbe}
+    {Só töltése a sószóró fejbe a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A hókotrókat vezető játékos a Telephelyen kezdeményezi a hókotró sószóró fejéhez tartozó sókészlet feltöltését. A folyamat során a rendszer ellenőrzi a játékos anyagi fedezetét, majd a megfelelő összeg levonása után a jármű sókészlete maximális szintre áll vissza. Ez a művelet elengedhetetlen a sószóró fej folyamatos és hatékony üzemeltetéséhez a jeges útszakaszokon.
+\end{use-case}
+
+\begin{use-case}
+    {Új hókotró vásárlása}
+    {Új hókotró vásárlása a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A Játékos a Telephelyen új Hókotrót vásárolhat a vagyona terhére, hogy bővítse a flottáját. A rendszer ellenőrzi a tartózkodási helyet és az anyagi fedezetet. Ha minden feltétel teljesül, levonja a vételárat a játékos pénzéből. Sikeres tranzakció után létrejön az új hókotró objektum, amely azonnal munkára fogható.
 \end{use-case}
 
 \section{A szkeleton kezelői felületének terve, dialógusok}
