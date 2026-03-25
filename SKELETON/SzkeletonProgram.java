@@ -402,6 +402,4 @@ public class SzkeletonProgram {
         System.out.println("Elvárt szkeleton hívások: Hokotro.fejjelTakarit -> Hokotro.fejKiBeKapcsolas -> Hokotro.takaritSavot -> SoszoroFej.takaritHatas");
         System.out.println("17. UseCase vége\n");
     }
-
-
 }

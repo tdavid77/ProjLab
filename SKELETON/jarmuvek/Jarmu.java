@@ -17,4 +17,8 @@ public abstract class Jarmu {
     public void balesetezik() {
         System.out.println("Jarmu.balesetezik() meghivva.");
     }
+
+    public void korRegisztralasa() {
+        System.out.println("Jarmu.korRegisztralasa() meghivva (nincs hatas ennnel a jarmunel).");
+    }
 }

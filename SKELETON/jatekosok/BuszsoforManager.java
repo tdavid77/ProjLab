@@ -16,8 +16,6 @@ public class BuszsoforManager extends JatekosManager {
     public void mozgatJarmuvet(char cel, Jarmu j) {
         System.out.println("BuszsoforManager.mozgatJarmuvet() meghivva.");
         j.lep(cel);
-        if (j instanceof Busz) {
-            ((Busz) j).korRegisztralasa();
-        }
+        j.korRegisztralasa();
     }
 }

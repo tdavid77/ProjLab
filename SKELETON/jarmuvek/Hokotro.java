@@ -1,7 +1,5 @@
 package jarmuvek;
 import takaritofejek.Fej;
-import takaritofejek.SarkanyFej;
-import takaritofejek.SoszoroFej;
 import terkep.Sav;
 
 /**
@@ -43,17 +41,17 @@ public class Hokotro extends Jarmu {
 
     public int soToltesAktualisFejbe() {
         System.out.println("Hokotro.soToltesAktualisFejbe() meghivva.");
-        if (aktualisFej instanceof SoszoroFej) {
-            return ((SoszoroFej) aktualisFej).soToltes(100);
+        if (aktualisFej == null) {
+            return 0;
         }
-        return 0;
+        return aktualisFej.soToltes(100);
     }
 
     public int kerozinToltesAktualisFejbe() {
         System.out.println("Hokotro.kerozinToltesAktualisFejbe() meghivva.");
-        if (aktualisFej instanceof SarkanyFej) {
-            return ((SarkanyFej) aktualisFej).kerozinToltes(100);
+        if (aktualisFej == null) {
+            return 0;
         }
-        return 0;
+        return aktualisFej.kerozinToltes(100);
     }
 }

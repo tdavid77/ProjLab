@@ -12,8 +12,14 @@ public class SoszoroFej extends Fej {
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
         System.out.println("SoszoroFej.takaritHatas() meghivva.");
+        if (sokeszlet > 0) {
+            s.soKihelyezese(3);
+            s.hoEsJegAzonnaliOlvasztas();
+            sokeszlet--;
+        }
     }
 
+    @Override
     public int soToltes(int mennyiseg) {
         System.out.println("SoszoroFej.soToltes() meghivva.");
         sokeszlet += mennyiseg;

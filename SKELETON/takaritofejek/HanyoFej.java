@@ -9,5 +9,6 @@ public class HanyoFej extends Fej {
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
         System.out.println("HanyoFej.takaritHatas() meghivva.");
+        s.havatUtSzelereSzor();
     }
 }

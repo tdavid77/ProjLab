@@ -9,5 +9,6 @@ public class SoproFej extends Fej {
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
         System.out.println("SoproFej.takaritHatas() meghivva.");
+        s.hoAtsepreseJobbra();
     }
 }

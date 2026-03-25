@@ -20,10 +20,38 @@ public class Sav {
         return nehezseg >= 5;
     }
 
+    public void hoEsJegAzonnaliOlvasztas() {
+        System.out.println("Sav.hoEsJegAzonnaliOlvasztas() meghivva.");
+        hovastagsag = 0;
+        jegvastagsag = 0;
+    }
+
+    public void havatUtSzelereSzor() {
+        System.out.println("Sav.havatUtSzelereSzor() meghivva.");
+        hovastagsag = 0;
+    }
+
+    public void jegFeltorese() {
+        System.out.println("Sav.jegFeltorese() meghivva.");
+        hovastagsag += jegvastagsag;
+        jegvastagsag = 0;
+    }
+
+    public void hoAtsepreseJobbra() {
+        System.out.println("Sav.hoAtsepreseJobbra() meghivva.");
+        hovastagsag = 0;
+    }
+
+    public void soKihelyezese(int korokSzama) {
+        System.out.println("Sav.soKihelyezese() meghivva.");
+        legutoljaraLeszortSoKore = korokSzama;
+    }
+
     public void autoAthalad() {
         System.out.println("Sav.autoAthalad() meghivva.");
         athaladtAutokSzama++;
         if (athaladtAutokSzama % 5 == 0) {
+            hovastagsag = 0;
             jegvastagsag++;
         }
     }
