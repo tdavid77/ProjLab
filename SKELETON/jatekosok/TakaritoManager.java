@@ -29,7 +29,6 @@ public class TakaritoManager extends JatekosManager {
     public boolean fejVasarlas(Fej k) {
         System.out.println("TakaritoManager.fejVasarlas() meghivva.");
         fejek.add(k);
-        raktarbaHelyezFejet(k);
         return true;
     }
 
@@ -76,11 +75,4 @@ public class TakaritoManager extends JatekosManager {
         return kerozinToltes(h);
     }
 
-    private void raktarbaHelyezHokotrot(Hokotro h) {
-        System.out.println("TakaritoManager.raktarbaHelyezHokotrot() meghivva.");
-    }
-
-    private void raktarbaHelyezFejet(Fej f) {
-        System.out.println("TakaritoManager.raktarbaHelyezFejet() meghivva.");
-    }
 }

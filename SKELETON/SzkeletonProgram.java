@@ -124,7 +124,7 @@ public class SzkeletonProgram {
         manager.fejCsere(hokotro, ujFej);
         
         System.out.println("1. UseCase vége\n");
-        System.out.println("Elvárt szkeleton hívások: TakaritoManager.fejCsere -> TakaritoManager.fejLevetel -> TakaritoManager.fejFelteves -> Hokotro.fejKiBeKapcsolas");
+
     }
 
     /**
@@ -142,7 +142,6 @@ public class SzkeletonProgram {
         manager.hokotroVasarlas(ujHokotro);
         
         System.out.println("2. UseCase vége\n");
-        System.out.println("Elvárt szkeleton hívások: TakaritoManager.hokotroVasarlas -> Hokotro (raktárba helyezés)");
     }
 
     /**
@@ -160,7 +159,6 @@ public class SzkeletonProgram {
         manager.fejVasarlas(ujSoszoroFej);
         
         System.out.println("3. UseCase vége\n");
-        System.out.println("Elvárt szkeleton hívások: TakaritoManager.fejVasarlas -> SoszoroFej (raktárba helyezés)");
     }
 
 
@@ -179,7 +177,6 @@ public class SzkeletonProgram {
 
         buszsoforManager.mozgatJarmuvet(celKeresztezodes, busz);
 
-        System.out.println("Elvárt szkeleton hívások: BuszsoforManager.mozgatJarmuvet -> Busz.lep -> Busz.korRegisztralasa");
         System.out.println("4. UseCase vége\n");
     }
 
@@ -191,11 +188,9 @@ public class SzkeletonProgram {
         System.out.println("\n5. UseCase: Sárkány fej működése");
         Hokotro hokotro = new Hokotro();
         Sav sav = new Sav();
-        SarkanyFej sarkanyFej = new SarkanyFej();
 
-        hokotro.fejjelTakarit(sav, sarkanyFej);
-
-        System.out.println("Elvárt szkeleton hívások: Hokotro.fejjelTakarit -> Hokotro.fejKiBeKapcsolas -> Hokotro.takaritSavot -> SarkanyFej.takaritHatas");
+        hokotro.takaritSavot(sav);
+        
         System.out.println("5. UseCase vége\n");
     }
 
@@ -212,7 +207,6 @@ public class SzkeletonProgram {
 
         hokotro.fejjelTakarit(sav, hanyoFej);
 
-        System.out.println("Elvárt szkeleton hívások: Hokotro.fejjelTakarit -> Hokotro.fejKiBeKapcsolas -> Hokotro.takaritSavot -> HanyoFej.takaritHatas");
         System.out.println("6. UseCase vége\n");
     }
 
@@ -232,7 +226,6 @@ public class SzkeletonProgram {
 
         hokotro.fejjelTakarit(sav, soszoroFej);
 
-        System.out.println("Elvárt szkeleton hívások: Hokotro.fejjelTakarit -> Hokotro.fejKiBeKapcsolas -> Hokotro.takaritSavot -> SoszoroFej.takaritHatas");
         System.out.println("7. UseCase vége\n");
     }
 
@@ -250,7 +243,6 @@ public class SzkeletonProgram {
 
         hokotro.fejjelTakarit(sav, soproFej);
 
-        System.out.println("Elvárt szkeleton hívások: Hokotro.fejjelTakarit -> Hokotro.fejKiBeKapcsolas -> Hokotro.takaritSavot -> SoproFej.takaritHatas");
         System.out.println("8. UseCase vége\n");
     }
 
@@ -267,7 +259,6 @@ public class SzkeletonProgram {
 
         hokotro.fejjelTakarit(sav, jegtoroFej);
 
-        System.out.println("Elvárt szkeleton hívások: Hokotro.fejjelTakarit -> Hokotro.fejKiBeKapcsolas -> Hokotro.takaritSavot -> JegtoroFej.takaritHatas");
         System.out.println("9. UseCase vége\n");
     }
 
@@ -282,7 +273,6 @@ public class SzkeletonProgram {
 
         halozat.jatekVegeEllenorzesJarmuvekAlapjan(jarmuvek);
 
-        System.out.println("Elvárt szkeleton hívások: Uthalozat.jatekVegeEllenorzesJarmuvekAlapjan -> Busz.balesetezik (tobb busz) -> Uthalozat.jatekVegeCheck");
         System.out.println("10. UseCase vége\n");
     }
 
@@ -303,7 +293,6 @@ public class SzkeletonProgram {
 
         halozat.jatekVegeEllenorzesJarmuvekAlapjan(jarmuvek);
 
-        System.out.println("Elvárt szkeleton hívások: Uthalozat.jatekVegeEllenorzesJarmuvekAlapjan -> Auto.balesetezik + Busz.balesetezik -> Uthalozat.jatekVegeCheck");
         System.out.println("11. UseCase vége\n");
     }
     
@@ -321,7 +310,6 @@ public class SzkeletonProgram {
         jegesSav.jarmuAtlepesKockazatVizsgalattal(auto, 5);
 
         System.out.println("12. UseCase vége\n");
-        System.out.println("Elvárt szkeleton hívások: Sav.jarmuAtlepesKockazatVizsgalattal -> Sav.balesetKalkulacio -> Auto.balesetezik (ha baleset történt)");
         }
 
     /**
@@ -335,7 +323,6 @@ public class SzkeletonProgram {
         Uthalozat halozat = new Uthalozat();
         
         halozat.havazas(1);
-        System.out.println("Elvárt szkeleton hívások: Uthalozat.havazas");
         System.out.println("A havazás megtörtént az utakon\n12. UseCase vége\n");
     }
 
@@ -353,7 +340,6 @@ public class SzkeletonProgram {
 
         manager.soToltes(hokotro, soszoro);
 
-        System.out.println("Elvárt szkeleton hívások: TakaritoManager.soToltes(Hokotro, Fej) -> TakaritoManager.fejFelteves -> Hokotro.fejKiBeKapcsolas -> TakaritoManager.soToltes -> Hokotro.soToltesAktualisFejbe -> SoszoroFej.soToltes");
         System.out.println("14. UseCase vége\n");
     }
 
@@ -370,7 +356,6 @@ public class SzkeletonProgram {
 
         manager.kerozinToltes(hokotro3, sarkany);
 
-        System.out.println("Elvárt szkeleton hívások: TakaritoManager.kerozinToltes(Hokotro, Fej) -> TakaritoManager.fejFelteves -> Hokotro.fejKiBeKapcsolas -> TakaritoManager.kerozinToltes -> Hokotro.kerozinToltesAktualisFejbe -> SarkanyFej.kerozinToltes\n");
         System.out.println("15. UseCase vége\n");
     }
 
@@ -380,7 +365,6 @@ public class SzkeletonProgram {
 
         sav.forgalomEsBalesetSzimulacio(5, 1);
 
-        System.out.println("Elvárt szkeleton hívások: Sav.forgalomEsBalesetSzimulacio -> Sav.autoAthalad (5x) -> Sav.balesetKalkulacio");
         System.out.println("16. UseCase vége\n");
     }
 
@@ -399,7 +383,6 @@ public class SzkeletonProgram {
         h.fejjelTakarit(s, fej);
         
         System.out.println("A só kihelyezve a sávra, a jegesedés megállt.\n");
-        System.out.println("Elvárt szkeleton hívások: Hokotro.fejjelTakarit -> Hokotro.fejKiBeKapcsolas -> Hokotro.takaritSavot -> SoszoroFej.takaritHatas");
         System.out.println("17. UseCase vége\n");
     }
 }

@@ -8,6 +8,16 @@ import terkep.Sav;
  */
 public abstract class Fej {
     protected String azonosito;
+    protected boolean fejAllapota;
+
+    public boolean getFejAllapota() {
+        System.out.println("Fej.getFejAllapota() meghivva.");
+        return fejAllapota;
+    }
+
+    public void setFejAllapota(boolean fejAllapota) {
+        System.out.println("Nem történt semmi, mert nem fogyóeszközös fejt kapcsoltál.")
+    }
 
     public abstract void takaritHatas(Sav s, Hokotro h);
 

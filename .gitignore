@@ -4,4 +4,10 @@ DOK/*fdb_latexmk
 DOK/*.fls
 DOK/*.out
 DOK/*.synctex.gz
+SKELETON/*.class
+SKELETON/jarmuvek/*.class
+SKELETON/jatekosok/*.class
+SKELETON/takaritofejek/*.class
+SKELETON/utak/*.class
+SKELETON/terkep/*.class
 %OUTDIR%

@@ -6,14 +6,12 @@ import terkep.Sav;
  * Prémium takarítóeszköz, amely gázturbinájával azonnal elolvasztja a havat és a jeget.
  */
 public class SarkanyFej extends Fej {
-    private boolean fejAllapota;
     private int biokerozinKeszlet;
 
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
         System.out.println("SarkanyFej.takaritHatas() meghivva.");
         if (biokerozinKeszlet > 0) {
-            s.hoEsJegAzonnaliOlvasztas();
             biokerozinKeszlet--;
         }
     }
@@ -23,5 +21,16 @@ public class SarkanyFej extends Fej {
         System.out.println("SarkanyFej.kerozinToltes() meghivva.");
         biokerozinKeszlet += mennyiseg;
         return biokerozinKeszlet;
+    }
+
+    @Override
+    public void setFejAllapota(boolean fejAllapota) {
+        this.fejAllapota = fejAllapota;
+
+        if (fejAllapota = false) {
+            System.out.println("Sarkanyfej kikapcsolva.");
+        } else {
+            System.out.println("Sarkanyfej bekapcsolva.");
+        }
     }
 }

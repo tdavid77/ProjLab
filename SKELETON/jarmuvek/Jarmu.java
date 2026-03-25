@@ -19,6 +19,6 @@ public abstract class Jarmu {
     }
 
     public void korRegisztralasa() {
-        System.out.println("Jarmu.korRegisztralasa() meghivva (nincs hatas ennnel a jarmunel).");
+        System.out.println("Jarmu.korRegisztralasa() meghivva.");
     }
 }

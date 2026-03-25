@@ -23,6 +23,7 @@ public class Hokotro extends Jarmu {
     
     public boolean fejKiBeKapcsolas(Fej f) {
         System.out.println("Hokotro.fejKiBeKapcsolas() meghivva.");
+        f.setFejAllapota(!f.getFejAllapota());
         return true;
     }
 
@@ -37,7 +38,7 @@ public class Hokotro extends Jarmu {
 
     public void fejjelTakarit(Sav s, Fej f) {
         System.out.println("Hokotro.fejjelTakarit() meghivva.");
-        fejKiBeKapcsolas(f);
+        fejKiBeKapcsolas(f); 
         takaritSavot(s);
     }
 
