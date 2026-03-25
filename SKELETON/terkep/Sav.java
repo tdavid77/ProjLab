@@ -56,6 +56,15 @@ public class Sav {
 
     public void autoAthalad() {
         System.out.println("Sav.autoAthalad() meghivva.");
+        Scanner s = new Scanner(System.in);
+        System.out.println("Kello mennyisegu auto athaladt a savon? (I/N)");
+        String valasz = s.nextLine().trim();
+
+        if (valasz.equalsIgnoreCase("I")) {
+            System.out.println("A ho jegge tomorult a savon (jeg hozzaadasa megtortent).");
+        } else {
+            System.out.println("Nincs eleg auto, a ho nem tomorult jegge.");
+        }
     }
 
     public boolean jarhatoEAutoknak() {

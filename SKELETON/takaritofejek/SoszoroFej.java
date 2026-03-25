@@ -11,6 +11,9 @@ public class SoszoroFej extends Fej {
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
         System.out.println("SoszoroFej.takaritHatas() meghivva.");
+        s.soKihelyezese(3);
+        s.hoEltavolit();
+        System.out.println("A leszort so ideiglenesen gatolja, hogy a ho megmaradjon a savon.");
     }
 
     @Override

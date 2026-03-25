@@ -7,6 +7,7 @@ import java.util.Scanner;
 import jarmuvek.Auto;
 import jarmuvek.Busz;
 import jarmuvek.Hokotro;
+import jarmuvek.Jarmu;
 import jatekosok.BuszsoforManager;
 import jatekosok.TakaritoManager;
 import takaritofejek.HanyoFej;
@@ -70,6 +71,9 @@ public class SzkeletonProgram {
                     jegtoroFejMukodeseTeszt();
                     break;
                 case 10:
+                    jatekVegeCheckTeszt();
+                    break;
+                case 11:
                     jatekVegeCheckTeszt();
                     break;
                 case 12:
@@ -258,7 +262,7 @@ public class SzkeletonProgram {
      * Ha barmelyik feltetel teljesul, a jateknak vege.
      */
     private static void jatekVegeCheckTeszt() {
-        System.out.println("\n10. UseCase: Játék vége check (egyesitett)");
+        System.out.println("\n10. és 11. UseCase egybevonva: Játék vége check");
         Uthalozat halozat = new Uthalozat();
         boolean jatekVege = halozat.jatekVegeCheck();
 
@@ -286,6 +290,7 @@ public class SzkeletonProgram {
         if (tortentBaleset) {
             auto.balesetezik();
         }
+        
 
         System.out.println("12. UseCase vége\n");
         }
@@ -316,6 +321,9 @@ public class SzkeletonProgram {
         Hokotro hokotro = new Hokotro();
         SoszoroFej soszoro = new SoszoroFej();
 
+        hokotro.setAktualisFej(soszoro);
+        manager.soToltes(hokotro);
+
 
         System.out.println("14. UseCase vége\n");
     }
@@ -331,13 +339,23 @@ public class SzkeletonProgram {
         Hokotro hokotro3 = new Hokotro();
         SarkanyFej sarkany = new SarkanyFej();
 
+        hokotro3.setAktualisFej(sarkany);
+        manager.kerozinToltes(hokotro3);
+
 
         System.out.println("15. UseCase vége\n");
     }
 
+    /**
+     * 16. Use case: Autó áthaladása és jéggé tömörülés
+     * Kellő mennyiségű áthaladt autó esetén a sávon található hó jéggé tömörül,
+     * amely megváltoztatja a sáv tulajdonságait és a rajta közlekedő járművek viselkedését.
+     */
     private static void autoAthaladasEsJeggeTomorulesTeszt() {
         System.out.println("\n16. UseCase: Autó áthaladása es jéggé tömörülés");
         Sav sav = new Sav();
+
+        sav.autoAthalad();
 
         System.out.println("16. UseCase vége\n");
     }
@@ -354,7 +372,8 @@ public class SzkeletonProgram {
         SoszoroFej fej = new SoszoroFej();
         Sav s = new Sav();
 
-       
+        h.setAktualisFej(fej);
+        h.takaritSavot(s);
         
         System.out.println("A só kihelyezve a sávra, a jegesedés megállt.\n");
         System.out.println("17. UseCase vége\n");

@@ -102,11 +102,29 @@ public class TakaritoManager extends JatekosManager {
 
     public int soToltes(Hokotro h) {
         System.out.println("TakaritoManager.soToltes() meghivva.");
+        Scanner s = new Scanner(System.in);
+        System.out.println("Telephelyen vagy? (I/N)");
+        String telephelyValasz = s.nextLine().trim();
+
+        if (!telephelyValasz.equalsIgnoreCase("I")) {
+            System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            return 0;
+        }
+
         return h.soToltesAktualisFejbe();
     }
 
     public int kerozinToltes(Hokotro h) {
         System.out.println("TakaritoManager.kerozinToltes() meghivva.");
+        Scanner s = new Scanner(System.in);
+        System.out.println("Telephelyen vagy? (I/N)");
+        String telephelyValasz = s.nextLine().trim();
+
+        if (!telephelyValasz.equalsIgnoreCase("I")) {
+            System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            return 0;
+        }
+
         return h.kerozinToltesAktualisFejbe();
     }
 }
