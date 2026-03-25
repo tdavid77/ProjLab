@@ -36,12 +36,4 @@ public class Uthalozat {
         System.out.println("Uthalozat.jatekVegeCheck() meghivva.");
         return false;
     }
-
-    public boolean jatekVegeEllenorzesJarmuvekAlapjan(List<? extends Jarmu> jarmuvek) {
-        System.out.println("Uthalozat.jatekVegeEllenorzesJarmuvekAlapjan() meghivva.");
-        for (Jarmu j : jarmuvek) {
-            j.balesetezik();
-        }
-        return jatekVegeCheck();
-    }
 }

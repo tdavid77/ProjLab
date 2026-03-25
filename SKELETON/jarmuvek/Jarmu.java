@@ -10,6 +10,12 @@ public abstract class Jarmu {
     protected String rendszam;
     protected Sav aktualisHelyzet;
 
+
+    public Sav getAktualisHelyzet() {
+        return aktualisHelyzet;
+    }
+
+
     public void lep(char cel) {
         System.out.println("Jarmu.lep() meghivva.");
     }

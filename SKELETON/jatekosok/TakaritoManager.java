@@ -1,7 +1,7 @@
 package jatekosok;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Scanner;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 import takaritofejek.Fej;
@@ -22,7 +22,6 @@ public class TakaritoManager extends JatekosManager {
     public boolean hokotroVasarlas(Hokotro h) {
         System.out.println("TakaritoManager.hokotroVasarlas() meghivva.");
         hokotrok.add(h);
-        raktarbaHelyezHokotrot(h);
         return true;
     }
 
@@ -46,11 +45,20 @@ public class TakaritoManager extends JatekosManager {
 
     public boolean fejCsere(Hokotro h, Fej ujFej) {
         System.out.println("TakaritoManager.fejCsere() meghivva.");
+        h.getAktualisHelyzet().getKezdopont();
+        System.out.println("A hókotró telephelyen van? (I/N)");
+        Scanner s = new Scanner(System.in);
+        String valasz = s.nextLine();
         boolean sikeresLevetel = fejLevetel(h);
-        if (!sikeresLevetel) {
+        if (valasz.equals("I")) {
+            if (!sikeresLevetel) {
             return false;
+            }
+            fejek.add(h.getAktualisFej());
+            fejek.remove(ujFej);
+            return fejFelteves(h, ujFej);
         }
-        return fejFelteves(h, ujFej);
+        return false;
     }
 
     public int soToltes(Hokotro h) {
@@ -58,21 +66,8 @@ public class TakaritoManager extends JatekosManager {
         return h.soToltesAktualisFejbe();
     }
 
-    public int soToltes(Hokotro h, Fej f) {
-        System.out.println("TakaritoManager.soToltes(Hokotro, Fej) meghivva.");
-        fejFelteves(h, f);
-        return soToltes(h);
-    }
-
     public int kerozinToltes(Hokotro h) {
         System.out.println("TakaritoManager.kerozinToltes() meghivva.");
         return h.kerozinToltesAktualisFejbe();
     }
-
-    public int kerozinToltes(Hokotro h, Fej f) {
-        System.out.println("TakaritoManager.kerozinToltes(Hokotro, Fej) meghivva.");
-        fejFelteves(h, f);
-        return kerozinToltes(h);
-    }
-
 }

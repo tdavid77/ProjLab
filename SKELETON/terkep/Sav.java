@@ -15,6 +15,16 @@ public class Sav {
     private int athaladtAutokSzama;
     private boolean jarhatoE;
 
+    public char getKezdopont() {
+        System.out.println("Sav.getKezdopont() meghivva.");
+        return kezdopont;
+    }
+
+    public char getVegpont() {
+        System.out.println("Sav.getVegpont() meghivva.");
+        return vegpont;
+    }
+
     public boolean balesetKalkulacio(int nehezseg) {
         System.out.println("Sav.balesetKalkulacio() meghivva.");
         return true; //TODO

@@ -11,16 +11,12 @@ public class SarkanyFej extends Fej {
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
         System.out.println("SarkanyFej.takaritHatas() meghivva.");
-        if (biokerozinKeszlet > 0) {
-            biokerozinKeszlet--;
-        }
     }
 
     @Override
     public int kerozinToltes(int mennyiseg) {
         System.out.println("SarkanyFej.kerozinToltes() meghivva.");
-        biokerozinKeszlet += mennyiseg;
-        return biokerozinKeszlet;
+        return 0; //TODO
     }
 
     @Override

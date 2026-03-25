@@ -10,6 +10,12 @@ public class Hokotro extends Jarmu {
     private int ar;
     private Fej aktualisFej;
 
+    public Fej getAktualisFej() {
+        System.out.println("Hokotro.getAktualisFej() meghivva.");
+        return aktualisFej;
+    }
+
+
     @Override
     public void lep(char cel) {
         System.out.println("Hokotro.lep() meghivva.");
@@ -23,7 +29,6 @@ public class Hokotro extends Jarmu {
     
     public boolean fejKiBeKapcsolas(Fej f) {
         System.out.println("Hokotro.fejKiBeKapcsolas() meghivva.");
-        f.setFejAllapota(!f.getFejAllapota());
         return true;
     }
 

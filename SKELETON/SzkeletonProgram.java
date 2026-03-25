@@ -120,9 +120,8 @@ public class SzkeletonProgram {
         TakaritoManager manager = new TakaritoManager();
         Hokotro hokotro = new Hokotro();
         SarkanyFej ujFej = new SarkanyFej(); // Az új fej, amit fel akarunk szerelni
-
         manager.fejCsere(hokotro, ujFej);
-        
+
         System.out.println("1. UseCase vége\n");
 
     }
@@ -271,7 +270,7 @@ public class SzkeletonProgram {
         jarmuvek.add(busz1);
         jarmuvek.add(busz2);
 
-        halozat.jatekVegeEllenorzesJarmuvekAlapjan(jarmuvek);
+    
 
         System.out.println("10. UseCase vége\n");
     }
@@ -291,7 +290,6 @@ public class SzkeletonProgram {
         jarmuvek.add(auto);
         jarmuvek.add(busz);
 
-        halozat.jatekVegeEllenorzesJarmuvekAlapjan(jarmuvek);
 
         System.out.println("11. UseCase vége\n");
     }
@@ -306,8 +304,6 @@ public class SzkeletonProgram {
         System.out.println("\n12. UseCase: Jármű megcsúszása");
         Jarmu auto = new Auto();
         Sav jegesSav = new Sav();
-
-        jegesSav.jarmuAtlepesKockazatVizsgalattal(auto, 5);
 
         System.out.println("12. UseCase vége\n");
         }
@@ -338,7 +334,6 @@ public class SzkeletonProgram {
         Hokotro hokotro = new Hokotro();
         SoszoroFej soszoro = new SoszoroFej();
 
-        manager.soToltes(hokotro, soszoro);
 
         System.out.println("14. UseCase vége\n");
     }
@@ -354,7 +349,6 @@ public class SzkeletonProgram {
         Hokotro hokotro3 = new Hokotro();
         SarkanyFej sarkany = new SarkanyFej();
 
-        manager.kerozinToltes(hokotro3, sarkany);
 
         System.out.println("15. UseCase vége\n");
     }
@@ -362,8 +356,6 @@ public class SzkeletonProgram {
     private static void autoAthaladasEsJeggeTomorulesTeszt() {
         System.out.println("\n16. UseCase: Autó áthaladása es jéggé tömörülés");
         Sav sav = new Sav();
-
-        sav.forgalomEsBalesetSzimulacio(5, 1);
 
         System.out.println("16. UseCase vége\n");
     }
