@@ -1,5 +1,9 @@
+package jatekosok;
 import java.util.ArrayList;
 import java.util.List;
+
+import jarmuvek.Busz;
+import jarmuvek.Jarmu;
 
 /**
  * A buszokat irányító szerepkör reprezentációja.
@@ -11,5 +15,9 @@ public class BuszsoforManager extends JatekosManager {
     @Override
     public void mozgatJarmuvet(char cel, Jarmu j) {
         System.out.println("BuszsoforManager.mozgatJarmuvet() meghivva.");
+        j.lep(cel);
+        if (j instanceof Busz) {
+            ((Busz) j).korRegisztralasa();
+        }
     }
 }

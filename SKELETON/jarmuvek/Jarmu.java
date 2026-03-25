@@ -1,3 +1,6 @@
+package jarmuvek;
+import terkep.Sav;
+
 /**
  * A városban mozgó eszközök absztrakt fogalma.
  * Kezeli a helyzetet és a baleset miatti mozgásképtelenséget.

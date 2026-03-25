@@ -1,3 +1,4 @@
+package terkep;
 /**
  * Az úttípusokat reprezentáló felsorolás.
  */

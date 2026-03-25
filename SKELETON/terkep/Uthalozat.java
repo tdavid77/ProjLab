@@ -1,5 +1,9 @@
+package terkep;
 import java.util.ArrayList;
 import java.util.List;
+
+import jarmuvek.Auto;
+import jarmuvek.Jarmu;
 
 /**
  * A város teljes térképét és működését átfogó rendszer motorja.
@@ -31,5 +35,13 @@ public class Uthalozat {
     public boolean jatekVegeCheck() {
         System.out.println("Uthalozat.jatekVegeCheck() meghivva.");
         return false;
+    }
+
+    public boolean jatekVegeEllenorzesJarmuvekAlapjan(List<? extends Jarmu> jarmuvek) {
+        System.out.println("Uthalozat.jatekVegeEllenorzesJarmuvekAlapjan() meghivva.");
+        for (Jarmu j : jarmuvek) {
+            j.balesetezik();
+        }
+        return jatekVegeCheck();
     }
 }

@@ -1,3 +1,7 @@
+package takaritofejek;
+import jarmuvek.Hokotro;
+import terkep.Sav;
+
 /**
  * Nagyteljesítményű eszköz, amely a havat és jeget véglegesen eltávolítja a pályáról.
  */

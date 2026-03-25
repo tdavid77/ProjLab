@@ -1,3 +1,7 @@
+package takaritofejek;
+import jarmuvek.Hokotro;
+import terkep.Sav;
+
 /**
  * A masszív jégpáncél fizikai feltörését végző fej.
  */

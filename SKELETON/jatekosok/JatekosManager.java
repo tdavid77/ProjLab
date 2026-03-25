@@ -1,3 +1,6 @@
+package jatekosok;
+import jarmuvek.Jarmu;
+
 /**
  * A szimulációban részt vevő aktív, döntéshozó entitás absztrakt szerepköre.
  * Kezeli a vagyont és irányítja a járműveket.

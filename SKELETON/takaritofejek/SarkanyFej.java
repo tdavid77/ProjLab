@@ -1,3 +1,7 @@
+package takaritofejek;
+import jarmuvek.Hokotro;
+import terkep.Sav;
+
 /**
  * Prémium takarítóeszköz, amely gázturbinájával azonnal elolvasztja a havat és a jeget.
  */
@@ -8,5 +12,11 @@ public class SarkanyFej extends Fej {
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
         System.out.println("SarkanyFej.takaritHatas() meghivva.");
+    }
+
+    public int kerozinToltes(int mennyiseg) {
+        System.out.println("SarkanyFej.kerozinToltes() meghivva.");
+        biokerozinKeszlet += mennyiseg;
+        return biokerozinKeszlet;
     }
 }

@@ -1,3 +1,4 @@
+package jarmuvek;
 /**
  * Előre megadott végállomások között közlekedő eszköz.
  * Felelőssége a menetrend szerinti haladás és a bevétel generálása.

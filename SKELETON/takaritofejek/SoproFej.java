@@ -1,3 +1,7 @@
+package takaritofejek;
+import jarmuvek.Hokotro;
+import terkep.Sav;
+
 /**
  * Alapvető takarítóeszköz, amely a csapadékot a szomszédos sávba tolja.
  */
