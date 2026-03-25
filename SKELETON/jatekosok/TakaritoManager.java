@@ -35,13 +35,13 @@ public class TakaritoManager extends JatekosManager {
 
     public boolean fejLevetel(Hokotro h) {
         System.out.println("TakaritoManager.fejLevetel() meghivva.");
-        h.fejKiBeKapcsolas(null);
+        h.setAktualisFej(null);
         return true;
     }
 
     public boolean fejFelteves(Hokotro h, Fej f) {
         System.out.println("TakaritoManager.fejFelteves() meghivva.");
-        h.fejKiBeKapcsolas(f);
+        h.setAktualisFej(f);
         return true;
     }
 

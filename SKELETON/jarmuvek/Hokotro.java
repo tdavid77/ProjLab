@@ -20,10 +20,19 @@ public class Hokotro extends Jarmu {
         System.out.println("Hokotro immunis a balesetre.");
     }
 
+    
     public boolean fejKiBeKapcsolas(Fej f) {
         System.out.println("Hokotro.fejKiBeKapcsolas() meghivva.");
-        aktualisFej = f;
         return true;
+    }
+
+    public void setAktualisFej(Fej f) {
+        System.out.println("Hokotro.setAktualisFej() meghivva.");
+        if (f != null) {
+            aktualisFej = f;
+        } else {
+            aktualisFej = null;
+        }
     }
 
     public void fejjelTakarit(Sav s, Fej f) {

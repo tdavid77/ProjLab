@@ -25,4 +25,8 @@ public class SoszoroFej extends Fej {
         sokeszlet += mennyiseg;
         return sokeszlet;
     }
+
+    public void setFejAllapota(boolean fejAllapota) {
+        this.fejAllapota = fejAllapota;
+    }
 }
