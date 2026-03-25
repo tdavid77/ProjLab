@@ -4,13 +4,9 @@
  */
 
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.List;
-
 import jarmuvek.Auto;
 import jarmuvek.Busz;
 import jarmuvek.Hokotro;
-import jarmuvek.Jarmu;
 import jatekosok.BuszsoforManager;
 import jatekosok.TakaritoManager;
 import takaritofejek.HanyoFej;
@@ -36,8 +32,7 @@ public class SzkeletonProgram {
             System.out.println("7 - Soszoro fej mukodese");
             System.out.println("8 - Sopro fej mukodese");
             System.out.println("9 - Jegtoro fej mukodese");
-            System.out.println("10 - Jatek vege 1 (elakadt tomegkozlekedes)");
-            System.out.println("11 - Jatek vege 2 (kijarasi tilalom)");
+            System.out.println("10 - Jatek vege check (egyesitett)");
             System.out.println("12 - Jarmu megcsuszasa");
             System.out.println("13 - Havazas szimulacioja");
             System.out.println("14 - So toltese a soszoro fejbe");
@@ -75,10 +70,7 @@ public class SzkeletonProgram {
                     jegtoroFejMukodeseTeszt();
                     break;
                 case 10:
-                    jatekVegeElakadtTomegkozlekedesTeszt();
-                    break;
-                case 11:
-                    jatekVegeKijarasiTilalomTeszt();
+                    jatekVegeCheckTeszt();
                     break;
                 case 12:
                     jarmuMegcsuszasaTeszt();
@@ -132,14 +124,11 @@ public class SzkeletonProgram {
      */
     public static void testHokotroVasarlas() {
         System.out.println("\n2. UseCase: Új hókotró vásárlása");
-        
         // Szükséges objektumok létrehozása
         TakaritoManager manager = new TakaritoManager();
         Hokotro ujHokotro = new Hokotro(); // A megvásárolni kívánt új gép
-        
         // Hókotró megvásárlása (a szkeletonban ellenőrzi a feltételeket és levonja a pénzt)
         manager.hokotroVasarlas(ujHokotro);
-        
         System.out.println("2. UseCase vége\n");
     }
 
@@ -180,16 +169,17 @@ public class SzkeletonProgram {
     }
 
     /**
-     * 5. Use case: Hókotró fejének működése
+     * 5. Use case: Hókotró sárkányfejének működése
      * A játékos bekapcsolja a hókotró fejét, majd a gép biokerozin fogyasztása közben leszedi a havat és a jeget is a sávról.
      */
     private static void sarkanyFejMukodeseTeszt() {
         System.out.println("\n5. UseCase: Sárkány fej működése");
         Hokotro hokotro = new Hokotro();
         Sav sav = new Sav();
-
+        SarkanyFej sarkanyFej = new SarkanyFej();
+        hokotro.setAktualisFej(sarkanyFej);
         hokotro.takaritSavot(sav);
-        
+        sarkanyFej.fejKiBeKapcsolasa(true);
         System.out.println("5. UseCase vége\n");
     }
 
@@ -203,9 +193,9 @@ public class SzkeletonProgram {
         Hokotro hokotro = new Hokotro();
         Sav sav = new Sav();
         HanyoFej hanyoFej = new HanyoFej();
-
-        hokotro.fejjelTakarit(sav, hanyoFej);
-
+        hokotro.setAktualisFej(hanyoFej);
+        hokotro.takaritSavot(sav);
+        hanyoFej.fejKiBeKapcsolasa(true);
         System.out.println("6. UseCase vége\n");
     }
 
@@ -222,9 +212,9 @@ public class SzkeletonProgram {
         Hokotro hokotro = new Hokotro();
         Sav sav = new Sav();
         SoszoroFej soszoroFej = new SoszoroFej();
-
-        hokotro.fejjelTakarit(sav, soszoroFej);
-
+        hokotro.setAktualisFej(soszoroFej);
+        hokotro.takaritSavot(sav);
+        soszoroFej.fejKiBeKapcsolasa(true);
         System.out.println("7. UseCase vége\n");
     }
 
@@ -239,9 +229,9 @@ public class SzkeletonProgram {
         Hokotro hokotro = new Hokotro();
         Sav sav = new Sav();
         SoproFej soproFej = new SoproFej();
-
-        hokotro.fejjelTakarit(sav, soproFej);
-
+        hokotro.setAktualisFej(soproFej);
+        hokotro.takaritSavot(sav);
+        soproFej.fejKiBeKapcsolasa(true);
         System.out.println("8. UseCase vége\n");
     }
 
@@ -255,43 +245,30 @@ public class SzkeletonProgram {
         Hokotro hokotro = new Hokotro();
         Sav sav = new Sav();
         JegtoroFej jegtoroFej = new JegtoroFej();
-
-        hokotro.fejjelTakarit(sav, jegtoroFej);
-
+        hokotro.setAktualisFej(jegtoroFej);
+        hokotro.takaritSavot(sav);
+        jegtoroFej.fejKiBeKapcsolasa(true);
         System.out.println("9. UseCase vége\n");
     }
 
-    private static void jatekVegeElakadtTomegkozlekedesTeszt() {
-        System.out.println("\n10. UseCase: Játék vége 1 (elakadt tömegközlekedés)");
+    /**
+     * 10. Use Case: Játék vége check 
+     * A rendszer megkerdezi, hogy a buszok mozgaskepesek-e, illetve hogy
+     * a balesetezett autok maximalis szama elerte-e a kritikus hatart.
+     * Ha barmelyik feltetel teljesul, a jateknak vege.
+     */
+    private static void jatekVegeCheckTeszt() {
+        System.out.println("\n10. UseCase: Játék vége check (egyesitett)");
         Uthalozat halozat = new Uthalozat();
-        Busz busz1 = new Busz();
-        Busz busz2 = new Busz();
-        List<Jarmu> jarmuvek = new ArrayList<>();
-        jarmuvek.add(busz1);
-        jarmuvek.add(busz2);
+        boolean jatekVege = halozat.jatekVegeCheck();
 
-    
+        if (jatekVege) {
+            System.out.println("A jateknak vege.");
+        } else {
+            System.out.println("A jatek folytatodik.");
+        }
 
         System.out.println("10. UseCase vége\n");
-    }
-
-
-    /**
-     * 11. Use Case: Játék vége 2 - Kijárási tilalom
-     * Amennyiben az összecsúszott és mozgásképtelenné vált járművek
-     * száma elér egy előre meghatározott kritikus határértéket, a játéknak vége. 
-     */
-    private static void jatekVegeKijarasiTilalomTeszt() {
-        System.out.println("\n11. UseCase: Játék vége 2 (kijárási tilalom)");
-        Uthalozat halozat = new Uthalozat();
-        Auto auto = new Auto();
-        Busz busz = new Busz();
-        List<Jarmu> jarmuvek = new ArrayList<>();
-        jarmuvek.add(auto);
-        jarmuvek.add(busz);
-
-
-        System.out.println("11. UseCase vége\n");
     }
     
     /**
@@ -304,6 +281,11 @@ public class SzkeletonProgram {
         System.out.println("\n12. UseCase: Jármű megcsúszása");
         Jarmu auto = new Auto();
         Sav jegesSav = new Sav();
+
+        boolean tortentBaleset = jegesSav.balesetKalkulacio(0);
+        if (tortentBaleset) {
+            auto.balesetezik();
+        }
 
         System.out.println("12. UseCase vége\n");
         }
@@ -372,7 +354,7 @@ public class SzkeletonProgram {
         SoszoroFej fej = new SoszoroFej();
         Sav s = new Sav();
 
-        h.fejjelTakarit(s, fej);
+       
         
         System.out.println("A só kihelyezve a sávra, a jegesedés megállt.\n");
         System.out.println("17. UseCase vége\n");

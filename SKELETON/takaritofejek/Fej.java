@@ -10,8 +10,8 @@ public abstract class Fej {
     protected String azonosito;
     protected boolean fejAllapota;
 
-    public void setFejAllapota(boolean fejAllapota) {
-        System.out.println("Nem történt semmi, mert nem fogyóeszközös fejt kapcsoltál.")
+    public void fejKiBeKapcsolasa(boolean fejAllapota) {
+        System.out.println("Nem tortent semmi, mert nem fogyoeszkozos fejt kapcsoltal.");
     }
 
     public abstract void takaritHatas(Sav s, Hokotro h);

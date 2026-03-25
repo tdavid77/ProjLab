@@ -1,4 +1,5 @@
 package terkep;
+import java.util.Scanner;
 import jarmuvek.Jarmu;
 
 /**
@@ -17,22 +18,24 @@ public class Sav {
 
     public char getKezdopont() {
         System.out.println("Sav.getKezdopont() meghivva.");
-        return kezdopont;
+        return 'a'; //TODO
     }
 
     public char getVegpont() {
         System.out.println("Sav.getVegpont() meghivva.");
-        return vegpont;
+        return 'a'; //TODO
     }
 
     public boolean balesetKalkulacio(int nehezseg) {
         System.out.println("Sav.balesetKalkulacio() meghivva.");
-        return true; //TODO
+        Scanner s = new Scanner(System.in);
+        System.out.println("Tortent baleset? (I/N)");
+        String valasz = s.nextLine().trim();
+        return valasz.equalsIgnoreCase("I");
     }
 
     public void hoEltavolit() {
         System.out.println("Sav.hoEltavolit() meghivva.");
-        
     }
 
     public void havatUtSzelereSzor() {

@@ -21,44 +21,83 @@ public class TakaritoManager extends JatekosManager {
 
     public boolean hokotroVasarlas(Hokotro h) {
         System.out.println("TakaritoManager.hokotroVasarlas() meghivva.");
+        Scanner s = new Scanner(System.in);
+
+        System.out.println("Telephelyen vagy? (I/N)");
+        String telephelyValasz = s.nextLine().trim();
+        if (!telephelyValasz.equalsIgnoreCase("I")) {
+            System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            return false;
+        }
+
+        System.out.println("Van eleg vagyonod? (I/N)");
+        String vagyonValasz = s.nextLine().trim();
+        if (!vagyonValasz.equalsIgnoreCase("I")) {
+            System.out.println("A muvelet nem vegezheto el, mert nincs eleg vagyon.");
+            return false;
+        }
+
         hokotrok.add(h);
+        System.out.println("Uj hokotro hozzaadva a takarito manager hokotro listajahoz.");
         return true;
     }
 
     public boolean fejVasarlas(Fej k) {
         System.out.println("TakaritoManager.fejVasarlas() meghivva.");
+        Scanner s = new Scanner(System.in);
+
+        System.out.println("Telephelyen vagy? (I/N)");
+        String telephelyValasz = s.nextLine().trim();
+        if (!telephelyValasz.equalsIgnoreCase("I")) {
+            System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            return false;
+        }
+
+        System.out.println("Van eleg vagyonod? (I/N)");
+        String vagyonValasz = s.nextLine().trim();
+        if (!vagyonValasz.equalsIgnoreCase("I")) {
+            System.out.println("A muvelet nem vegezheto el, mert nincs eleg vagyon.");
+            return false;
+        }
+
         fejek.add(k);
+        System.out.println("Uj fej hozzaadva a takarito manager fejek listajahoz.");
         return true;
     }
 
     public boolean fejLevetel(Hokotro h) {
         System.out.println("TakaritoManager.fejLevetel() meghivva.");
-        h.setAktualisFej(null);
         return true;
     }
 
     public boolean fejFelteves(Hokotro h, Fej f) {
         System.out.println("TakaritoManager.fejFelteves() meghivva.");
-        h.setAktualisFej(f);
         return true;
     }
 
     public boolean fejCsere(Hokotro h, Fej ujFej) {
         System.out.println("TakaritoManager.fejCsere() meghivva.");
-        h.getAktualisHelyzet().getKezdopont();
         System.out.println("A hókotró telephelyen van? (I/N)");
         Scanner s = new Scanner(System.in);
-        String valasz = s.nextLine();
-        boolean sikeresLevetel = fejLevetel(h);
-        if (valasz.equals("I")) {
-            if (!sikeresLevetel) {
+        String valasz = s.nextLine().trim();
+
+        if (!valasz.equalsIgnoreCase("I")) {
+            System.out.println("A muvelet nem vegezheto el, mert a hokotro nincs a telephelyen.");
             return false;
-            }
-            fejek.add(h.getAktualisFej());
-            fejek.remove(ujFej);
-            return fejFelteves(h, ujFej);
         }
-        return false;
+
+        Fej regiFej = h.getAktualisFej();
+        boolean sikeresLevetel = fejLevetel(h);
+        if (!sikeresLevetel) {
+            return false;
+        }
+
+        if (regiFej != null) {
+            fejek.add(regiFej);
+        }
+        fejek.remove(ujFej);
+
+        return fejFelteves(h, ujFej);
     }
 
     public int soToltes(Hokotro h) {

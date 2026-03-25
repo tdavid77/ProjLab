@@ -19,5 +19,7 @@ public class Busz extends Jarmu {
 
     public void korRegisztralasa() {
         System.out.println("Busz.korRegisztralasa() meghivva.");
+        
+        System.out.println("Busz.korokSzama novelve.");
     }
 }

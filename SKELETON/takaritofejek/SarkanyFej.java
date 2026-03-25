@@ -20,10 +20,10 @@ public class SarkanyFej extends Fej {
     }
 
     @Override
-    public void setFejAllapota(boolean fejAllapota) {
+    public void fejKiBeKapcsolasa(boolean fejAllapota) {
         this.fejAllapota = fejAllapota;
 
-        if (fejAllapota = false) {
+        if (fejAllapota == false) {
             System.out.println("Sarkanyfej kikapcsolva.");
         } else {
             System.out.println("Sarkanyfej bekapcsolva.");

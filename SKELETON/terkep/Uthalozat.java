@@ -1,6 +1,7 @@
 package terkep;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import jarmuvek.Auto;
 import jarmuvek.Jarmu;
@@ -34,6 +35,16 @@ public class Uthalozat {
 
     public boolean jatekVegeCheck() {
         System.out.println("Uthalozat.jatekVegeCheck() meghivva.");
-        return false;
+        Scanner s = new Scanner(System.in);
+        System.out.println("Mozgaskepesek a buszok? (I/N)");
+        String buszokMozgaskepesek = s.nextLine().trim();
+
+        System.out.println("A balesetezett autok maximalis szama elerte a kritikus hatart? (I/N)");
+        String elerteKritikusHatar = s.nextLine().trim();
+
+        boolean tomegkozlekedesElakadt = buszokMozgaskepesek.equalsIgnoreCase("N");
+        boolean kijarasiTilalom = elerteKritikusHatar.equalsIgnoreCase("I");
+
+        return tomegkozlekedesElakadt || kijarasiTilalom;
     }
 }

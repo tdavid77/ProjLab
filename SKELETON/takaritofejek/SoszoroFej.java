@@ -20,10 +20,10 @@ public class SoszoroFej extends Fej {
     }
 
     @Override
-    public void setFejAllapota(boolean fejAllapota) {
+    public void fejKiBeKapcsolasa(boolean fejAllapota) {
         this.fejAllapota = fejAllapota;
 
-        if (fejAllapota = false) {
+        if (fejAllapota == false) {
             System.out.println("Sószórófej kikapcsolva.");
         } else {
             System.out.println("Sószórófej bekapcsolva.");
