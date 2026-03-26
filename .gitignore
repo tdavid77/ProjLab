@@ -10,4 +10,10 @@ SKELETON/jatekosok/*.class
 SKELETON/takaritofejek/*.class
 SKELETON/utak/*.class
 SKELETON/terkep/*.class
+bin/*.class
+bin/jarmuvek/*.class
+bin/jatekosok/*.class
+bin/takaritofejek/*.class
+bin/utak/*.class
+bin/terkep/*.class
 %OUTDIR%

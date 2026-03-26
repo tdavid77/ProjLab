@@ -4,39 +4,36 @@
 \subsection{Fájllista}
 
 \begin{fajllista}
-	\fajl{Auto.java}{571 byte}{2026.03.25~14:30~}{Auto osztály}
-	\fajl{Busz.java}{589 byte}{2026.03.25~14:49~}{Busz osztály}
-	\fajl{BuszsoforManager.java}{447 byte}{2026.03.25~14:58~}{BuszsoforManager osztály}
-	\fajl{Fej.java}{270 byte}{2026.03.25~15:20~}{Fej osztály}
-	\fajl{HanyoFej.java}{287 byte}{2026.03.25~15:30~}{HanyoFej osztály}
-	\fajl{Hokotro.java}{823 byte}{2026.03.25~15:40~}{Hokotro osztály}
-	\fajl{Jarmu.java}{480 byte}{2026.03.25~15:47~}{Jarmu osztály}
-	\fajl{JatekosManager.java}{385 byte}{2026.03.25~15:55~}{JatekosManager osztály}
-	\fajl{JegtoroFej.java}{255 byte}{2026.03.25~16:05~}{JegtoroFej osztály}
-	\fajl{SarkanyFej.java}{362 byte}{2026.03.25~16:15~}{SarkanyFej osztály}
-	\fajl{Sav.java}{807 byte}{2026.03.25~16:28~}{Sav osztály}
-	\fajl{SoproFej.java}{269 byte}{2026.03.25~16:40~}{SoproFej osztály}
-	\fajl{SoszoroFej.java}{339 byte}{2026.03.25~16:53~}{SoszoroFej osztály}
+	\fajl{Auto.java}{590 byte}{2026.03.25~14:30~}{Auto osztály}
+	\fajl{Busz.java}{675 byte}{2026.03.25~14:49~}{Busz osztály}
+	\fajl{BuszsoforManager.java}{1000 byte}{2026.03.25~14:58~}{BuszsoforManager osztály}
+	\fajl{Fej.java}{873 byte}{2026.03.25~15:20~}{Fej osztály}
+	\fajl{HanyoFej.java}{359 byte}{2026.03.25~15:30~}{HanyoFej osztály}
+	\fajl{Hokotro.java}{1623 byte}{2026.03.25~15:40~}{Hokotro osztály}
+	\fajl{Jarmu.java}{720 byte}{2026.03.25~15:47~}{Jarmu osztály}
+	\fajl{JatekosManager.java}{431 byte}{2026.03.25~15:55~}{JatekosManager osztály}
+	\fajl{JegtoroFej.java}{327 byte}{2026.03.25~16:05~}{JegtoroFej osztály}
+	\fajl{SarkanyFej.java}{877 byte}{2026.03.25~16:15~}{SarkanyFej osztály}
+	\fajl{Sav.java}{2281 byte}{2026.03.25~16:28~}{Sav osztály}
+	\fajl{SoproFej.java}{341 byte}{2026.03.25~16:40~}{SoproFej osztály}
+	\fajl{SoszoroFej.java}{996 byte}{2026.03.25~16:53~}{SoszoroFej osztály}
 	\fajl{SzkeletonProgram.java}{717 byte}{2026.03.25~17:00~}{SzkeletonProgram osztály}
-	\fajl{TakaritoManager.java}{1388 byte}{2026.03.25~17:16~}{TakaritoManager osztály}
-	\fajl{Ut.java}{446 byte}{2026.03.25~17:30~}{Ut osztály}
-	\fajl{Uthalozat.java}{1120 byte}{2026.03.25~17:42~}{Uthalozat osztály}
-	\fajl{UtTipus.java}{110 byte}{2026.03.25~17:58~}{UtTipus osztály}
+	\fajl{TakaritoManager.java}{4522 byte}{2026.03.25~17:16~}{TakaritoManager osztály}
+	\fajl{Ut.java}{463 byte}{2026.03.25~17:30~}{Ut osztály}
+	\fajl{Uthalozat.java}{1744 byte}{2026.03.25~17:42~}{Uthalozat osztály}
+	\fajl{UtTipus.java}{127 byte}{2026.03.25~17:58~}{UtTipus osztály}
 \end{fajllista}
 
 \subsection{Fordítás}
-\comment{A fenti listában szereplő forrásfájlokból milyen műveletekkel lehet a bináris, futtatható kódot előállítani. Az előállításhoz csak a 2. Követelmények c. dokumentumban leírt környezetet szabad előírni.}
-
 \begin{verbatim}
-    javac -d bin *.java
+    javac -d bin skeleton/jarmuvek/*.java skeleton/jatekosok/*.java 
+	skeleton/takaritofejek/*.java skeleton/terkep/*.java skeleton/SzkeletonProgram.java
 \end{verbatim}
 
 \subsection{Futtatás}
-\comment{A futtatható kód elindításával kapcsolatos teendők leírása. Az indításhoz csak a 2. Követelmények c. dokumentumban leírt környezetet szabad előírni.}
-
 \begin{verbatim}
     cd bin
-    java Main.java
+    java SzkeletonProgram
 \end{verbatim}
 
 \clearpage

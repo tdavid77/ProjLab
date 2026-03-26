@@ -40,6 +40,7 @@ public class SzkeletonProgram {
             System.out.println("15 - Biokerozin toltese a sarkany fejbe");
             System.out.println("16 - Auto athaladasa es jegge tomorules");
             System.out.println("17 - Leszort so");
+            System.out.println("0 - Kilépés");
             System.out.print("Válassz egy opciót: ");
             valasztas = scanner.nextInt();
             switch (valasztas) {
