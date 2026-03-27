@@ -13,6 +13,11 @@ import jarmuvek.Jarmu;
 public class BuszsoforManager extends JatekosManager {
     private List<Busz> buszok = new ArrayList<>();
 
+    /**
+     * Mozgatja a megadott járművet a megadott célpontra.
+     * @param cel a célpontra
+     * @param j a jármű
+     */
     @Override
     public void mozgatJarmuvet(char cel, Jarmu j) {
         System.out.println("BuszsoforManager.mozgatJarmuvet() meghivva.");

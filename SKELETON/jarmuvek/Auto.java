@@ -11,11 +11,18 @@ public class Auto extends Jarmu {
     private char munkahely;
     private List<Character> utvonal = new ArrayList<>();
 
+    /**
+     * Lép a megadott célpontra.
+     * @param cel a célpontra
+     */
     @Override
     public void lep(char cel) {
         System.out.println("Auto.lep() meghivva.");
     }
 
+    /**
+     * Baleset történik.
+     */
     @Override
     public void balesetezik() {
         System.out.println("Auto.balesetezik() meghivva.");

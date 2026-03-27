@@ -9,6 +9,11 @@ public abstract class JatekosManager {
     protected String nev;
     protected int vagyon;
 
+    /**
+     * Mozgatja a megadott járművet a megadott célpontra.
+     * @param cel a célpontra
+     * @param j a jármű
+     */
     public void mozgatJarmuvet(char cel, Jarmu j) {
         System.out.println("JatekosManager.mozgatJarmuvet() meghivva.");
     }

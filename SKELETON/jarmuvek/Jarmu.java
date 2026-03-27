@@ -11,19 +11,32 @@ public abstract class Jarmu {
     protected Sav aktualisHelyzet;
 
 
+    /**
+     * Visszaadja a jármű aktuális helyzetét.
+     * @return a jármű aktuális helyzete
+     */
     public Sav getAktualisHelyzet() {
         return aktualisHelyzet;
     }
 
-
+    /**
+     * Lép a megadott célpontra.
+     * @param cel a célpontra
+     */
     public void lep(char cel) {
         System.out.println("Jarmu.lep() meghivva.");
     }
 
+    /**
+     * Baleset történik.
+     */
     public void balesetezik() {
         System.out.println("Jarmu.balesetezik() meghivva.");
     }
 
+    /**
+     * Regisztrálja a járművet a körben.
+     */
     public void korRegisztralasa() {
         System.out.println("Jarmu.korRegisztralasa() meghivva.");
     }
