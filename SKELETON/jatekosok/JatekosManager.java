@@ -1,5 +1,6 @@
 package jatekosok;
 import jarmuvek.Jarmu;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * A szimulációban részt vevő aktív, döntéshozó entitás absztrakt szerepköre.
@@ -15,6 +16,7 @@ public abstract class JatekosManager {
      * @param j a jármű
      */
     public void mozgatJarmuvet(char cel, Jarmu j) {
-        System.out.println("JatekosManager.mozgatJarmuvet() meghivva.");
+        SzkeletonProgram.logCall("jm", "JatekosManager", "mozgatJarmuvet", "cel, j");
+        SzkeletonProgram.logReturn("void");
     }
 }

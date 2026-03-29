@@ -1,6 +1,7 @@
 package terkep;
 import java.util.Scanner;
 import jarmuvek.Jarmu;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * Az utak belső, egy járműnyi szélességű felosztása.
@@ -21,7 +22,8 @@ public class Sav {
      * @return a sáv kezdőpontja
      */
     public char getKezdopont() {
-        System.out.println("Sav.getKezdopont() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "getKezdopont", "");
+        SzkeletonProgram.logReturn("char");
         return 'a'; //TODO
     }
 
@@ -30,7 +32,8 @@ public class Sav {
      * @return a sáv végpontja
      */
     public char getVegpont() {
-        System.out.println("Sav.getVegpont() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "getVegpont", "");
+        SzkeletonProgram.logReturn("char");
         return 'a'; //TODO
     }
 
@@ -40,39 +43,45 @@ public class Sav {
      * @return true, ha történt baleset, false egyébként
      */
     public boolean balesetKalkulacio(int nehezseg) {
-        System.out.println("Sav.balesetKalkulacio() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "balesetKalkulacio", "nehezseg");
         Scanner s = new Scanner(System.in);
         System.out.println("Tortent baleset? (I/N)");
         String valasz = s.nextLine().trim();
-        return valasz.equalsIgnoreCase("I");
+        boolean result = valasz.equalsIgnoreCase("I");
+        SzkeletonProgram.logReturn("boolean");
+        return result;
     }
 
     /**
      * Eltávolítja a hót a sávról.
      */
     public void hoEltavolit() {
-        System.out.println("Sav.hoEltavolit() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "hoEltavolit", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
      * Sószórásával kémiai úton olvasztja el az akadályokat egy adott sávon.
      */
     public void havatUtSzelereSzor() {
-        System.out.println("Sav.havatUtSzelereSzor() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "havatUtSzelereSzor", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
      * Feltöri a jéget a sávon.
      */
     public void jegFeltorese() {
-        System.out.println("Sav.jegFeltorese() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "jegFeltorese", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
      * Az adott sáv hava jobbra tolódik.
      */
     public void hoAtsepreseJobbra() {
-        System.out.println("Sav.hoAtsepreseJobbra() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "hoAtsepreseJobbra", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -80,14 +89,15 @@ public class Sav {
      * @param korokSzama
      */
     public void soKihelyezese(int korokSzama) {
-        System.out.println("Sav.soKihelyezese() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "soKihelyezese", "korokSzama");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
      * Az adott sávon áthaladó autók számának növelése, amely befolyásolja a sáv állapotát és a balesetkalkulációt.
      */
     public void autoAthalad() {
-        System.out.println("Sav.autoAthalad() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "autoAthalad", "");
         Scanner s = new Scanner(System.in);
         System.out.println("Kello mennyisegu auto athaladt a savon? (I/N)");
         String valasz = s.nextLine().trim();
@@ -97,6 +107,7 @@ public class Sav {
         } else {
             System.out.println("Nincs eleg auto, a ho nem tomorult jegge.");
         }
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -104,7 +115,8 @@ public class Sav {
      * @return true, ha járható, false egyébként
      */
     public boolean jarhatoEAutoknak() {
-        System.out.println("Sav.jarhatoEAutoknak() meghivva.");
+        SzkeletonProgram.logCall("sav", "Sav", "jarhatoEAutoknak", "");
+        SzkeletonProgram.logReturn("boolean");
         return true; //TODO
     }
 }

@@ -1,6 +1,7 @@
 package takaritofejek;
 import jarmuvek.Hokotro;
 import terkep.Sav;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * A hókotrókra szerelhető, cserélhető munkaeszközök absztrakt fogalma.
@@ -15,7 +16,9 @@ public abstract class Fej {
      * @param fejAllapota a kívánt fej állapot (true: bekapcsolva, false: kikapcsolva)
      */
     public void fejKiBeKapcsolasa(boolean fejAllapota) {
+        SzkeletonProgram.logCall("f", "Fej", "fejKiBeKapcsolasa", "fejAllapota");
         System.out.println("Nem tortent semmi, mert nem fogyoeszkozos fejt kapcsoltal.");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -31,7 +34,9 @@ public abstract class Fej {
      * @return a feltöltött só mennyisége, ha sikeres volt, 0 egyébként
      */
     public int soToltes(int mennyiseg) {
+        SzkeletonProgram.logCall("f", "Fej", "soToltes", "mennyiseg");
         System.out.println("Fej.soToltes() meghivva (ez a fej nem tamogat so toltest).");
+        SzkeletonProgram.logReturn("0");
         return 0;
     }
 
@@ -41,7 +46,9 @@ public abstract class Fej {
      * @return a feltöltött kerozin mennyisége, ha sikeres volt, 0 egyébként
      */
     public int kerozinToltes(int mennyiseg) {
+        SzkeletonProgram.logCall("f", "Fej", "kerozinToltes", "mennyiseg");
         System.out.println("Fej.kerozinToltes() meghivva (ez a fej nem tamogat kerozin toltest).");
+        SzkeletonProgram.logReturn("0");
         return 0;
     }
 }

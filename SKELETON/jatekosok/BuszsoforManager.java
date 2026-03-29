@@ -2,6 +2,7 @@ package jatekosok;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import skeletonprogram.SzkeletonProgram;
 
 import jarmuvek.Busz;
 import jarmuvek.Jarmu;
@@ -20,7 +21,7 @@ public class BuszsoforManager extends JatekosManager {
      */
     @Override
     public void mozgatJarmuvet(char cel, Jarmu j) {
-        System.out.println("BuszsoforManager.mozgatJarmuvet() meghivva.");
+        SzkeletonProgram.logCall("bsm", "BuszsoforManager", "mozgatJarmuvet", "cel, j");
         j.lep(cel);
 
         Scanner s = new Scanner(System.in);
@@ -33,5 +34,6 @@ public class BuszsoforManager extends JatekosManager {
         } else {
             System.out.println("Nem vegallomas, kor nem lett regisztralva, fizetes nem jart.");
         }
+        SzkeletonProgram.logReturn("void");
     }
 }

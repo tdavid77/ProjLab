@@ -1,3 +1,5 @@
+package skeletonprogram;
+
 /**
  * A Szkeleton fő programja, amely belépési pontként szolgál.
  * Ebből a fájlból tesztelhető a modell alapvető működése.
@@ -19,6 +21,27 @@ import terkep.Sav;
 import terkep.Uthalozat;
 
 public class SzkeletonProgram {
+    
+    private static int depth = 0;
+
+    public static void printIndent() {
+        for (int i = 0; i < depth; i++) {
+            System.out.print("\t");
+        }
+    }
+
+    public static void logCall(String callerId, String className, String methodName, String params) {
+        printIndent();
+        System.out.println("-> " + callerId + ": " + className + "." + methodName + "(" + params + ")");
+        depth++;
+    }
+
+    public static void logReturn(String returnDesc) {
+        depth--;
+        printIndent();
+        System.out.println("<- " + returnDesc);
+    }
+
     public static void main(String[] args) {
         System.out.println("Szkeleton program inditasa...");
         Scanner scanner = new Scanner(System.in);

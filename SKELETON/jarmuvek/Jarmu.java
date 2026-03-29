@@ -1,5 +1,6 @@
 package jarmuvek;
 import terkep.Sav;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * A városban mozgó eszközök absztrakt fogalma.
@@ -16,6 +17,8 @@ public abstract class Jarmu {
      * @return a jármű aktuális helyzete
      */
     public Sav getAktualisHelyzet() {
+        SzkeletonProgram.logCall("j", "Jarmu", "getAktualisHelyzet", "");
+        SzkeletonProgram.logReturn("Sav");
         return aktualisHelyzet;
     }
 
@@ -24,20 +27,23 @@ public abstract class Jarmu {
      * @param cel a célpontra
      */
     public void lep(char cel) {
-        System.out.println("Jarmu.lep() meghivva.");
+        SzkeletonProgram.logCall("j", "Jarmu", "lep", "cel");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
      * Baleset történik.
      */
     public void balesetezik() {
-        System.out.println("Jarmu.balesetezik() meghivva.");
+        SzkeletonProgram.logCall("j", "Jarmu", "balesetezik", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
      * Regisztrálja a járművet a körben.
      */
     public void korRegisztralasa() {
-        System.out.println("Jarmu.korRegisztralasa() meghivva.");
+        SzkeletonProgram.logCall("j", "Jarmu", "korRegisztralasa", "");
+        SzkeletonProgram.logReturn("void");
     }
 }

@@ -1,6 +1,7 @@
 package jarmuvek;
 import takaritofejek.Fej;
 import terkep.Sav;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * Takarító munkagép, amely a hó és a jég eltávolításáért felelős.
@@ -15,7 +16,8 @@ public class Hokotro extends Jarmu {
      * @return
      */
     public Fej getAktualisFej() {
-        System.out.println("Hokotro.getAktualisFej() meghivva.");
+        SzkeletonProgram.logCall("h1", "Hokotro", "getAktualisFej", "");
+        SzkeletonProgram.logReturn("Fej");
         return aktualisFej;
     }
 
@@ -25,7 +27,8 @@ public class Hokotro extends Jarmu {
      */
     @Override
     public void lep(char cel) {
-        System.out.println("Hokotro.lep() meghivva.");
+        SzkeletonProgram.logCall("h1", "Hokotro", "lep", "cel");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -33,7 +36,8 @@ public class Hokotro extends Jarmu {
      */
     @Override
     public void balesetezik() {
-        System.out.println("Hokotro immunis a balesetre.");
+        SzkeletonProgram.logCall("h1", "Hokotro", "balesetezik", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     
@@ -42,12 +46,13 @@ public class Hokotro extends Jarmu {
      * @param f a beállítandó fej
      */
     public void setAktualisFej(Fej f) {
-        System.out.println("Hokotro.setAktualisFej() meghivva.");
+        SzkeletonProgram.logCall("h1", "Hokotro", "setAktualisFej", "f");
         if (f != null) {
             aktualisFej = f;
         } else {
             aktualisFej = null;
         }
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -55,10 +60,11 @@ public class Hokotro extends Jarmu {
      * @param s a takarítandó sáv
      */
     public void takaritSavot(Sav s) {
-        System.out.println("Hokotro.takaritSavot() meghivva.");
+        SzkeletonProgram.logCall("h1", "Hokotro", "takaritSavot", "s_akt");
         if(aktualisFej != null) {
             aktualisFej.takaritHatas(s, this);
         }
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -66,11 +72,14 @@ public class Hokotro extends Jarmu {
      * @return a feltöltött só mennyisége
      */
     public int soToltesAktualisFejbe() {
-        System.out.println("Hokotro.soToltesAktualisFejbe() meghivva.");
+        SzkeletonProgram.logCall("h1", "Hokotro", "soToltesAktualisFejbe", "");
         if (aktualisFej == null) {
+            SzkeletonProgram.logReturn("0");
             return 0;
         }
-        return aktualisFej.soToltes(100);
+        int ret = aktualisFej.soToltes(100);
+        SzkeletonProgram.logReturn("int");
+        return ret;
     }
 
     /**
@@ -78,10 +87,13 @@ public class Hokotro extends Jarmu {
      * @return a feltöltött kerozin mennyisége
      */
     public int kerozinToltesAktualisFejbe() {
-        System.out.println("Hokotro.kerozinToltesAktualisFejbe() meghivva.");
+        SzkeletonProgram.logCall("h1", "Hokotro", "kerozinToltesAktualisFejbe", "");
         if (aktualisFej == null) {
+            SzkeletonProgram.logReturn("0");
             return 0;
         }
-        return aktualisFej.kerozinToltes(100);
+        int ret = aktualisFej.kerozinToltes(100);
+        SzkeletonProgram.logReturn("int");
+        return ret;
     }
 }

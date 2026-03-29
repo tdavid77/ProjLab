@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import jarmuvek.Auto;
 import jarmuvek.Jarmu;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * A város teljes térképét és működését átfogó rendszer motorja.
@@ -21,7 +22,8 @@ public class Uthalozat {
      * @param csomopontok
      */
     public void jatekInditasa(List<Character> csomopontok) {
-        System.out.println("Uthalozat.jatekInditasa() meghivva.");
+        SzkeletonProgram.logCall("uh", "Uthalozat", "jatekInditasa", "csomopontok");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -31,7 +33,8 @@ public class Uthalozat {
      * @return
      */
     public List<Character> legrovidebbUt(char otthon, char munkahely) {
-        System.out.println("Uthalozat.legrovidebbUt() meghivva.");
+        SzkeletonProgram.logCall("uh", "Uthalozat", "legrovidebbUt", "otthon, munkahely");
+        SzkeletonProgram.logReturn("List<Character>");
         return new ArrayList<>();
     }
 
@@ -39,7 +42,8 @@ public class Uthalozat {
      * Elindítja a játék körét, amely során minden autó megpróbál lépni a következő csomópontjára, és szimulálja a havazást, amely befolyásolja a sávok állapotát és a járművek mozgását.
      */
     public void korInditasa() {
-        System.out.println("Uthalozat.korInditasa() meghivva.");
+        SzkeletonProgram.logCall("uh", "Uthalozat", "korInditasa", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -47,7 +51,8 @@ public class Uthalozat {
      * @param mennyiseg
      */
     public void havazas(int mennyiseg) {
-        System.out.println("Uthalozat.havazas() meghivva.");
+        SzkeletonProgram.logCall("uh", "Uthalozat", "havazas", "mennyiseg");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -55,7 +60,7 @@ public class Uthalozat {
      * @return true, ha a játék véget ért, false egyébként
      */
     public boolean jatekVegeCheck() {
-        System.out.println("Uthalozat.jatekVegeCheck() meghivva.");
+        SzkeletonProgram.logCall("uh", "Uthalozat", "jatekVegeCheck", "");
         Scanner s = new Scanner(System.in);
         System.out.println("Mozgaskepesek a buszok? (I/N)");
         String buszokMozgaskepesek = s.nextLine().trim();
@@ -66,6 +71,7 @@ public class Uthalozat {
         boolean tomegkozlekedesElakadt = buszokMozgaskepesek.equalsIgnoreCase("N");
         boolean kijarasiTilalom = elerteKritikusHatar.equalsIgnoreCase("I");
 
+        SzkeletonProgram.logReturn("boolean");
         return tomegkozlekedesElakadt || kijarasiTilalom;
     }
 }

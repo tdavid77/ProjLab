@@ -1,4 +1,7 @@
 package jarmuvek;
+
+import skeletonprogram.SzkeletonProgram;
+
 /**
  * Előre megadott végállomások között közlekedő eszköz.
  * Felelőssége a menetrend szerinti haladás és a bevétel generálása.
@@ -13,7 +16,8 @@ public class Busz extends Jarmu {
      */
     @Override
     public void lep(char cel) {
-        System.out.println("Busz.lep() meghivva.");
+        SzkeletonProgram.logCall("b", "Busz", "lep", "cel");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -21,15 +25,15 @@ public class Busz extends Jarmu {
      */
     @Override
     public void balesetezik() {
-        System.out.println("Busz.balesetezik() meghivva.");
+        SzkeletonProgram.logCall("b", "Busz", "balesetezik", "");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
      * Növeli a megtett körök számát, ha a busz elérte valamelyik végállomását és kifizeti a sofőrt.
      */
     public void korRegisztralasa() {
-        System.out.println("Busz.korRegisztralasa() meghivva.");
-        
-        System.out.println("Busz.korokSzama novelve.");
+        SzkeletonProgram.logCall("b", "Busz", "korRegisztralasa", "");
+        SzkeletonProgram.logReturn("void");
     }
 }

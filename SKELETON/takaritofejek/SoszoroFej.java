@@ -1,6 +1,7 @@
 package takaritofejek;
 import jarmuvek.Hokotro;
 import terkep.Sav;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * Só szórásával kémiai úton olvasztja el az akadályokat egy adott sávon.
@@ -15,10 +16,11 @@ public class SoszoroFej extends Fej {
      */
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
-        System.out.println("SoszoroFej.takaritHatas() meghivva.");
+        SzkeletonProgram.logCall("sf", "SoszoroFej", "takaritHatas", "s, h");
         s.soKihelyezese(3);
         s.hoEltavolit();
         System.out.println("A leszort so ideiglenesen gatolja, hogy a ho megmaradjon a savon.");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -28,7 +30,8 @@ public class SoszoroFej extends Fej {
      */
     @Override
     public int soToltes(int mennyiseg) {
-        System.out.println("SoszoroFej.soToltes() meghivva.");
+        SzkeletonProgram.logCall("sf", "SoszoroFej", "soToltes", "mennyiseg");
+        SzkeletonProgram.logReturn("0");
         return 0;
     }
 
@@ -38,6 +41,7 @@ public class SoszoroFej extends Fej {
      */
     @Override
     public void fejKiBeKapcsolasa(boolean fejAllapota) {
+        SzkeletonProgram.logCall("sf", "SoszoroFej", "fejKiBeKapcsolasa", "fejAllapota");
         this.fejAllapota = fejAllapota;
 
         if (fejAllapota == false) {
@@ -45,5 +49,6 @@ public class SoszoroFej extends Fej {
         } else {
             System.out.println("Sószórófej bekapcsolva.");
         }
+        SzkeletonProgram.logReturn("void");
     }
 }

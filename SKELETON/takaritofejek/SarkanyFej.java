@@ -1,6 +1,7 @@
 package takaritofejek;
 import jarmuvek.Hokotro;
 import terkep.Sav;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * Prémium takarítóeszköz, amely gázturbinájával azonnal elolvasztja a havat és a jeget.
@@ -15,7 +16,8 @@ public class SarkanyFej extends Fej {
      */
     @Override
     public void takaritHatas(Sav s, Hokotro h) {
-        System.out.println("SarkanyFej.takaritHatas() meghivva.");
+        SzkeletonProgram.logCall("sf", "SarkanyFej", "takaritHatas", "s, h");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -25,7 +27,8 @@ public class SarkanyFej extends Fej {
      */
     @Override
     public int kerozinToltes(int mennyiseg) {
-        System.out.println("SarkanyFej.kerozinToltes() meghivva.");
+        SzkeletonProgram.logCall("sf", "SarkanyFej", "kerozinToltes", "mennyiseg");
+        SzkeletonProgram.logReturn("0");
         return 0; //TODO
     }
 
@@ -35,6 +38,7 @@ public class SarkanyFej extends Fej {
      */
     @Override
     public void fejKiBeKapcsolasa(boolean fejAllapota) {
+        SzkeletonProgram.logCall("sf", "SarkanyFej", "fejKiBeKapcsolasa", "fejAllapota");
         this.fejAllapota = fejAllapota;
 
         if (fejAllapota == false) {
@@ -42,5 +46,6 @@ public class SarkanyFej extends Fej {
         } else {
             System.out.println("Sarkanyfej bekapcsolva.");
         }
+        SzkeletonProgram.logReturn("void");
     }
 }

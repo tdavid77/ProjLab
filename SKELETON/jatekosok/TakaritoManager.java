@@ -5,6 +5,7 @@ import java.util.Scanner;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 import takaritofejek.Fej;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * A hókotró flottát üzemeltető menedzser.
@@ -21,7 +22,8 @@ public class TakaritoManager extends JatekosManager {
      */
     @Override
     public void mozgatJarmuvet(char cel, Jarmu j) {
-        System.out.println("TakaritoManager.mozgatJarmuvet() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "mozgatJarmuvet", "cel, j");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -30,13 +32,14 @@ public class TakaritoManager extends JatekosManager {
      * @return true, ha a vásárlás sikeres volt, false egyébként
      */
     public boolean hokotroVasarlas(Hokotro h) {
-        System.out.println("TakaritoManager.hokotroVasarlas() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "hokotroVasarlas", "h");
         Scanner s = new Scanner(System.in);
 
         System.out.println("Telephelyen vagy? (I/N)");
         String telephelyValasz = s.nextLine().trim();
         if (!telephelyValasz.equalsIgnoreCase("I")) {
             System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            SzkeletonProgram.logReturn("false");
             return false;
         }
 
@@ -44,11 +47,13 @@ public class TakaritoManager extends JatekosManager {
         String vagyonValasz = s.nextLine().trim();
         if (!vagyonValasz.equalsIgnoreCase("I")) {
             System.out.println("A muvelet nem vegezheto el, mert nincs eleg vagyon.");
+            SzkeletonProgram.logReturn("false");
             return false;
         }
 
         hokotrok.add(h);
         System.out.println("Uj hokotro hozzaadva a takarito manager hokotro listajahoz.");
+        SzkeletonProgram.logReturn("true");
         return true;
     }
 
@@ -58,13 +63,14 @@ public class TakaritoManager extends JatekosManager {
      * @return true, ha a vásárlás sikeres volt, false egyébként
      */
     public boolean fejVasarlas(Fej k) {
-        System.out.println("TakaritoManager.fejVasarlas() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "fejVasarlas", "k");
         Scanner s = new Scanner(System.in);
 
         System.out.println("Telephelyen vagy? (I/N)");
         String telephelyValasz = s.nextLine().trim();
         if (!telephelyValasz.equalsIgnoreCase("I")) {
             System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            SzkeletonProgram.logReturn("false");
             return false;
         }
 
@@ -72,11 +78,13 @@ public class TakaritoManager extends JatekosManager {
         String vagyonValasz = s.nextLine().trim();
         if (!vagyonValasz.equalsIgnoreCase("I")) {
             System.out.println("A muvelet nem vegezheto el, mert nincs eleg vagyon.");
+            SzkeletonProgram.logReturn("false");
             return false;
         }
 
         fejek.add(k);
         System.out.println("Uj fej hozzaadva a takarito manager fejek listajahoz.");
+        SzkeletonProgram.logReturn("true");
         return true;
     }
 
@@ -86,7 +94,8 @@ public class TakaritoManager extends JatekosManager {
      * @return true, ha a leveszélés sikeres volt, false egyébként
      */
     public boolean fejLevetel(Hokotro h) {
-        System.out.println("TakaritoManager.fejLevetel() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "fejLevetel", "h");
+        SzkeletonProgram.logReturn("true");
         return true;
     }
 
@@ -97,7 +106,8 @@ public class TakaritoManager extends JatekosManager {
      * @return true, ha a feltevés sikeres volt, false egyébként
      */
     public boolean fejFelteves(Hokotro h, Fej f) {
-        System.out.println("TakaritoManager.fejFelteves() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "fejFelteves", "h, f");
+        SzkeletonProgram.logReturn("true");
         return true;
     }
 
@@ -108,19 +118,21 @@ public class TakaritoManager extends JatekosManager {
      * @return true, ha a cserélsikeres volt, false egyébként
      */
     public boolean fejCsere(Hokotro h, Fej ujFej) {
-        System.out.println("TakaritoManager.fejCsere() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "fejCsere", "h, ujFej");
         System.out.println("A hókotró telephelyen van? (I/N)");
         Scanner s = new Scanner(System.in);
         String valasz = s.nextLine().trim();
 
         if (!valasz.equalsIgnoreCase("I")) {
             System.out.println("A muvelet nem vegezheto el, mert a hokotro nincs a telephelyen.");
+            SzkeletonProgram.logReturn("false");
             return false;
         }
 
         Fej regiFej = h.getAktualisFej();
         boolean sikeresLevetel = fejLevetel(h);
         if (!sikeresLevetel) {
+            SzkeletonProgram.logReturn("false");
             return false;
         }
 
@@ -129,7 +141,9 @@ public class TakaritoManager extends JatekosManager {
         }
         fejek.remove(ujFej);
 
-        return fejFelteves(h, ujFej);
+        boolean ret = fejFelteves(h, ujFej);
+        SzkeletonProgram.logReturn("boolean");
+        return ret;
     }
 
     /**
@@ -138,17 +152,20 @@ public class TakaritoManager extends JatekosManager {
      * @return a feltöltött so mennyisége, ha sikeres volt, 0 egyébként
      */
     public int soToltes(Hokotro h) {
-        System.out.println("TakaritoManager.soToltes() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "soToltes", "h");
         Scanner s = new Scanner(System.in);
         System.out.println("Telephelyen vagy? (I/N)");
         String telephelyValasz = s.nextLine().trim();
 
         if (!telephelyValasz.equalsIgnoreCase("I")) {
             System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            SzkeletonProgram.logReturn("0");
             return 0;
         }
 
-        return h.soToltesAktualisFejbe();
+        int ret = h.soToltesAktualisFejbe();
+        SzkeletonProgram.logReturn("int");
+        return ret;
     }
 
     /**
@@ -157,16 +174,19 @@ public class TakaritoManager extends JatekosManager {
      * @return a feltöltött kerozin mennyisége, ha sikeres volt, 0 egyébként
      */
     public int kerozinToltes(Hokotro h) {
-        System.out.println("TakaritoManager.kerozinToltes() meghivva.");
+        SzkeletonProgram.logCall("tm", "TakaritoManager", "kerozinToltes", "h");
         Scanner s = new Scanner(System.in);
         System.out.println("Telephelyen vagy? (I/N)");
         String telephelyValasz = s.nextLine().trim();
 
         if (!telephelyValasz.equalsIgnoreCase("I")) {
             System.out.println("A muvelet nem vegezheto el, mert nem telephelyen vagy.");
+            SzkeletonProgram.logReturn("0");
             return 0;
         }
 
-        return h.kerozinToltesAktualisFejbe();
+        int ret = h.kerozinToltesAktualisFejbe();
+        SzkeletonProgram.logReturn("int");
+        return ret;
     }
 }

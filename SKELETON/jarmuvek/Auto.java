@@ -1,6 +1,7 @@
 package jarmuvek;
 import java.util.ArrayList;
 import java.util.List;
+import skeletonprogram.SzkeletonProgram;
 
 /**
  * A város lakóit szállító önműködő (NPC) jármű.
@@ -17,7 +18,8 @@ public class Auto extends Jarmu {
      */
     @Override
     public void lep(char cel) {
-        System.out.println("Auto.lep() meghivva.");
+        SzkeletonProgram.logCall("a", "Auto", "lep", "cel");
+        SzkeletonProgram.logReturn("void");
     }
 
     /**
@@ -25,6 +27,7 @@ public class Auto extends Jarmu {
      */
     @Override
     public void balesetezik() {
-        System.out.println("Auto.balesetezik() meghivva.");
+        SzkeletonProgram.logCall("a", "Auto", "balesetezik", "");
+        SzkeletonProgram.logReturn("void");
     }
 }
