@@ -17,4 +17,5 @@ bin/takaritofejek/*.class
 bin/utak/*.class
 bin/terkep/*.class
 bin/skeletonprogram/*.class
+*.zip
 %OUTDIR%
