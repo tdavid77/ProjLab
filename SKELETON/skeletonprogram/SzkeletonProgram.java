@@ -24,18 +24,32 @@ public class SzkeletonProgram {
     
     private static int depth = 0;
 
+    /**
+     * Kiírja a megfelelő tabulátorokat a logoláshoz.
+     */
     public static void printIndent() {
         for (int i = 0; i < depth; i++) {
             System.out.print("\t");
         }
     }
 
+    /**
+     * Logolja a metódus hívását, növelve a behívási mélységet.
+     * @param callerId A hívó azonosítója, amely megjelenik a logban (pl. osztály vagy objektum neve).
+     * @param className A hívott osztály neve.
+     * @param methodName A hívott metódus neve.
+     * @param params A hívott metódus paramétereinek leírása, amely megjelenik a logban.
+     */
     public static void logCall(String callerId, String className, String methodName, String params) {
         printIndent();
         System.out.println("-> " + callerId + ": " + className + "." + methodName + "(" + params + ")");
         depth++;
     }
 
+    /**
+     * Logolja a metódus visszatérését, csökkentve a behívási mélységet.
+     * @param returnDesc A visszatérés leírása, amely megjelenik a logban.
+     */
     public static void logReturn(String returnDesc) {
         depth--;
         printIndent();
