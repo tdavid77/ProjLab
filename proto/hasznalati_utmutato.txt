@@ -1,0 +1,68 @@
+﻿Használati útmutató a prototípushoz
+
+1. Előfeltételek
+- Java JDK telepítve (legalább JDK 8).
+- Parancssor használata (Command Prompt).
+- A fájlok a proto mappában vannak.
+
+2. Fordítás
+1. Nyisd meg a parancssort.
+2. Lépj be a proto mappába:
+   cd proto
+3. Fordítsd le a forrásokat Windows rendszeren:
+   javac -d . jarmuvek\*.java jatekosok\*.java takaritofejek\*.java terkep\*.java skeletonprogram\*.java
+4. Linux/Unix rendszeren:
+   javac -d . jarmuvek/*.java jatekosok/*.java takaritofejek/*.java terkep/*.java skeletonprogram/*.java
+
+3. Futtatás
+- Interaktív menü:
+  java skeletonprogram.SzkeletonProgram
+- Egy konkrét teszt:
+  java skeletonprogram.SzkeletonProgram --test=4
+- Az összes teszt:
+  java skeletonprogram.SzkeletonProgram --all
+- Bemenet fájlból:
+  java skeletonprogram.SzkeletonProgram --test=4 --input=input.txt
+- Kimenet fájlba:
+  java skeletonprogram.SzkeletonProgram --test=4 --output=output.txt
+- Közvetlen opcióválasztás:
+  java skeletonprogram.SzkeletonProgram 4
+
+4. Menüpontok
+1: Hókotró fejének cserélése
+2: Új hókotró vásárlása
+3: Új fej vásárlása
+4: Busz haladása és fizetés
+5: Sárkány fej működése
+6: Hányó fej működése
+7: Sószóró fej működése
+8: Söprő fej működése
+9: Jégtörő fej működése
+10: Játék vége ellenőrzés
+12: Jármű megcsúszása
+13: Havazás szimulációja
+14: Só töltése a sószóró fejbe
+15: Biokerozin töltése a sárkány fejbe
+16: Autó áthaladása és jéggé tömörülés
+17: Leszórt só
+0: Kilépés
+
+5. Logolás
+- A program minden főbb műveletet és metódushívást naplóz a konzolra.
+- A logolás segíti a működés és a tesztkimenet követését.
+- A felület karakteres, nincs grafikus megjelenés.
+
+6. Fájl alapú vezérlés
+- --input=FILE használható a bemenet fájlból történő beolvasására.
+- --output=FILE használható a kimenet fájlba írására.
+- A run_test.bat és run_test.sh segít a gyors futtatásban.
+
+7. Gyors futtatás Windows alatt
+- run_test.bat 4
+- run_test.bat 4 input.txt output.txt
+
+8. Hibakeresés
+- Ha a javac nem találja a fájlokat, ellenőrizze, hogy a proto könyvtárban van-e.
+- Ha class not found hiba lép fel, győződjön meg róla, hogy a fordítás -d . opcióval történt.
+- A helyes indítás:
+  java skeletonprogram.SzkeletonProgram
