@@ -7,9 +7,10 @@
 \subsection{Módosult osztálydiagram}
 \comment{Az analízis modell osztálydiagramja a változások figyelembevételével.}
 \subsection{Új vagy megváltozott metódusok}
-\comment{Az analízis modell osztályleírásaiból azon metódusok újbóli felsorolása leírással együtt, amelyek a változtatás miatt módosultak vagy újonnan be lettek vezetve}
+\comment{z anal´ızis modell osztályleírásaiból azon met´odusok ´ujb´oli felsorol´asa le´ır´assal egy¨utt,
+amelyek a v´altoztat´as miatt m´odosultak vagy ´ujonnan be lettek vezetve}
 \textbf{A bevezetett új osztályok}
-\subsubsection{Osztály1}
+\subsubsection{ZuzottkoSzoroFej}
 \begin{class-template-responsibility}
     Felelősség leírása
 \end{class-template-responsibility}
@@ -17,17 +18,14 @@
     Megvalósított interfészek felsorolása
 \end{class-template-interface}
 \begin{class-template-baseclass}
-    Ős-Ősosztály \baseclass Ősosztály... 
+    Fej \baseclass ZuzottkoSzoroFej
 \end{class-template-baseclass}
 \begin{class-template-attribute}
-    \classitem{+asszociáció A}{asszociáció jellemzése: ki a túloldali szereplő, mi a kapcsolat célja}
+    \classitem{+fejAllapota: bool}{Jelzi, hogy az eszköz éppen be van-e kapcsolva.}
+    \classitem{+zuzottkoKeszlet: int}{A fejben lévő kiszórható zúzottkő mennyisége.}
 \end{class-template-attribute}
-\begin{class-template-association}
-    \classitem{+A [0..*]}{adattag A}
-\end{class-template-association}
-\comment{Milyen publikus, protected és privát  metódusokkal rendelkezik. Metódusonként egy-három mondat arról, hogy mit csinál.}
 \begin{class-template-method}
-    \classitem{+B(A a) : void}{metódus B}
+    \classitem{+takaritHatas(s: Sav, h: Hokotro) : void (Override)}{Bekapcsolt állapotban kiszórja a zúzottkövet a sávra, ezáltal megakadályozva a jegen való megcsúszást}
 \end{class-template-method}
 
 \textbf{A korábbi osztályokban történt módosítások}
@@ -54,27 +52,153 @@
 \comment{A protó (karakteres) input és output felületeit úgy kell kialakítani, hogy az input fájlból is vehető legyen illetőleg az output fájlba menthető legyen, vagyis kommunikációra csak a szabványos be- és kimenet használható.}
 
 \subsection{Bemeneti nyelv}
-\comment{Definiálni kell a teszteket leíró nyelvet. Külön figyelmet kell fordítani arra, hogy ha a rendszer véletlen elemeket is tartalmaz, akkor a véletlenszerűség ki-bekapcsolható legyen, és a program determinisztikusan is futtatható legyen. A szálkezelést is tesztelhető, irányítható módon kell megoldani. A programot egy adott konfigurációból is el kell tudni indítani, vagyis kell olyan parancs, amivel konkrét előre megadott állapotból indul a rendszer (pl. load).}
-
+\comment{A prototípus megvalósítása egy konzol alapú parancsértelmező rendszer keretein belül lesz megvalósítva. A parancsok kiadásán kívül lehetőség lesz azok hatásának átfogó követésére, hiszen a parancsok kimenetét és hatását azonnal látni fogja a felhasználó. A parancsok egyértelműen definiáltak lesznek, és a program képes lesz értelmezni azokat, valamint végrehajtani a megfelelő műveleteket. A parancsoknak lehetnek paramétereik. Magukról a parancsokról és paramétereikről a felhasználó ezen dokumentumból, illetve a help parancs kimenetelének tanulmányozásából szerezhet információt. A parancsok között szerepelnek olyanok, amelyek a játékosok menedzsmentjére, a hókotrók működtetésére, valamint a rendszer általános működésére vonatkoznak.}
 \begin{itemize}
-    \item Parancs1
+%INICIALIZÁLÓS PARANCSOK
+    \item nehezseg [ertek]
     \begin{itemize}
-        \item Leírás:
-        \item Opciók:
+        \item Leírás: Beállítja a játék nehézségét.
+        \item \texttt{[érték]}: easy, medium, hard
     \end{itemize}
-    \item Parancs2
+
+    \item letrehoz [tipus] [nev]
     \begin{itemize}
-        \item Leírás:
-        \item Opciók:
+        \item Leírás: Létrehoz egy adott objektumot: típusa lehet TakarítóJátékos, BuszosJátékos, Hókotró (maximum egyet lehet létrehozni kezdésként), Busz, Autó
+        \item \texttt{[tipus]}: TakarítóJátékos, BuszosJátékos, Hókotró, Busz, Autó
+        \item \texttt{[nev]}: egyedi azonosító, amely a későbbiekben a parancsokban használható
     \end{itemize}
+
+    \item szerkeszt [nev] [ujnev] 
+    \begin{itemize}
+        \item Leírás: Változtatja a korábban létrehozott objektum nevét.
+        \item \texttt{[nev]}: a szerkesztendő objektum neve
+        \item \texttt{[ujnev]}: az új név, amely egyedi azonosító kell, hogy legyen
+    \end{itemize}
+
+    \item kivalaszt [nev]
+    \begin{itemize}
+        \item Leírás: Kiválasztja a megadott nevű objektumot, amelyre a további parancsok hatni fognak.
+        \item \texttt{[nev]}: A kiválasztandó objektum neve
+    \end{itemize}
+
+    \item betolt [fajlnev]
+    \begin{itemize}
+        \item Leírás: Betölti a megadott fájlból az objektumokat.
+        \item \texttt{[fajlnev]}: A betöltendő fájl neve
+    \end{itemize}
+
+    %MOZGATÓ PARANCSOK
+
+    \item lepes [ut] [sav]
+    \begin{itemize}
+        \item Leírás: Egy jármű mozgatása a pályán, egy szomszédos útra. 
+        \item \texttt{[ut]} : Az út neve amire szeretne lépni a játékos, amelynek a jelenlegi út szomszédságában kell lennie.
+        \item \texttt{[sav]} : Opcionális paraméter, amely megadja, hogy a jármű melyik sávba szeretne lépni az adott úton, amennyiben az út több sávos.
+    \end{itemize}
+
+    \item wait [nev]
+    \begin{itemize}
+        \item Leírás: Lépés kihagyása, a játékos nem hajt végre lépést.
+    \end{itemize}
+
+    %Menedzsment parancsok
+
+    \item hokotrovasarlas [nev]
+    \begin{itemize}
+        \item Leírás: A játékos megvásárol egy új hókotró járművet, amennyiben telephelyen tartózkodik és rendelkezik a megfelelő összeggel.
+        \item \texttt{[nev]}: a megvásárolni kívánt hókotró neve, amely egyedi azonosító kell, hogy legyen
+    \end{itemize}
+
+    \item allapot [nev]
+    \begin{itemize}
+        \item Leírás: Kiírja egy adott objektum (játékos, hókotró, út) aktuális tulajdonságait.
+        \item \texttt{[nev]}: az állapot lekérdezni kívánt objektum neve
+    \end{itemize}
+
+    \item lista [tipus]
+    \begin{itemize}
+        \item Leírás: Kiírja egy adott objektum (játékos, hókotró, út) aktuális tulajdonságait.
+        \item \texttt{[tipus]}: az állapot lekérdezni kívánt objektum neve
+    \end{itemize}
+    
+    \item terkep
+    \begin{itemize}
+        \item Leírás: Szövegesen kilistázza a csomópontokat és a köztük lévő utakat, hogy lehessen tudni, honnan hova lehet lépni.
+    \end{itemize}
+    
+%HÓKOTRÓS PARANCSOK
+    \item fejcsere [hokotro] [ujfej]
+    \begin{itemize}
+        \item Leírás: Kicseréli a hókotró fejét egy új fejre, amennyiben a játékos rendelkezik a megfelelő fejjel a készletében, és telephelyen tartózkodik.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amin fejet szeretnénk cserélni
+        \item \texttt{[ujfej]}: a kívánt új fej típusa, amire cserélni szeretnénk a jelenlegi fejet
+    \end{itemize}
+
+    \item fejvasarlas [hokotro] [fejtipus]
+    \begin{itemize}
+        \item Leírás: Új fejet vásárol a játékos a készletére, amennyiben telephelyen tartózkodik és rendelkezik a megfelelő összeggel.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelyhez fejvásárlást szeretnénk végrehajtani
+        \item \texttt{[fejtipus]}: a kívánt fej típusa, amelyet vásárolni szeretnénk
+    \end{itemize}
+
+    \item sotoltes [hokotro]
+    \begin{itemize}
+        \item Leírás: Amennyiben a játékos telephelyen tartózkodik, feltölti a hókotró sókészletét maxra. 
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelynek sókészletét szeretnénk feltölteni
+    \end{itemize}
+
+    \item kerozintoltes [hokotro]
+    \begin{itemize}
+        \item Leírás: Amennyiben a játékos telephelyen tartózkodik, feltölti a hókotró kerozinkészletét maxra.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelynek kerozinkészletét szeretnénk feltölteni
+    \end{itemize}
+
+    \item zuzalektoltes [hokotro]
+    \begin{itemize}
+        \item Leírás: Amennyiben a játékos telephelyen tartózkodik, feltölti a hókotró zuzalékkészletét maxra.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelynek zuzalékkészletét szeretnénk feltölteni
+    \end{itemize}
+
+    \item takarit [hokotro] [sav]
+    \begin{itemize}
+        \item Leírás: A hókotro vévigmegy két csomópont között, és takarít az adott sávon. 
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelyik takarítani fog
+        \item \texttt{[sav]}: az út azon sávja, amit takarítani tervezünk
+    \end{itemize}
+
+%RENDSZER PARANCSOK
+    \item havazas 
+    \begin{itemize}
+        \item Leírás: Havazás eseményét indítja el, amelynek hatására a pályán hó jelenik meg. 
+    \end{itemize}
+
+    \item kilepes
+    \begin{itemize}
+        \item Leírás: Kilép a játékból
+    \end{itemize}
+
+    \item help
+    \begin{itemize}
+        \item Leírás: Megjeleníti a parancsok listáját
+    \end{itemize}
+
+
 \end{itemize}
 Példák a bemeneti nyelvre:
 \begin{verbatim}
-    parancs1 arg1 arg2 arg3
-    parancs2 arg1 arg2
-\end{verbatim}
+    nehezseg medium
+    betolt palya_alap.txt
+    terkep
+    lista Hokotro
+    lista Auto
 
-\comment{Ha szükséges, meg kell adni a konfigurációs (pl. pályaképet megadó) fájlok nyelvtanát is.}
+    letrehoz TakaritoJatekos takarito1
+    letrehoz BuszosJatekos buszsofor1
+    letrehoz Hokotro alap_kotro
+    letrehoz Busz bkv_busz
+    szerkeszt alap_kotro kotro_01
+    allapot kotro_01
+\end{verbatim}
 
 \subsection{Kimeneti nyelv}
 \comment{Egyértelműen definiálni kell, hogy az egyes bemeneti parancsok végrehajtása után előálló állapot milyen formában jelenik meg a szabványos kimeneten. A program képes legyen olyan kimenetet előállítani, amellyel az objektumok állapota ellenőrizhető (pl. save). Ebben az alfejezetben is precízen definiálni kell, hogy a kimenet nyelve milyen elemekből és milyen szintakszissal áll elő.}
@@ -83,22 +207,317 @@ Példák a bemeneti nyelvre:
 \end{verbatim}
 
 \section{Összes részletes use-case}
+
 \begin{use-case}
-    %név
-    {Use-case Neve}
-    %rövid leírás
-    {Az eset rövid leírása}
-    %aktorok
-    {Aktorok}
-    %forgatókönyv
-    Forgatókönyv \newline 
-    \textbf{A.1} Alternatíva
+    {Biokerozin töltés}
+    {Biokerozin töltés a Sárkány fejbe a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    Hasonlóan a sóhoz, a sárkány fej működtetéséhez szükséges biokerozin is a Telephelyen vételezhető. A takarító szerepet játszó játékos pénzért cserébe tölti fel a munkagép üzemanyagtartályát, biztosítva a gázturbina további működését. A rendszer a tranzakció sikere után frissíti a hókotró biokerozin-készletét, lehetővé téve a takarítás végrehajtását.
+\end{use-case}
+
+\begin{use-case}
+    {Busz haladása és fizetés}
+    {Busz haladása és fizetés a BuszsoforManager által kezdeményezve}
+    {BuszsoforManager}
+    A BuszsoforManager szerepkörben tevékenykedő játékos kezdeményezi a busz léptetését az úthálózaton. A jármű a megadott cél felé halad, miközben a rendszer ellenőrzi, hogy az adott kereszteződés egy Végállomás-e. Amennyiben a busz végállomásra ér, a program regisztrálja a megtett kört, növeli a teljesített utak számát, és a játékos vagyona gyarapodik a menetdíjból származó bevétellel.
+\end{use-case}
+
+\begin{use-case}
+    {Hókotró fejcsere}
+    {Hókotró fejének cseréje a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A TakarítoManager a Telephelyen kezdeményezi a Hókotróra szerelt munkaeszköz cseréjét. A folyamat során a rendszer ellenőrzi, hogy a Jármű a telephelyen tartózkodik-e, majd a régi fejet leszerelik és a raktárba helyezik. Ezt követően, ha a Játékos rendelkezik a felszerelni kívánt új fejjel, az rákerül a gépre, és törlődik a raktárkészletből, hiszen onnantól az lesz az aktív fej a hókotrón.
+\end{use-case}
+
+\begin{use-case}
+    {Fej vásárlása}
+    {Új hókotró fej vásárlása a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A TakarítoManager a Telephelyen speciális takarítóeszközöket (például Sárkány- vagy Sószóró fejet) vásárolhat a hatékonyabb munkavégzés érdekében. A vásárlás során a rendszer ellenőrzi a pénzügyi keretet, majd a vételár kifizetése után az új eszköz bekerül a játékos raktárába. A megvásárolt fejeket a játékos később bármelyik Hókotrójára felszerelheti a telephelyen.
+\end{use-case}
+
+\begin{use-case}
+    {Hányó fej működése}
+    {Hányó fej működése a jármű mozgatása közben}
+    {JátékosManager}
+    A fej először ellenőrzi, hogy található-e hóréteg vagy feltört jég az úton. Amennyiben van eltávolítandó csapadék, a fej azt nagy erővel az út mellé szórja, így a hó véglegesen kikerül a rendszerből, és nem kerül át szomszédos sávokba. A tömör jégpáncél viszont változatlanul marad a sávon. 
+\end{use-case}
+
+\begin{use-case}
+    {Havazás szimulációja}
+    {Havazás szimulációja minden pillanatban}
+    {Tesztelő}
+    A környezeti hatások modellezéséért felelős Úthálózat minden körben végrehajtja a havazás folyamatát. A rendszer egyenletesen növeli a hóvastagságot a város minden útszakaszán, kivéve az alagutakat, amelyeket a kialakításuk megvéd a csapadéktól. 
+\end{use-case}
+
+\begin{use-case}
+    {Játék vége 1 – Elakadt tömegközlekedés}
+    {Játék vége 1 – Elakadt tömegközlekedés a városban}
+    {Tesztelő}
+    A rendszer minden lépés után ellenőrzi a forgalom állapotát és a játék folytathatóságát. Ez a use case akkor következik be, ha a rendszer megállapítja, hogy a városban egyetlen busz sem képes a mozgásra (például balesetek vagy hótorlaszok miatt). Mivel a tömegközlekedés megbénulása a város működésképtelenségét jelenti, a játék ebben a pillanatban vereséggel véget ér.
+\end{use-case}
+
+\begin{use-case}
+    {Játék vége 2 – Kijárási tilalom}
+    {Játék vége 2 – Kijárási tilalom a városban}
+    {Tesztelő}
+    A rendszer szintén folyamatosan monitorozza a városban bekövetkezett balesetek és úttorlaszok számát. Amennyiben az összecsúszott és mozgásképtelenné vált járművek száma elér egy előre meghatározott kritikus határértéket, “kijárási tilalmat hirdetnek”. Ez a vészhelyzet a szimuláció azonnali leállítását és a játék végét vonja maga után.
+\end{use-case}
+
+\begin{use-case}
+    {Autó áthaladása és jéggé tömörülés}
+    {Autó áthaladása és jéggé tömörülés a sávon}
+    {Tesztelő}
+    Amikor egy NPC autó vagy egy busz áthalad egy havas útsávon, súlyával tömöríti az ott lévő havat. A sáv minden áthaladáskor növeli a számlálóját, és amint eléri a kritikus (5 jármű) határt, a sávon lévő teljes hómennyiség azonnal jégpáncéllá tömörödik. Ez a folyamat dinamikusan változtatja az útviszonyokat, növelve a balesetveszélyt a forgalom számára.
+\end{use-case}
+
+\begin{use-case}
+    {Jégtörő fej működése}
+    {Jégtörő fej működése a sávon lévő jégpáncél feltörésére}
+    {JátékosManager}
+    A fej feladata a sávon lévő masszív jégpáncél fizikai feltörése, amelyet “feltört jéggé” (a modellben hóvá) alakít át, de az útról nem távolítja el, így az visszatömörödhet jéggé. 
+\end{use-case}
+
+\begin{use-case}
+    {Leszórt só}
+    {Leszórt só hatása a sáv állapotára}
+    {Tesztelő}
+    A sószóró fej által az útra juttatott só aktív hatást fejt ki a sáv állapotára. Felolvasztja a havat és a jeget, illetve meggátolja azok újboli kialakulását egy bizonyos ideig. 
+\end{use-case}
+
+\begin{use-case}
+    {Jármű megcsúszása}
+    {Jármű megcsúszása a jeges sávon}
+    {Tesztelő}
+    Amikor egy jármű (autó vagy busz) jeges sávra lép, a rendszer baleseti kalkulációt végez a globális nehézségi szint és a jégvastagság alapján. Sikertelen kimenetel esetén a jármű megcsúszik, elszenvedi a balesetet és meghatározott ideig mozgásképtelenné válik. Az ilyen jármű eltorlaszolja az adott sávot, akadályozva a forgalom többi résztvevőjét, amíg a mozgásképtelensége le nem jár.
+\end{use-case}
+
+\begin{use-case}
+    {Sárkány fej működése}
+    {Sárkány fej működése a sávon lévő hó és jég eltávolítására}
+    {JátékosManager}
+    A fej működésének feltétele, hogy a Sárkányfej bekapcsolt állapotban legyen és rendelkezzen elegendő biokerozinnal. Aktív állapotban a gép biokerozint fogyaszt, cserébe az adott sávon minden havat és jégpáncélt azonnal és véglegesen elolvaszt, megtisztítva az utat a forgalom számára.
+\end{use-case}
+
+\begin{use-case}
+    {Söprő fej működése}
+    {Söprő fej működése a sávon lévő hó eltávolítására}
+    {JátékosManager}
+    A fej lekérdezi az aktuális sáv hóvastagságát, majd a havat és a feltört jeget a menetirány szerinti jobb oldali szomszédos sávba továbbítja. Ha a gép a legszélső sávban halad, a csapadék az út mellé kerül, ahol már nem akadályozza tovább a közlekedést.
+\end{use-case}
+
+\begin{use-case}
+    {Sószóró fej működése}
+    {Sószóró fej működése a sávon lévő hó és jég olvasztására és újraképződésének megakadályozására}
+    {JátékosManager}
+    Ez a fej működés közben csökkenti a gép sókészletét, és a sávhoz egy speciális só-objektumot rendel. Ez az anyag nemcsak felolvasztja a meglévő havat és jeget, hanem pár körön keresztül megakadályozza az újabb csapadék megmaradását is az adott sávon. 
+\end{use-case}
+
+\begin{use-case}
+    {Só töltése a sószóró fejbe}
+    {Só töltése a sószóró fejbe a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A hókotrókat vezető játékos a Telephelyen kezdeményezi a hókotró sószóró fejéhez tartozó sókészlet feltöltését. A folyamat során a rendszer ellenőrzi a játékos anyagi fedezetét, majd a megfelelő összeg levonása után a jármű sókészlete maximális szintre áll vissza. Ez a művelet elengedhetetlen a sószóró fej folyamatos és hatékony üzemeltetéséhez a jeges útszakaszokon.
+\end{use-case}
+
+\begin{use-case}
+    {Új hókotró vásárlása}
+    {Új hókotró vásárlása a TakarítóManager által kezdeményezve}
+    {TakarítóManager}
+    A Játékos a Telephelyen új Hókotrót vásárolhat a vagyona terhére, hogy bővítse a flottáját. A rendszer ellenőrzi a tartózkodási helyet és az anyagi fedezetet. Ha minden feltétel teljesül, levonja a vételárat a játékos pénzéből. Sikeres tranzakció után létrejön az új hókotró objektum, amely azonnal munkára fogható.
 \end{use-case}
 
 \section{Tesztelési terv}
 \comment{A tesztelési tervben definiálni kell, hogy a be- és kimeneti fájlok egybevetésével miként végezhető el a program tesztelése. Meg kell adni teszt forgatókönyveket. Az egyes teszteket elég informálisan, szabad szövegként leírni. Teszt-esetenként egy-öt mondatban. Minden teszthez meg kell adni, hogy mi a célja, a proto mely funkcionalitását, osztályait stb. teszteli. Az alábbi táblázat minden teszt-esethez külön-külön elkészítendő.}
 
-\test{Teszteset neve}{Leírás}{A végrehajtott teszt célja}
+% ==========================================
+% A tesztelés megvalósítása és a be-/kimeneti fájlok egybevetése
+% ==========================================
+% A prototípus tesztelése determinisztikus forgatókönyvek alapján történik. 
+% Minden tesztesethez tartozik egy előre megírt bemeneti parancsfájl (input.txt), 
+% amely a konzolos menüpontok kiválasztását és a program által feltett kérdésekre 
+% adott válaszokat tartalmazza. A program futtatása során ezt a fájlt a 
+% --input=input.txt paraméterrel adjuk át. A futás során keletkező konzolos üzeneteket, 
+% logolásokat és állapotváltozásokat a --output=actual_output.txt paraméterrel fájlba irányítjuk. 
+% A tesztelés kiértékelése a létrejött kimeneti fájl és egy előzetesen, manuálisan verifikált 
+% elvárt kimeneti fájl (expected_output.txt) soronkénti összehasonlításával (diff / fc) történik. 
+% Ha a két fájl karaktermillióra megegyezik, a teszt sikeres.
+
+% ==========================================
+% 1. Játékosok menedzsment akciói (Vásárlás, felszerelés, töltés)
+% ==========================================
+
+\test{Hókotró fejének cseréje - Sikeres}
+{A Takarító játékos a telephelyen tartózkodva lecseréli a hókotrója jelenlegi fejét egy másikra, amely elérhető a raktárban.}
+{A fejcsere metódusainak (\texttt{TakaritoManager}, \texttt{Hokotro}) helyes lefutását és a régi, valamint új \texttt{Fej} objektumkapcsolatok frissülését teszteli.}
+
+\test{Hókotró fejének cseréje - Sikertelen (Nincs telephelyen)}
+{A játékos a város egy normál útszakaszán próbál meg fejet cserélni a hókotróján.}
+{Annak ellenőrzése, hogy a rendszer elutasítja a cserét, mivel a művelet kizárólag a \texttt{Telephely} csomóponton hajtható végre.}
+
+\test{Új hókotró vásárlása - Sikeres}
+{A Takarító menedzser a telephelyen állva új hókotrót vásárol, és rendelkezik a vásárláshoz szükséges elegendő pénzzel.}
+{A vásárlási feltételek ellenőrzése, a pénzlevonás, és a \texttt{TakaritoManager} járműlistájának bővülésének validálása.}
+
+\test{Új hókotró vásárlása - Sikertelen (Nincs elég pénz)}
+{A menedzser a telephelyen próbál hókotrót vásárolni, de a kasszában nincs meg a fedezet.}
+{Validálja, hogy a vagyon nem megy mínuszba, és a flotta nem bővül járművel fedezet hiányában.}
+
+\test{Új hókotró vásárlása - Sikertelen (Nincs telephelyen)}
+{A menedzser egy útszakaszon tartózkodik, és elegendő pénz birtokában próbál hókotrót vásárolni.}
+{Ellenőrzi, hogy a helyszíni feltétel hiányában a vásárlás meghiúsul.}
+
+\test{Új fej vásárlása - Sikeres}
+{A menedzser egy speciális takarítófejet (pl. Zúzottkőszóró fej) vásárol a telephelyen, elegendő pénzből.}
+{A fejvásárlás menetének, a készletkezelésnek (a fej a raktárba kerül) és a pénzkövetésnek az ellenőrzése.}
+
+\test{Új fej vásárlása - Sikertelen (Nincs elég pénz)}
+{A menedzser a telephelyen próbál meg fejet vásárolni, de nincs rá elég pénze.}
+{A tranzakció sikertelen lefutásának ellenőrzése, a raktárkészlet változatlanságának validálása.}
+
+\test{Új fej vásárlása - Sikertelen (Nincs telephelyen)}
+{A menedzser nem telephelyen állva próbál takarítófejet venni a raktárába.}
+{A tranzakció elutasításának ellenőrzése a helyszín miatt.}
+
+\test{Fogyóeszköz töltése - Só (Sikeres)}
+{A játékos a telephelyen sót tölt a hókotróra szerelt sószóró fejbe.}
+{A sótöltés logikájának, a készletváltozásnak és a \texttt{SoszoroFej} belső állapotfrissítésének ellenőrzése.}
+
+\test{Fogyóeszköz töltése - Só (Sikertelen, nincs telephelyen)}
+{A játékos útközben, a várost járva próbál sót tölteni a sószóró fejbe.}
+{Az akció blokkolásának ellenőrzése helyszíni megkötés miatt.}
+
+\test{Fogyóeszköz töltése - Biokerozin (Sikeres)}
+{A játékos a telephelyen biokerozint tölt a sárkány fejbe.}
+{A kerozin feltöltésének és a \texttt{SarkanyFej} kapacitásnövekedésének validálása.}
+
+\test{Fogyóeszköz töltése - Biokerozin (Sikertelen, nincs telephelyen)}
+{A játékos munka közben próbál biokerozint vételezni a sárkány fejbe.}
+{A művelet meghiúsulásának ellenőrzése.}
+
+\test{Fogyóeszköz töltése - Zúzottkő (Sikeres)}
+{A játékos a telephelyen zúzottkövet tölt a zúzottkőszóró fejbe.}
+{A \texttt{ZuzottkoszoroFej} belső készletének sikeres feltöltésének tesztelése.}
+
+\test{Fogyóeszköz töltése - Zúzottkő (Sikertelen, nincs telephelyen)}
+{A játékos útszakaszon próbálja feltölteni a zúzottkőszóró fejét.}
+{A művelet meghiúsulásának validálása.}
+
+% ==========================================
+% 2. Tömegközlekedés és forgalom mozgása
+% ==========================================
+
+\test{Busz mozgása - Végállomás elérése (Sikeres kör)}
+{A Buszsofőr egy buszt egy olyan csomópontra léptet, amely a busz útvonalának végállomása.}
+{A \texttt{Busz} és a \texttt{BuszsoforManager} tesztelése: ellenőrzi a körtelesítés regisztrációját és a bevétel jóváírását.}
+
+\test{Busz mozgása - Köztes csomópont (Nincs körtelesítés)}
+{A buszsofőr egy buszt mozgat, de a cél egy normál útszakasz vagy köztes csomópont.}
+{Validálja, hogy köztes lépés esetén a rendszer nem regisztrál teljesített kört és nem ad pénzjutalmat.}
+
+\test{Jármű elakadása magas hóban (Sikertelen haladás)}
+{Egy jármű (Busz vagy NPC Autó) egy olyan sávra lépne, ahol a hó vastagsága mozgást akadályozó szintű.}
+{A normál \texttt{Jarmu} osztályok lépésének blokkolásának tesztelése a \texttt{Sav} magas csapadékszintje miatt.}
+
+\test{Hókotró mozgatása (Sikeres haladás extrém időben is)}
+{A Takarító játékos hókotróját egy vastag hóréteggel vagy jégpáncéllal borított sávra irányítja.}
+{A \texttt{Hokotro} környezeti hatásokkal (elakadás, megcsúszás) szembeni immunitásának ellenőrzése: a jármű akadálytalanul halad tovább.}
+
+\test{Jármű megcsúszása jeges úton (Baleset)}
+{Egy normál jármű jégpáncélos sávon halad át, ahol a baleseti ráta alapján megcsúszás következik be.}
+{A balesetkalkuláció és az ütközési logika tesztelése: a jármű baleseti állapotba kerülésének validálása.}
+
+\test{Autó áthaladása és jéggé tömörülés}
+{Egy önműködő NPC autó áthalad egy havas sávon.}
+{A \texttt{Sav.autoAthalad()} metódus tesztelése: validálja, hogy a hó a jármű súlya alatt \texttt{Jegpancel}-lá tömörül.}
+
+% ==========================================
+% 3. Takarítófejek működése
+% ==========================================
+
+\test{Sárkány fej működése - Sikeres olvasztás}
+{A sárkány fejjel felszerelt hókotró áthalad egy havas/jeges sávon, és van elég biokerozinja.}
+{Az azonnali hó- és jégolvasztó hatás, valamint a kerozinkészlet csökkenésének ellenőrzése.}
+
+\test{Sárkány fej működése - Sikertelen (Kifogyott kerozin)}
+{A sárkány fej áthalad a csapadékos sávon, de az üzemanyagtartálya üres.}
+{Ellenőrzi, hogy a fej kerozin hiányában nem olvasztja el a csapadékot, a sáv állapota változatlan marad.}
+
+\test{Sószóró fej működése - Sikeres szórás}
+{A sószóró fej áthalad a sávon, van elég sója, így kiszórja azt.}
+{A só kihelyezésének, a meglévő hó olvasztásának és az útburkolat ideiglenes tisztántartásának (\texttt{SoszoroFej} hatás) validálása.}
+
+\test{Sószóró fej működése - Sikertelen (Kifogyott só)}
+{A sószóró fej áthalad az úton, de nincs benne só.}
+{Ellenőrzi, hogy a sáv állapota változatlan marad és nem jön létre sózott réteg.}
+
+\test{Zúzottkőszóró fej működése - Sikeres szórás}
+{A hókotró zúzottkőszóró fejjel halad a jeges úton, és van készlete, amit kiszór.}
+{Az új \texttt{ZuzottkoszoroFej} tesztelése: a fogyóeszköz csökken, és az adott sávon csökken a baleseti ráta (megcsúszás esélye).}
+
+\test{Zúzottkőszóró fej működése - Sikertelen (Kifogyott kő)}
+{A zúzottkőszóró fej halad, de üres a tartálya.}
+{Validálja, hogy nem történik kőszórás, és a sáv csúszásveszélye nem csökken.}
+
+\test{Söprő fej működése - Normál takarítás}
+{A söprő fejjel haladó hókotró a csapadékot a menetirány szerinti jobbra lévő sávba tolja át.}
+{A \texttt{SoproFej} és a \texttt{Sav} szomszédsági relációinak validálása: az aktuális sáv megtisztul, a szomszédoson nő a csapadék.}
+
+\test{Jégtörő fej működése - Jégzúzás}
+{A jégtörő fejjel felszerelt jármű szilárd jégpáncéllal borított sávon halad át.}
+{Annak ellenőrzése, hogy a \texttt{JegtoroFej} a szilárd jeget feltört jéggé (törmelékké) alakítja, de fizikailag az úton hagyja.}
+
+\test{Hányó fej működése - Teljes tisztítás}
+{A nagyteljesítményű hányó fej áthalad egy csapadékos sávon.}
+{Validálja, hogy a \texttt{HanyoFej} az úttól messzire repíti a havat, így az aktuális sáv teljesen mentesül a csapadéktól.}
+
+% ==========================================
+% 4. Környezeti hatások és játékállapot
+% ==========================================
+
+\test{Havazás szimulációja - Úton és hídon}
+{Az \texttt{Uthalozat} globális havazást szimulál, amely érinti a nyílt útszakaszokat és a hidakat.}
+{A folyamatos hógyarapodás ellenőrzése ezeken a \texttt{UtTipus} elemeken.}
+
+\test{Havazás szimulációja - Alagútban}
+{A globális havazás lefutása során ellenőrizzük az alagút típusú csomópontokat.}
+{Validálja, hogy az alagút védett a csapadéktól, így ott nem nő a hóréteg vastagsága.}
+
+\test{Leszórt só hatása (Olvadási idő működése)}
+{Körök telnek el egy korábban már sózott útszakaszon.}
+{A \texttt{Sav} állapotgépének tesztelése: a só megakadályozza a hó megmaradását, majd a rétegvastagsággal arányos idő után a só hatása elmúlik.}
+
+\test{Játék vége - Kijárási tilalom (Vereség)}
+{A folyamatos játék során a jeges utakon történő balesetek száma elér egy kritikus határértéket.}
+{A vereséget kiváltó esemény (\texttt{Uthalozat} balesetszámláló) helyes detektálásának és a játék leállításának tesztelése.}
+
+\test{Játék vége - Buszok elakadtak (Vereség)}
+{A nagy hó miatt a város összes busza mozgásképtelenné (elakadttá) válik.}
+{A játék végét hajtó alternatív logika ellenőrzése: a rendszer észleli a teljes forgalmi blokádot és lezárja a szimulációt.}
 
 \section{Tesztelést támogató segéd- és fordítóprogramok specifikálása}
 \comment{Specifikálni kell a tesztelést támogató segédprogramokat. Rövid bemutatással (elvárt funkcionalitás) specifikálni kell a tesztelést támogató segédprogramokat.}
+
+A prototípus teszteléséhez nem használunk bonyolult, saját szintaktikájú pályaépítő vagy bemenet-generáló segédprogramokat, mivel a jelenlegi iterációban a konzolos interakciók és a soronkénti manuális bemenet-meghatározás elegendő a determinisztikus működéshez. A térkép inicializálását és a játékosok akcióit az előre megírt bemeneti parancsfájlok (input.txt) definiálják, amelyek a konzolos menüpontokra és kérdésekre adnak szekvenciális válaszokat.
+
+A tesztelést és az értékelést az alábbi standard, illetve egyedi segédprogramok támogatják:
+
+\subsection{Fordítóprogram}
+A Java forráskódok lefordításához a standard Java Development Kit (JDK) \texttt{javac} fordítóprogramját használjuk. A fordítás parancssorból történik, amely a forrásfájlokból (\texttt{.java}) bájtkódot (\texttt{.class}) állít elő, fenntartva az eredeti csomagszerkezetet.
+
+\subsection{Tesztfuttató szkript (\texttt{run\_test.bat} / \texttt{run\_test.sh})}
+A tesztesetek automatizált és kényelmes futtatásáért egy platformfüggő parancsfájl (Windows alatt \texttt{.bat}, Linux/Unix alatt \texttt{.sh}) felel. 
+\textbf{Funkcionalitás:}
+\begin{itemize}
+    \item Képes egyetlen, argumentumban megadott azonosítójú teszteset (pl. \texttt{run\_test.bat 4}), vagy az összes beépített teszt szekvenciális elindítására.
+    \item A futtatás során a megfelelő Java parancsnak átadja az adott teszthez tartozó bemeneti fájlt (\texttt{--input=input.txt}).
+    \item A program konzolos kimenetét teljes egészében egy szöveges fájlba (\texttt{--output=actual\_output.txt}) irányítja a későbbi kiértékelés céljából.
+\end{itemize}
+
+\subsection{Kimenet-ellenőrző (Diff) eszköz}
+A tesztek sikerességének megállapításához nem írunk saját validáló programot, hanem az operációs rendszerek beépített szöveg-összehasonlító eszközeit alkalmazzuk (Windows környezetben az \texttt{fc}, Linux környezetben a \texttt{diff} parancs).
+\textbf{Funkcionalitás:}
+\begin{itemize}
+    \item Összehasonlítja a tesztfuttató szkript által legenerált aktuális kimenetet (\texttt{actual\_output.txt}) a fejlesztők által manuálisan előállított és helyesnek ítélt elvárt kimenettel (\texttt{expected\_output.txt}).
+    \item Eltérés esetén sorra pontosan megmutatja a különbségeket, míg egyezés esetén sikeres tesztlefutást igazol (0-s hibakód).
+\end{itemize}
