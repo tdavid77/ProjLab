@@ -3,20 +3,17 @@
 \comment{\hrule}
 \comment{Amennyiben változott a modell:}
 \setcounter{section}{-1}
+\pagebreak
 \section{Változás hatása a modellre}
 \subsection{Módosult osztálydiagram}
 \comment{Az analízis modell osztálydiagramja a változások figyelembevételével.}
+\diagram{docs/img/uml_class/zuzottko_class}{Módosult osztálydiagram}{18cm}
 \subsection{Új vagy megváltozott metódusok}
-\comment{z anal´ızis modell osztályleírásaiból azon met´odusok ´ujb´oli felsorol´asa le´ır´assal egy¨utt,
-amelyek a v´altoztat´as miatt m´odosultak vagy ´ujonnan be lettek vezetve}
 \textbf{A bevezetett új osztályok}
 \subsubsection{ZuzottkoSzoroFej}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    A rendkívül veszélyes jégpáncél csúszósságának a megszűntetésére szolgáló fej, amely a sávra szórja a fejben tárolt zúzottkövet. Fontos felelőssége, hogy a sávon lévő csapadékot nem távolítja el.
 \end{class-template-responsibility}
-\begin{class-template-interface}
-    Megvalósított interfészek felsorolása
-\end{class-template-interface}
 \begin{class-template-baseclass}
     Fej \baseclass ZuzottkoSzoroFej
 \end{class-template-baseclass}
@@ -25,26 +22,34 @@ amelyek a v´altoztat´as miatt m´odosultak vagy ´ujonnan be lettek vezetve}
     \classitem{+zuzottkoKeszlet: int}{A fejben lévő kiszórható zúzottkő mennyisége.}
 \end{class-template-attribute}
 \begin{class-template-method}
-    \classitem{+takaritHatas(s: Sav, h: Hokotro) : void (Override)}{Bekapcsolt állapotban kiszórja a zúzottkövet a sávra, ezáltal megakadályozva a jegen való megcsúszást}
+    \classitem{+takaritHatas(s: Sav, h: Hokotro) : void (Override)}{Bekapcsolt állapotban kiszórja a zúzottkövet a sávra, ezáltal megakadályozva a jegen való megcsúszást. A sávon lévő csapadékot nem távolítja el.}
 \end{class-template-method}
 
 \textbf{A korábbi osztályokban történt módosítások}
-\subsubsection{Osztály2}
+\subsubsection{TakaritoJatekos}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    A hókotró flottát üzemeltető játékos reprezentációja. Szolgáltatásokat vesz igénybe a telephelyen (fejcsere, vásárlás, újratöltés), és karbantartja a gépeit.
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Ős-Ősosztály \baseclass Ősosztály... 
+    Jatekos \baseclass TakaritoJatekos 
 \end{class-template-baseclass}
 \begin{class-template-method}
-    \classitem{+B(A a) : void}{metódus B}
+    \classitem{+hokotroVasarlas(Hokotro h) : bool}{Új hókotró vásárlása.}
+    \classitem{+fejVasarlas(Fej f) : bool}{Új fej vásárlása.}
+    \classitem{+fejLevetel(Hokotro h, Telephely t) : bool}{A hókotró jelenlegi fejének levétele és a raktárba helyezése a telephelyen.}
+    \classitem{+fejFelteves(Hokotro h, Fej f) : bool}{Raktáron lévő fej felszerelése a hókotróra a telephelyen.}
+    \classitem{+soToltes(Hokotro h) : int}{Pénzért feltölti a hókotró sókészletét a telephelyen.}
+    \classitem{+kerozinToltes(Hokotro h) : int}{Pénzért feltölti a hókotró kerozinkészletét a telephelyen.}
+    \classitem{+zuzottkoToltes(Hokotro h) : int}{Pénzért feltölti a hókotró zúzottkőkészletét a telephelyen.}
 \end{class-template-method}
 
 \subsection{Szekvencia-diagramok}
-\comment{Az analízis modell szekvenciadiagramjaiból a változás által érintett, előírt, módosítottdiagramok}
 \diagram{docs/img/BMElogo}{Megváltozott szekvenciák}{3cm}
+\diagram{docs/img/uml_sequence/zuzottkotoltes}{Zúzottkő töltése}{15cm}
+\diagram{docs/img/uml_sequence/zuzottkofej}{Zúzottkő fej működése}{15cm}
 \comment{\hrule}
 
+\clearpage
 \section{Prototípus interface-definíciója}
 \comment{Definiálni kell a teszteket leíró nyelvet. Külön figyelmet kell fordítani arra, hogy ha a rendszer véletlen elemeket is tartalmaz, akkor a véletlenszerűség ki-bekapcsolható legyen, és a program determinisztikusan is tesztelhető legyen.}
 
