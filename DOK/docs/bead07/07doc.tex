@@ -207,8 +207,69 @@ Példák a bemeneti nyelvre:
 
 \subsection{Kimeneti nyelv}
 \comment{Egyértelműen definiálni kell, hogy az egyes bemeneti parancsok végrehajtása után előálló állapot milyen formában jelenik meg a szabványos kimeneten. A program képes legyen olyan kimenetet előállítani, amellyel az objektumok állapota ellenőrizhető (pl. save). Ebben az alfejezetben is precízen definiálni kell, hogy a kimenet nyelve milyen elemekből és milyen szintakszissal áll elő.}
+
+A kimeneti üzenetek négy fő kategóriába sorolhatók:
+
+\begin{itemize}
+    \item \textbf{Visszajelzések (Siker / Hiba):} Minden kiadott parancs azonnali visszajelzést generál a végrehajtás eredményéről.
+    \begin{itemize}
+        \item \textbf{Szintaxis (Siker):} \texttt{> OK: [Rövid leírás a végrehajtott műveletről]}
+        \item \textbf{Szintaxis (Hiba):} \texttt{> ERROR: [A hiba pontos oka, pl. "Nincs elegendő pénz" vagy "Nincs telephelyen"]}
+    \end{itemize}
+
+    \item \textbf{Állapot lekérdezések (allapot, lista):} Determinisztikus, kulcs-érték párokat tartalmazó reprezentáció, amely egyaránt alkalmas a program aktuális állapotának fájlba mentésére (save) és annak későbbi visszaellenőrzésére.
+    \begin{itemize}
+        \item \textbf{Játékos szintaxis:} \texttt{[Típus] [Név] | Pénz:[Összeg] | Járművek:[jármű1, jármű2, ...] | Raktár:[fej1, fej2, ...]}
+        \item \textbf{Hókotró szintaxis:} \texttt{Hokotro [Név] | Poz:[Út neve, Sáv indexe] | Fej:[Aktív fej típusa] | Készletek:[So: X, Kerozin: Y, Zuzottko: Z] | Állapot:[Aktív/Baleset(hátralévő körök)]}
+        \item \textbf{Út és Sáv szintaxis:} \texttt{Ut [Név] ([Típus]) | Szomszédok:[csomópont1, csomópont2] | Sávok: [Sáv0(Hó: X, Jég: Y, Sózott: I/N)], [Sáv1(Hó: X, Jég: Y, Sózott: I/N)]}
+    \end{itemize}
+
+    \item \textbf{Térkép vizualizáció (terkep):} Hierarchikus listázás, amely megmutatja a csomópontokat és az azokat összekötő utakat.
+    \begin{itemize}
+        \item \textbf{Szintaxis:} 
+        \begin{verbatim}
+Csomópont [Név] ([Típus])
+  -> [Szomszédos Csomópont Név] : [Út Név] ([Sávok száma] sáv)
+        \end{verbatim}
+    \end{itemize}
+
+    \item \textbf{Események és logok (havazas, baleset, kör vége):} A rendszer működése során automatikusan bekövetkező események (pl. NPC lépések, megcsúszás) logolása.
+    \begin{itemize}
+        \item \textbf{Szintaxis:} \texttt{[ESEMÉNY] [Esemény pontos leírása és az érintett objektumok]}
+    \end{itemize}
+\end{itemize}
+
+\textbf{Példák a kimeneti nyelvre a bemenetek alapján:}
+
 \begin{verbatim}
-    kimeneti szintaktika
+// Bemenet: letrehoz TakaritoJatekos takarito1
+> OK: TakaritoJatekos 'takarito1' sikeresen letrehozva.
+
+// Bemenet: allapot kotro_01
+Hokotro kotro_01 | Poz: Fo_ut, 0 | Fej: SoproFej | Készletek: So:0, Kerozin:0, Zuzottko:0 | Állapot: Aktív
+
+// Bemenet: fejvasarlas kotro_01 SarkanyFej
+> ERROR: A jármű nem a telephelyen tartózkodik, a vásárlás meghiúsult.
+
+// Bemenet: kerozintoltes kotro_01
+> OK: 'kotro_01' kerozinkészlete feltöltve (Aktuális: 100%). Pénz levonva: 50.
+
+// Bemenet: takarit kotro_01 0
+> OK: 'kotro_01' végighaladt a 'Fo_ut' 0. sávján.
+[ESEMÉNY] SarkanyFej bekapcsolva. Kerozin szint csökkent: 10%.
+[ESEMÉNY] Fo_ut 0. sávján 2 egység hó elolvasztva.
+
+// Bemenet: havazas
+> OK: Havazás szimuláció elindítva.
+[ESEMÉNY] Fo_ut összes sávján a hóréteg +1 egységgel nőtt.
+[ESEMÉNY] Alagut_1 sávjain a hóréteg nem változott.
+
+// Bemenet: terkep
+Csomópont Telephely_1 (Telephely)
+  -> Csomópont_A : Fo_ut (2 sáv)
+Csomópont_A (Kereszteződés)
+  -> Telephely_1 : Fo_ut (2 sáv)
+  -> Csomópont_B : Mellek_ut (1 sáv)
 \end{verbatim}
 
 \section{Összes részletes use-case}
