@@ -1,62 +1,39 @@
 package skeletonprogram;
 
-/**
- * A Szkeleton fő programja, amely belépési pontként szolgál.
- * Ebből a fájlból tesztelhető a modell alapvető működése.
- */
-
+import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
-import jarmuvek.Auto;
-import jarmuvek.Busz;
-import jarmuvek.Hokotro;
-import jarmuvek.Jarmu;
-import jatekosok.BuszsoforManager;
-import jatekosok.TakaritoManager;
-import takaritofejek.HanyoFej;
-import takaritofejek.JegtoroFej;
-import takaritofejek.SarkanyFej;
-import takaritofejek.SoproFej;
-import takaritofejek.SoszoroFej;
-import terkep.Sav;
-import terkep.Uthalozat;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
+import java.util.HashSet;
 
 public class SzkeletonProgram {
-    
     private static int depth = 0;
-    private static Scanner scanner;
-    private static PrintStream originalOut = System.out;
 
-    /**
-     * Kiírja a megfelelő tabulátorokat a logoláshoz.
-     */
     public static void printIndent() {
         for (int i = 0; i < depth; i++) {
             System.out.print("\t");
         }
     }
 
-    /**
-     * Logolja a metódus hívását, növelve a behívási mélységet.
-     * @param callerId A hívó azonosítója, amely megjelenik a logban (pl. osztály vagy objektum neve).
-     * @param className A hívott osztály neve.
-     * @param methodName A hívott metódus neve.
-     * @param params A hívott metódus paramétereinek leírása, amely megjelenik a logban.
-     */
     public static void logCall(String callerId, String className, String methodName, String params) {
         printIndent();
         System.out.println("-> " + callerId + ": " + className + "." + methodName + "(" + params + ")");
         depth++;
     }
 
-    /**
-     * Logolja a metódus visszatérését, csökkentve a behívási mélységet.
-     * @param returnDesc A visszatérés leírása, amely megjelenik a logban.
-     */
     public static void logReturn(String returnDesc) {
         depth--;
         printIndent();
@@ -64,544 +41,1363 @@ public class SzkeletonProgram {
     }
 
     public static void main(String[] args) {
-        System.out.println("Szkeleton program inditasa...");
-        boolean runAll = false;
-        int selectedTest = -1;
-        String inputFile = null;
-        String outputFile = null;
+        GameEngine engine = new GameEngine();
+        engine.run(args);
+    }
 
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i].trim();
-            if (arg.equals("--help") || arg.equals("-h")) {
-                printUsage();
+    private enum Difficulty {
+        EASY(0.08),
+        MEDIUM(0.18),
+        HARD(0.32);
+
+        private final double baseCrashChance;
+
+        Difficulty(double baseCrashChance) {
+            this.baseCrashChance = baseCrashChance;
+        }
+
+        public double baseCrashChance() {
+            return baseCrashChance;
+        }
+
+        public static Difficulty fromInput(String value) {
+            for (Difficulty d : values()) {
+                if (d.name().equalsIgnoreCase(value)) {
+                    return d;
+                }
+            }
+            return null;
+        }
+    }
+
+    private enum RoadType {
+        NORMAL,
+        HID,
+        ALAGUT;
+
+        public static RoadType fromInput(String value) {
+            for (RoadType t : values()) {
+                if (t.name().equalsIgnoreCase(value)) {
+                    return t;
+                }
+            }
+            return null;
+        }
+    }
+
+    private enum EntityType {
+        TAKARITOJATEKOS,
+        BUSZOSJATEKOS,
+        HOKOTRO,
+        BUSZ,
+        AUTO
+    }
+
+    private enum HeadType {
+        SOPROFEJ,
+        HANYOFEJ,
+        JEGTOROFEJ,
+        SARKANYFEJ,
+        SOSZOROFEJ,
+        ZUZOTTKOSZOROFEJ;
+
+        public static HeadType fromInput(String value) {
+            if (value == null) {
+                return null;
+            }
+            String normalized = value.trim().toUpperCase(Locale.ROOT);
+            for (HeadType type : values()) {
+                if (type.name().equals(normalized)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+
+    private enum DepositType {
+        HO,
+        JEG,
+        SO,
+        FELTORTJEG,
+        ZUZALEK;
+
+        public static DepositType fromInput(String value) {
+            for (DepositType t : values()) {
+                if (t.name().equalsIgnoreCase(value)) {
+                    return t;
+                }
+            }
+            return null;
+        }
+    }
+
+    private interface NamedEntity {
+        String name();
+        void renameTo(String newName);
+        String type();
+        String statusLine(GameState state);
+    }
+
+    private interface CommandHandler {
+        void execute(CommandContext context, List<String> args);
+    }
+
+    private static final class CommandContext {
+        private final GameState state;
+        private final String rawLine;
+
+        private CommandContext(GameState state, String rawLine) {
+            this.state = state;
+            this.rawLine = rawLine;
+        }
+
+        public GameState state() {
+            return state;
+        }
+
+        public String rawLine() {
+            return rawLine;
+        }
+    }
+
+    private static final class Road {
+        private String name;
+        private final String nodeA;
+        private final String nodeB;
+        private final int length;
+        private final RoadType type;
+        private final List<Lane> lanes;
+
+        private Road(String name, String nodeA, String nodeB, int length, RoadType type, int laneCount) {
+            this.name = name;
+            this.nodeA = nodeA;
+            this.nodeB = nodeB;
+            this.length = length;
+            this.type = type;
+            this.lanes = new ArrayList<>();
+            for (int i = 0; i < laneCount; i++) {
+                lanes.add(new Lane(i));
+            }
+        }
+
+        public String name() {
+            return name;
+        }
+
+        public void renameTo(String newName) {
+            this.name = newName;
+        }
+
+        public boolean hasNode(String node) {
+            return nodeA.equalsIgnoreCase(node) || nodeB.equalsIgnoreCase(node);
+        }
+
+        public String opposite(String node) {
+            if (nodeA.equalsIgnoreCase(node)) {
+                return nodeB;
+            }
+            if (nodeB.equalsIgnoreCase(node)) {
+                return nodeA;
+            }
+            return null;
+        }
+
+        public int laneCount() {
+            return lanes.size();
+        }
+
+        public Lane lane(int idx) {
+            return lanes.get(idx);
+        }
+
+        public String describeCompact() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Ut ").append(name).append(" (").append(type.name()).append(")")
+                .append(" | Szomszedok:[").append(nodeA).append(", ").append(nodeB).append("]")
+                .append(" | Savok: ");
+            List<String> laneText = new ArrayList<>();
+            for (Lane lane : lanes) {
+                laneText.add(lane.describeCompact());
+            }
+            sb.append(String.join(", ", laneText));
+            return sb.toString();
+        }
+    }
+
+    private static final class Lane {
+        private final int index;
+        private int snow;
+        private int ice;
+        private int brokenIce;
+        private int saltedRounds;
+        private int grittedRounds;
+
+        private Lane(int index) {
+            this.index = index;
+        }
+
+        public void applyDeposit(DepositType type, int value) {
+            if (type == DepositType.HO) {
+                snow = Math.max(0, value);
+            }
+            if (type == DepositType.JEG) {
+                ice = Math.max(0, value);
+            }
+            if (type == DepositType.SO) {
+                saltedRounds = Math.max(0, value);
+            }
+            if (type == DepositType.FELTORTJEG) {
+                brokenIce = Math.max(0, value);
+            }
+            if (type == DepositType.ZUZALEK) {
+                grittedRounds = Math.max(0, value);
+            }
+        }
+
+        public void snowingOneUnit(boolean protectedByTunnel) {
+            if (protectedByTunnel) {
                 return;
             }
-            if (arg.equals("--all")) {
-                runAll = true;
-                continue;
+            if (saltedRounds > 0) {
+                return;
             }
-            if (arg.equals("--test") && i + 1 < args.length) {
-                selectedTest = parseTestArgument(args[++i]);
-                continue;
-            }
-            if (arg.startsWith("--test=")) {
-                selectedTest = parseTestArgument(arg.substring(arg.indexOf('=') + 1));
-                continue;
-            }
-            if (arg.equals("--input") && i + 1 < args.length) {
-                inputFile = args[++i];
-                continue;
-            }
-            if (arg.startsWith("--input=")) {
-                inputFile = arg.substring(arg.indexOf('=') + 1);
-                continue;
-            }
-            if (arg.equals("--output") && i + 1 < args.length) {
-                outputFile = args[++i];
-                continue;
-            }
-            if (arg.startsWith("--output=")) {
-                outputFile = arg.substring(arg.indexOf('=') + 1);
-                continue;
-            }
-            if (arg.matches("\\d+")) {
-                selectedTest = Integer.parseInt(arg);
-                continue;
-            }
-            System.out.println("Ismeretlen argumentum: " + arg);
+            snow += 1;
         }
 
-        try {
-            if (inputFile != null) {
-                setupInput(inputFile);
+        public void tickRound() {
+            if (saltedRounds > 0) {
+                saltedRounds -= 1;
             }
-            if (outputFile != null) {
-                setupOutput(outputFile);
+            if (grittedRounds > 0) {
+                grittedRounds -= 1;
             }
-        } catch (IOException e) {
-            System.out.println("Hiba az I/O beállítása közben: " + e.getMessage());
-            return;
         }
 
-        scanner = new Scanner(System.in);
-
-        if (runAll) {
-            runAllTests();
-        } else if (selectedTest > 0) {
-            runTest(selectedTest);
-        } else {
-            interactiveMenu();
-        }
-
-        scanner.close();
-        if (outputFile != null) {
-            System.out.println("Kimenet mentve: " + outputFile);
+        public String describeCompact() {
+            return "[Sav" + index + "(Ho:" + snow + ", Jeg:" + ice + ", Sozott:" + (saltedRounds > 0 ? "I" : "N") + ")]";
         }
     }
 
-    private static void printUsage() {
-        System.out.println("Hasznalat: java skeletonprogram.SzkeletonProgram [opciok]\n");
-        System.out.println("Opciók:");
-        System.out.println("  --help, -h         : súgó megjelenítése");
-        System.out.println("  --all              : az összes teszt egymás után futtatása");
-        System.out.println("  --test=N           : egy konkrét teszt futtatása (1-17)");
-        System.out.println("  --input=FILE       : a bemenet fájlból olvasása");
-        System.out.println("  --output=FILE      : a kimenet fájlba írása a konzol mellett");
-        System.out.println("  N                  : az adott menüpont kiválasztása közvetlenül");
-    }
+    private static class Player implements NamedEntity {
+        protected String name;
+        protected int money = 1000;
+        protected final List<String> vehicles = new ArrayList<>();
+        protected final List<HeadType> inventory = new ArrayList<>();
 
-    private static int parseTestArgument(String text) {
-        try {
-            return Integer.parseInt(text);
-        } catch (NumberFormatException e) {
-            System.out.println("Hibas teszt szam: " + text);
-            return -1;
+        private Player(String name) {
+            this.name = name;
         }
-    }
 
-    private static void setupInput(String inputFile) throws IOException {
-        FileInputStream inStream = new FileInputStream(inputFile);
-        System.setIn(inStream);
-    }
-
-    private static void setupOutput(String outputFile) throws IOException {
-        FileOutputStream fileOut = new FileOutputStream(outputFile);
-        System.setOut(new PrintStream(new TeeOutputStream(originalOut, fileOut), true));
-    }
-
-    private static void interactiveMenu() {
-        int valasztas;
-        do {
-            printMenu();
-            System.out.print("Válassz egy opciót: ");
-            valasztas = readInt();
-            runTest(valasztas);
-        } while (valasztas != 0);
-    }
-
-    private static void printMenu() {
-        System.out.println("\n=== Szkeleton prototípus menü ===");
-        System.out.println("1  - Hókotró fejének cserélése");
-        System.out.println("2  - Új hókotró vásárlása");
-        System.out.println("3  - Új fej vásárlása");
-        System.out.println("4  - Busz haladása és fizetés");
-        System.out.println("5  - Sárkány fej működése");
-        System.out.println("6  - Hányó fej működése");
-        System.out.println("7  - Sószóró fej működése");
-        System.out.println("8  - Söprő fej működése");
-        System.out.println("9  - Jégtörő fej működése");
-        System.out.println("10 - Játék vége ellenőrzés");
-        System.out.println("11 - Játék vége ellenőrzés (ismételt)");
-        System.out.println("12 - Jármű megcsúszása");
-        System.out.println("13 - Havazás szimulációja");
-        System.out.println("14 - Só töltése a sószóró fejbe");
-        System.out.println("15 - Biokerozin töltése a sárkány fejbe");
-        System.out.println("16 - Autó áthaladása és jéggé tömörülés");
-        System.out.println("17 - Leszórt só");
-        System.out.println("0  - Kilépés");
-    }
-
-    private static int readInt() {
-        if (scanner == null) {
-            scanner = new Scanner(System.in);
+        @Override
+        public String name() {
+            return name;
         }
-        while (true) {
-            String line = scanner.nextLine().trim();
-            if (line.isEmpty()) {
-                System.out.print("Kérlek, adj meg egy számot: ");
-                continue;
-            }
-            try {
-                return Integer.parseInt(line);
-            } catch (NumberFormatException e) {
-                System.out.print("Nem érvényes szám. Próbáld újra: ");
+
+        @Override
+        public void renameTo(String newName) {
+            this.name = newName;
+        }
+
+        @Override
+        public String type() {
+            return "Jatekos";
+        }
+
+        @Override
+        public String statusLine(GameState state) {
+            return type() + " " + name + " | Penz:" + money + " | Jarmuvek:" + vehicles + " | Raktar:" + inventory;
+        }
+
+        public boolean canAfford(int amount) {
+            return money >= amount;
+        }
+
+        public void charge(int amount) {
+            money -= amount;
+        }
+
+        public void addVehicle(String vehicleName) {
+            if (!vehicles.contains(vehicleName)) {
+                vehicles.add(vehicleName);
             }
         }
+
+        public boolean removeHeadFromInventory(HeadType headType) {
+            return inventory.remove(headType);
+        }
+
+        public void addHeadToInventory(HeadType headType) {
+            inventory.add(headType);
+        }
     }
 
-    private static void runAllTests() {
-        System.out.println("Az összes prototípus vizsgálat futtatása...");
-        for (int i = 1; i <= 17; i++) {
-            if (i == 11) {
-                runTest(10);
+    private static final class TakaritoJatekos extends Player {
+        private TakaritoJatekos(String name) {
+            super(name);
+        }
+
+        @Override
+        public String type() {
+            return "TakaritoJatekos";
+        }
+    }
+
+    private static final class BuszosJatekos extends Player {
+        private BuszosJatekos(String name) {
+            super(name);
+        }
+
+        @Override
+        public String type() {
+            return "BuszosJatekos";
+        }
+    }
+
+    private static class Vehicle implements NamedEntity {
+        protected String name;
+        protected String owner;
+        protected String currentRoad;
+        protected int laneIndex;
+        protected int disabledRounds;
+
+        private Vehicle(String name) {
+            this.name = name;
+            this.currentRoad = null;
+            this.laneIndex = 0;
+            this.disabledRounds = 0;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public void renameTo(String newName) {
+            this.name = newName;
+        }
+
+        @Override
+        public String type() {
+            return "Jarmu";
+        }
+
+        @Override
+        public String statusLine(GameState state) {
+            String pos;
+            if (currentRoad == null) {
+                pos = "Telephely";
             } else {
-                runTest(i);
+                pos = currentRoad + ", " + laneIndex;
+            }
+            String allapot = disabledRounds > 0 ? "Baleset(" + disabledRounds + " kor)" : "Aktiv";
+            return type() + " " + name + " | Poz:" + pos + " | Allapot:" + allapot;
+        }
+
+        public boolean canMove() {
+            return disabledRounds <= 0;
+        }
+
+        public void tickRound() {
+            if (disabledRounds > 0) {
+                disabledRounds -= 1;
             }
         }
-        System.out.println("Összes teszt lefutott.");
     }
 
-    private static void runTest(int valasztas) {
-        switch (valasztas) {
-            case 1:
-                testFejCsere();
-                break;
-            case 2:
-                testHokotroVasarlas();
-                break;
-            case 3:
-                testFejVasarlas();
-                break;
-            case 4:
-                buszHaladasEsFizetesTeszt();
-                break;
-            case 5:
-                sarkanyFejMukodeseTeszt();
-                break;
-            case 6:
-                hanyoFejMukodeseTeszt();
-                break;
-            case 7:
-                soszoroFejMukodeseTeszt();
-                break;
-            case 8:
-                soproFejMukodeseTeszt();
-                break;
-            case 9:
-                jegtoroFejMukodeseTeszt();
-                break;
-            case 10:
-            case 11:
-                jatekVegeCheckTeszt();
-                break;
-            case 12:
-                jarmuMegcsuszasaTeszt();
-                break;
-            case 13:
-                havazasSzimulacioTeszt();
-                break;
-            case 14:
-                soTolteseTeszt();
-                break;
-            case 15:
-                kerozinTolteseTeszt();
-                break;
-            case 16:
-                autoAthaladasEsJeggeTomorulesTeszt();
-                break;
-            case 17:
-                leszortSoTeszt();
-                break;
-            case 0:
-                System.out.println("Kilépés a programból.");
-                break;
-            default:
-                System.out.println("Ismeretlen teszt sorszam.");
-                break;
-        }
-    }
+    private static final class Hokotro extends Vehicle {
+        private HeadType activeHead;
+        private int so;
+        private int kerozin;
+        private int zuzottko;
 
-    private static class TeeOutputStream extends OutputStream {
-        private final OutputStream original;
-        private final OutputStream copy;
-
-        public TeeOutputStream(OutputStream original, OutputStream copy) {
-            this.original = original;
-            this.copy = copy;
+        private Hokotro(String name) {
+            super(name);
+            this.activeHead = HeadType.SOPROFEJ;
+            this.so = 0;
+            this.kerozin = 0;
+            this.zuzottko = 0;
         }
 
         @Override
-        public void write(int b) throws IOException {
-            original.write(b);
-            copy.write(b);
+        public String type() {
+            return "Hokotro";
         }
 
         @Override
-        public void write(byte[] b) throws IOException {
-            original.write(b);
-            copy.write(b);
+        public String statusLine(GameState state) {
+            String pos;
+            if (currentRoad == null) {
+                pos = "Telephely";
+            } else {
+                pos = currentRoad + ", " + laneIndex;
+            }
+            String allapot = disabledRounds > 0 ? "Baleset(" + disabledRounds + " kor)" : "Aktiv";
+            return "Hokotro " + name
+                + " | Poz:" + pos
+                + " | Fej:" + activeHead.name()
+                + " | Keszletek:[So:" + so + ", Kerozin:" + kerozin + ", Zuzottko:" + zuzottko + "]"
+                + " | Allapot:" + allapot;
+        }
+    }
+
+    private static final class Busz extends Vehicle {
+        private int completedTrips;
+
+        private Busz(String name) {
+            super(name);
+            this.completedTrips = 0;
         }
 
         @Override
-        public void write(byte[] b, int off, int len) throws IOException {
-            original.write(b, off, len);
-            copy.write(b, off, len);
+        public String type() {
+            return "Busz";
+        }
+    }
+
+    private static final class Auto extends Vehicle {
+        private Auto(String name) {
+            super(name);
         }
 
         @Override
-        public void flush() throws IOException {
-            original.flush();
-            copy.flush();
-        }
-
-        @Override
-        public void close() throws IOException {
-            // Do not close the original stdout stream.
-            copy.close();
+        public String type() {
+            return "Auto";
         }
     }
-    
-    /**
-     * 1. Use case: Hókotró takarítófejének cserélése
-     * A menedzser a telephelyen leszereli a régi fejet, majd feltesz egy újat.
-     */
-    public static void testFejCsere() {
-        System.out.println("\n1. UseCase: Hókotró takarítófejének cseréje");
-        
-        // Szükséges objektumok létrehozása
-        TakaritoManager manager = new TakaritoManager();
-        Hokotro hokotro = new Hokotro();
-        SarkanyFej ujFej = new SarkanyFej(); // Az új fej, amit fel akarunk szerelni
-        manager.fejCsere(hokotro, ujFej);
 
-        System.out.println("1. UseCase vége\n");
+    private static final class GameState {
+        private final Map<String, NamedEntity> entities = new LinkedHashMap<>();
+        private final Map<String, Road> roads = new LinkedHashMap<>();
+        private final Map<String, List<String>> graph = new HashMap<>();
+        private final Random random = new Random(42);
+        private final Set<String> fileLoadStack = new HashSet<>();
+        private final Deque<String> eventQueue = new ArrayDeque<>();
 
-    }
+        private Difficulty difficulty = Difficulty.MEDIUM;
+        private String selectedName;
+        private boolean running = true;
+        private int accidents;
+        private String depotNode = "Telephely_1";
 
-    /**
-     * 2. Use case: Új hókotró vásárlása
-     * A játékos (menedzser) új hókotrót vásárol a vagyona terhére.
-     */
-    public static void testHokotroVasarlas() {
-        System.out.println("\n2. UseCase: Új hókotró vásárlása");
-        // Szükséges objektumok létrehozása
-        TakaritoManager manager = new TakaritoManager();
-        Hokotro ujHokotro = new Hokotro(); // A megvásárolni kívánt új gép
-        // Hókotró megvásárlása (a szkeletonban ellenőrzi a feltételeket és levonja a pénzt)
-        manager.hokotroVasarlas(ujHokotro);
-        System.out.println("2. UseCase vége\n");
-    }
-
-    /**
-     * 3. Use case: Új fej vásárlása
-     * A menedzser új speciális takarítóeszközt vásárol (pl. Sószóró fej).
-     */
-    public static void testFejVasarlas() {
-        System.out.println("\n3. UseCase: ÚJ fej vásárlása");
-        
-        // Szükséges objektumok létrehozása
-        TakaritoManager manager = new TakaritoManager();
-        SoszoroFej ujSoszoroFej = new SoszoroFej(); // A megvásárolni kívánt speciális fej
-        
-        // Fej megvásárlása (a szkeletonban ellenőrzi a pénzt és raktárba helyezi az eszközt)
-        manager.fejVasarlas(ujSoszoroFej);
-        
-        System.out.println("3. UseCase vége\n");
-    }
-
-
-    /**
-     * 4. Use case: Busz haladása és fizetés
-     * A busz játékos kezdeményezi a busz léptetését az úthálózaton. 
-     * A jármű a megadott cél felé halad, miközben a rendszer ellenőrzi, hogy az adott kereszteződés egy Végállomás-e.
-     * Amennyiben a busz végállomásra ér, a program regisztrálja a megtett kört,
-     * növeli a teljesített utak számát, és a játékos vagyona gyarapodik a menetdíjból származó bevétellel.
-     */
-    private static void buszHaladasEsFizetesTeszt() {
-        System.out.println("\n4. UseCase: Busz haladása es fizetés");
-        BuszsoforManager buszsoforManager = new BuszsoforManager();
-        Busz busz = new Busz();
-        char celKeresztezodes = 'V';
-
-        buszsoforManager.mozgatJarmuvet(celKeresztezodes, busz);
-
-        System.out.println("4. UseCase vége\n");
-    }
-
-    /**
-     * 5. Use case: Hókotró sárkányfejének működése
-     * A játékos bekapcsolja a hókotró fejét, majd a gép biokerozin fogyasztása közben leszedi a havat és a jeget is a sávról.
-     */
-    private static void sarkanyFejMukodeseTeszt() {
-        System.out.println("\n5. UseCase: Sárkány fej működése");
-        Hokotro hokotro = new Hokotro();
-        Sav sav = new Sav();
-        SarkanyFej sarkanyFej = new SarkanyFej();
-        hokotro.setAktualisFej(sarkanyFej);
-        hokotro.takaritSavot(sav);
-        sarkanyFej.fejKiBeKapcsolasa(true);
-        System.out.println("5. UseCase vége\n");
-    }
-
-    /**
-     * 6. Use case: Hányó fej működése
-     * A játékos a hányófejjel felszerelt hókotróval halad végig az adott sávon
-     * A hányófej a jeget nem takarítja le, az a sávon marad, viszont a havat felszedi és az út szélére hajítja. 
-     */
-    private static void hanyoFejMukodeseTeszt() {
-        System.out.println("\n6. UseCase: Hányó fej működése");
-        Hokotro hokotro = new Hokotro();
-        Sav sav = new Sav();
-        HanyoFej hanyoFej = new HanyoFej();
-        hokotro.setAktualisFej(hanyoFej);
-        hokotro.takaritSavot(sav);
-        hanyoFej.fejKiBeKapcsolasa(true);
-        System.out.println("6. UseCase vége\n");
-    }
-
-
-    /**
-     * 7. Use case: Sószóró fej működése
-     * A játékos a sószórófejjel felszerelt hókotróval halad végig az adott sávon
-     * Ez a fej működés közben csökkenti a gép sókészletét, és a sávhoz egy speciális só-objektumot rendel. 
-     * Ez az anyag nemcsak felolvasztja a meglévő havat és jeget,
-     * hanem pár körön keresztül megakadályozza az újabb csapadék megmaradását is az adott sávon. 
-     */
-    private static void soszoroFejMukodeseTeszt() {
-        System.out.println("\n7. UseCase: Sószóró fej működése");
-        Hokotro hokotro = new Hokotro();
-        Sav sav = new Sav();
-        SoszoroFej soszoroFej = new SoszoroFej();
-        hokotro.setAktualisFej(soszoroFej);
-        hokotro.takaritSavot(sav);
-        soszoroFej.fejKiBeKapcsolasa(true);
-        System.out.println("7. UseCase vége\n");
-    }
-
-    /**
-     * 8. Use case: Söprő fej működése
-     * A játékos a söprőfejjel felszerelt hókotróval halad végig az adott sávon
-     * Ez a fej a havat és a feltört jeget a menetirány szerinti jobb oldali szomszédos sávba továbbítja. 
-     * Ha a gép a legszélső sávban halad, a csapadék az út mellé kerül, ahol már nem akadályozza tovább a közlekedést.
-     */
-    private static void soproFejMukodeseTeszt() {
-        System.out.println("\n8. UseCase: Söprő fej működése");
-        Hokotro hokotro = new Hokotro();
-        Sav sav = new Sav();
-        SoproFej soproFej = new SoproFej();
-        hokotro.setAktualisFej(soproFej);
-        hokotro.takaritSavot(sav);
-        soproFej.fejKiBeKapcsolasa(true);
-        System.out.println("8. UseCase vége\n");
-    }
-
-    /**
-     * 9. Use case: Jégtörő fej működése
-     * A játékos a jégtörő fejjel felszerelt hókotróval halad végig az adott sávon
-     * Ez a fej működés közben a jeget feltöri, amely ezután a sávon marad, és hóként viselekdik.
-     */
-    private static void jegtoroFejMukodeseTeszt() {
-        System.out.println("\n9. UseCase: Jégtörő fej működése");
-        Hokotro hokotro = new Hokotro();
-        Sav sav = new Sav();
-        JegtoroFej jegtoroFej = new JegtoroFej();
-        hokotro.setAktualisFej(jegtoroFej);
-        hokotro.takaritSavot(sav);
-        jegtoroFej.fejKiBeKapcsolasa(true);
-        System.out.println("9. UseCase vége\n");
-    }
-
-    /**
-     * 10. Use Case: Játék vége check 
-     * A rendszer megkerdezi, hogy a buszok mozgaskepesek-e, illetve hogy
-     * a balesetezett autok maximalis szama elerte-e a kritikus hatart.
-     * Ha barmelyik feltetel teljesul, a jateknak vege.
-     */
-    private static void jatekVegeCheckTeszt() {
-        System.out.println("\n10. és 11. UseCase egybevonva: Játék vége check");
-        Uthalozat halozat = new Uthalozat();
-        boolean jatekVege = halozat.jatekVegeCheck();
-
-        if (jatekVege) {
-            System.out.println("A jateknak vege.");
-        } else {
-            System.out.println("A jatek folytatodik.");
+        public NamedEntity selected() {
+            if (selectedName == null) {
+                return null;
+            }
+            return entities.get(selectedName.toLowerCase(Locale.ROOT));
         }
 
-        System.out.println("10. UseCase vége\n");
-    }
-    
-    /**
-     * 12. Use case: Jármű megcsúszása
-     * A jeges sávra lépő járműnél a rendszer baleseti kalkulációt végez. 
-     * Sikertelen kimenetel esetén a jármű balesetet szenved és meghatározott 
-     * ideig mozgásképtelenné válik, eltorlaszolva az adott sávot.
-     */
-    public static void jarmuMegcsuszasaTeszt() {
-        System.out.println("\n12. UseCase: Jármű megcsúszása");
-        Jarmu auto = new Auto();
-        Sav jegesSav = new Sav();
-
-        boolean tortentBaleset = jegesSav.balesetKalkulacio(0);
-        if (tortentBaleset) {
-            auto.balesetezik();
-        }
-        
-
-        System.out.println("12. UseCase vége\n");
+        public NamedEntity getEntity(String name) {
+            if (name == null) {
+                return null;
+            }
+            return entities.get(name.toLowerCase(Locale.ROOT));
         }
 
-    /**
-     * 13. Use case: Havazás szimulációja
-     * Az Úthálózat minden körben egyenletesen növeli a hóvastagságot a város 
-     * útszakaszain. A folyamat az alagutakat nem érinti, mivel azok 
-     * kialakításuknál fogva védettek a csapadéktól.
-     */
-    public static void havazasSzimulacioTeszt() {
-        System.out.println("\n13. UseCase: Havazás szimulációja");
-        Uthalozat halozat = new Uthalozat();
-        
-        halozat.havazas(1);
-        System.out.println("A havazás megtörtént az utakon\n12. UseCase vége\n");
+        public <T> T getTypedEntity(String name, Class<T> type) {
+            NamedEntity entity = getEntity(name);
+            if (entity == null || !type.isInstance(entity)) {
+                return null;
+            }
+            return type.cast(entity);
+        }
+
+        public boolean existsName(String name) {
+            String key = name.toLowerCase(Locale.ROOT);
+            return entities.containsKey(key) || roads.containsKey(key);
+        }
+
+        public void putEntity(NamedEntity entity) {
+            entities.put(entity.name().toLowerCase(Locale.ROOT), entity);
+        }
+
+        public void removeEntity(String name) {
+            entities.remove(name.toLowerCase(Locale.ROOT));
+        }
+
+        public Road getRoad(String name) {
+            if (name == null) {
+                return null;
+            }
+            return roads.get(name.toLowerCase(Locale.ROOT));
+        }
+
+        public void putRoad(Road road) {
+            roads.put(road.name().toLowerCase(Locale.ROOT), road);
+            graph.computeIfAbsent(road.nodeA.toLowerCase(Locale.ROOT), key -> new ArrayList<>()).add(road.name());
+            graph.computeIfAbsent(road.nodeB.toLowerCase(Locale.ROOT), key -> new ArrayList<>()).add(road.name());
+        }
+
+        public void removeRoad(String name) {
+            roads.remove(name.toLowerCase(Locale.ROOT));
+        }
+
+        public boolean playerAtDepot(Player player) {
+            for (String vehicleName : player.vehicles) {
+                Vehicle vehicle = getTypedEntity(vehicleName, Vehicle.class);
+                if (vehicle == null) {
+                    continue;
+                }
+                if (vehicle.currentRoad == null) {
+                    return true;
+                }
+                Road road = getRoad(vehicle.currentRoad);
+                if (road != null && (road.hasNode(depotNode))) {
+                    return true;
+                }
+            }
+            return player.vehicles.isEmpty();
+        }
+
+        public void enqueueEvent(String line) {
+            eventQueue.addLast(line);
+        }
+
+        public void flushEvents() {
+            while (!eventQueue.isEmpty()) {
+                System.out.println("[ESEMENY] " + eventQueue.removeFirst());
+            }
+        }
+
+        public void tickRound() {
+            for (Road road : roads.values()) {
+                for (Lane lane : road.lanes) {
+                    lane.tickRound();
+                }
+            }
+            for (NamedEntity entity : entities.values()) {
+                if (entity instanceof Vehicle) {
+                    ((Vehicle) entity).tickRound();
+                }
+            }
+        }
     }
 
+    private static final class GameEngine {
+        private final GameState state = new GameState();
+        private final Map<String, CommandHandler> commands = new HashMap<>();
 
-    /**
-     * 14. Use case: Só töltése a sószóró fejbe
-     * A játékos a sószóró fejjel felszerelt hókotróba sót tölt, hogy az használható legyen a sáv takarítására.
-     */
+        private GameEngine() {
+            registerCommands();
+        }
 
-    private static void soTolteseTeszt(){
-        System.out.println("\n14. UseCase: Só töltése a sószóró fejbe");
-        TakaritoManager manager = new TakaritoManager();
-        Hokotro hokotro = new Hokotro();
-        SoszoroFej soszoro = new SoszoroFej();
+        public void run(String[] args) {
+            String autoInput = null;
+            for (String arg : args) {
+                if (arg.startsWith("--input=")) {
+                    autoInput = arg.substring("--input=".length());
+                }
+            }
 
-        hokotro.setAktualisFej(soszoro);
-        manager.soToltes(hokotro);
+            System.out.println("Parancssori prototipus indult. A parancsok listajahoz: help");
+            if (autoInput != null && !autoInput.trim().isEmpty()) {
+                executeLine("betolt " + autoInput);
+            }
 
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
+                while (state.running) {
+                    System.out.print("> ");
+                    String line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    executeLine(line);
+                }
+            } catch (IOException ex) {
+                printError("I/O hiba: " + ex.getMessage());
+            }
+        }
 
-        System.out.println("14. UseCase vége\n");
-    }
+        private void registerCommands() {
+            commands.put("help", this::handleHelp);
+            commands.put("kilepes", this::handleExit);
+            commands.put("nehezseg", this::handleDifficulty);
+            commands.put("letrehoz", this::handleCreate);
+            commands.put("szerkeszt", this::handleRename);
+            commands.put("kivalaszt", this::handleSelect);
+            commands.put("betolt", this::handleLoadFromFile);
+            commands.put("utletrehoz", this::handleCreateRoad);
+            commands.put("lerakodas", this::handleDeposit);
+            commands.put("lepes", this::handleMove);
+            commands.put("wait", this::handleWait);
+            commands.put("hokotrovasarlas", this::handleBuySnowplow);
+            commands.put("allapot", this::handleStatus);
+            commands.put("terkep", this::handleMap);
+            commands.put("fejcsere", this::handleHeadSwap);
+            commands.put("fejvasarlas", this::handleHeadBuy);
+            commands.put("sotoltes", this::handleSaltRefill);
+            commands.put("kerozintoltes", this::handleFuelRefill);
+            commands.put("zuzalektoltes", this::handleGritRefill);
+            commands.put("takarit", this::handleCleanLane);
+            commands.put("havazas", this::handleSnowfall);
+            commands.put("lista", this::handleListByType);
+        }
 
-      /**
-     * 15. Use case: töltése a sárkányfejbe
-     * A játékos a sárkány fejjel felszerelt hókotróba biokerozint tölt, hogy az használható legyen a sáv takarítására.
-     */
+        private void executeLine(String line) {
+            String trimmed = line == null ? "" : line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#") || trimmed.startsWith("//")) {
+                return;
+            }
 
-    private static void kerozinTolteseTeszt(){
-        System.out.println("\n15. UseCase: Biokerozin töltése a sárkány fejbe");
-        TakaritoManager manager = new TakaritoManager();
-        Hokotro hokotro3 = new Hokotro();
-        SarkanyFej sarkany = new SarkanyFej();
+            List<String> parts = tokenize(trimmed);
+            if (parts.isEmpty()) {
+                return;
+            }
 
-        hokotro3.setAktualisFej(sarkany);
-        manager.kerozinToltes(hokotro3);
+            String commandName = parts.get(0).toLowerCase(Locale.ROOT);
+            List<String> args = parts.subList(1, parts.size());
+            CommandHandler handler = commands.get(commandName);
+            if (handler == null) {
+                printError("Ismeretlen parancs: " + commandName + ". Segitseg: help");
+                return;
+            }
 
+            try {
+                handler.execute(new CommandContext(state, trimmed), args);
+                state.flushEvents();
+            } catch (IllegalArgumentException ex) {
+                printError(ex.getMessage());
+            } catch (Exception ex) {
+                printError("Varatlan hiba: " + ex.getMessage());
+            }
+        }
 
-        System.out.println("15. UseCase vége\n");
-    }
+        private List<String> tokenize(String line) {
+            List<String> tokens = new ArrayList<>();
+            StringBuilder current = new StringBuilder();
+            boolean inQuote = false;
+            for (int i = 0; i < line.length(); i++) {
+                char ch = line.charAt(i);
+                if (ch == '"') {
+                    inQuote = !inQuote;
+                    continue;
+                }
+                if (!inQuote && Character.isWhitespace(ch)) {
+                    if (current.length() > 0) {
+                        tokens.add(current.toString());
+                        current.setLength(0);
+                    }
+                } else {
+                    current.append(ch);
+                }
+            }
+            if (current.length() > 0) {
+                tokens.add(current.toString());
+            }
+            if (inQuote) {
+                throw new IllegalArgumentException("Hibas bemenet: idezojel nincs lezarva.");
+            }
+            return tokens;
+        }
 
-    /**
-     * 16. Use case: Autó áthaladása és jéggé tömörülés
-     * Kellő mennyiségű áthaladt autó esetén a sávon található hó jéggé tömörül,
-     * amely megváltoztatja a sáv tulajdonságait és a rajta közlekedő járművek viselkedését.
-     */
-    private static void autoAthaladasEsJeggeTomorulesTeszt() {
-        System.out.println("\n16. UseCase: Autó áthaladása es jéggé tömörülés");
-        Sav sav = new Sav();
+        private void ensureArgCount(List<String> args, int min, int max, String usage) {
+            if (args.size() < min || args.size() > max) {
+                throw new IllegalArgumentException("Hibas parameterlista. Hasznalat: " + usage);
+            }
+        }
 
-        sav.autoAthalad();
+        private void ensureUniqueName(String name) {
+            if (name == null || name.trim().isEmpty()) {
+                throw new IllegalArgumentException("Ures nev nem megengedett.");
+            }
+            if (state.existsName(name)) {
+                throw new IllegalArgumentException("Mar letezik ilyen azonosito: " + name);
+            }
+        }
 
-        System.out.println("16. UseCase vége\n");
-    }
+        private void printOk(String message) {
+            System.out.println("OK: " + message);
+        }
 
-    /**
-     * 17. Use case: Leszórt só
-     * A sószóró fej felolvasztja az úton lévő havat és jeget[cite: 52, 292]. 
-     * Az útra juttatott anyag ideiglenesen megakadályozza a csapadék 
-     * újbóli megmaradását és a jegesedést[cite: 48, 750].
-     */
-    public static void leszortSoTeszt() {
-        System.out.println("\n17. UseCase: Leszórt só");
-        Hokotro h = new Hokotro();
-        SoszoroFej fej = new SoszoroFej();
-        Sav s = new Sav();
+        private void printError(String message) {
+            System.out.println("ERROR: " + message);
+        }
 
-        h.setAktualisFej(fej);
-        h.takaritSavot(s);
-        
-        System.out.println("A só kihelyezve a sávra, a jegesedés megállt.\n");
-        System.out.println("17. UseCase vége\n");
+        private void handleHelp(CommandContext context, List<String> args) {
+            ensureArgCount(args, 0, 0, "help");
+            List<String> lines = Arrays.asList(
+                "nehezseg [easy|medium|hard]",
+                "letrehoz [TakaritoJatekos|BuszosJatekos|Hokotro|Busz|Auto] [nev]",
+                "szerkeszt [nev] [ujnev]",
+                "kivalaszt [nev]",
+                "betolt [fajlnev]",
+                "utletrehoz [nev] [cs1] [cs2] [hossz] [normal|hid|alagut] [savszam]",
+                "lerakodas [utnev] [sav] [Ho|Jeg|So|Feltortjeg|Zuzalek] [ertek]",
+                "lepes [ut] [sav-opcionalis]",
+                "wait [nev-opcionalis]",
+                "hokotrovasarlas [nev]",
+                "fejvasarlas [hokotro] [fejtipus]",
+                "fejcsere [hokotro] [ujfej]",
+                "sotoltes [hokotro]",
+                "kerozintoltes [hokotro]",
+                "zuzalektoltes [hokotro]",
+                "takarit [hokotro] [sav]",
+                "allapot [nev|Mind]",
+                "terkep",
+                "havazas",
+                "lista [tipus]",
+                "kilepes"
+            );
+            printOk("Elerheto parancsok:");
+            for (String line : lines) {
+                System.out.println("  " + line);
+            }
+        }
+
+        private void handleExit(CommandContext context, List<String> args) {
+            ensureArgCount(args, 0, 0, "kilepes");
+            state.running = false;
+            printOk("A jatek leall.");
+        }
+
+        private void handleDifficulty(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "nehezseg [easy|medium|hard]");
+            Difficulty difficulty = Difficulty.fromInput(args.get(0));
+            if (difficulty == null) {
+                throw new IllegalArgumentException("Ervenytelen nehezseg: " + args.get(0));
+            }
+            state.difficulty = difficulty;
+            printOk("Nehezseg beallitva: " + difficulty.name().toLowerCase(Locale.ROOT));
+        }
+
+        private void handleCreate(CommandContext context, List<String> args) {
+            ensureArgCount(args, 2, 2, "letrehoz [tipus] [nev]");
+            String typeText = args.get(0).toUpperCase(Locale.ROOT);
+            String name = args.get(1);
+            ensureUniqueName(name);
+
+            EntityType entityType;
+            try {
+                entityType = EntityType.valueOf(typeText);
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException("Ismeretlen tipus: " + args.get(0));
+            }
+
+            NamedEntity created;
+            if (entityType == EntityType.TAKARITOJATEKOS) {
+                created = new TakaritoJatekos(name);
+            } else if (entityType == EntityType.BUSZOSJATEKOS) {
+                created = new BuszosJatekos(name);
+            } else if (entityType == EntityType.HOKOTRO) {
+                created = new Hokotro(name);
+                attachVehicleToSelectedPlayer((Vehicle) created);
+            } else if (entityType == EntityType.BUSZ) {
+                created = new Busz(name);
+                attachVehicleToSelectedPlayer((Vehicle) created);
+            } else {
+                created = new Auto(name);
+                attachVehicleToSelectedPlayer((Vehicle) created);
+            }
+
+            state.putEntity(created);
+            printOk(created.type() + " '" + created.name() + "' sikeresen letrehozva.");
+        }
+
+        private void attachVehicleToSelectedPlayer(Vehicle vehicle) {
+            NamedEntity selected = state.selected();
+            if (selected instanceof Player) {
+                Player player = (Player) selected;
+                player.addVehicle(vehicle.name);
+                vehicle.owner = player.name;
+            }
+        }
+
+        private void handleRename(CommandContext context, List<String> args) {
+            ensureArgCount(args, 2, 2, "szerkeszt [nev] [ujnev]");
+            String oldName = args.get(0);
+            String newName = args.get(1);
+            ensureUniqueName(newName);
+
+            NamedEntity entity = state.getEntity(oldName);
+            if (entity != null) {
+                state.removeEntity(oldName);
+                entity.renameTo(newName);
+                state.putEntity(entity);
+                if (state.selectedName != null && state.selectedName.equalsIgnoreCase(oldName)) {
+                    state.selectedName = newName;
+                }
+                relinkReferences(oldName, newName);
+                printOk("Atnevezve: '" + oldName + "' -> '" + newName + "'.");
+                return;
+            }
+
+            Road road = state.getRoad(oldName);
+            if (road != null) {
+                state.removeRoad(oldName);
+                road.renameTo(newName);
+                state.putRoad(road);
+                for (NamedEntity e : state.entities.values()) {
+                    if (e instanceof Vehicle) {
+                        Vehicle v = (Vehicle) e;
+                        if (oldName.equalsIgnoreCase(v.currentRoad)) {
+                            v.currentRoad = newName;
+                        }
+                    }
+                }
+                printOk("Atnevezve: '" + oldName + "' -> '" + newName + "'.");
+                return;
+            }
+
+            throw new IllegalArgumentException("Nincs ilyen objektum vagy ut: " + oldName);
+        }
+
+        private void relinkReferences(String oldName, String newName) {
+            for (NamedEntity e : state.entities.values()) {
+                if (e instanceof Player) {
+                    Player p = (Player) e;
+                    for (int i = 0; i < p.vehicles.size(); i++) {
+                        if (p.vehicles.get(i).equalsIgnoreCase(oldName)) {
+                            p.vehicles.set(i, newName);
+                        }
+                    }
+                }
+                if (e instanceof Vehicle) {
+                    Vehicle v = (Vehicle) e;
+                    if (oldName.equalsIgnoreCase(v.owner)) {
+                        v.owner = newName;
+                    }
+                }
+            }
+        }
+
+        private void handleSelect(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "kivalaszt [nev]");
+            NamedEntity entity = state.getEntity(args.get(0));
+            if (entity == null) {
+                throw new IllegalArgumentException("Nem talalhato ilyen objektum: " + args.get(0));
+            }
+            state.selectedName = entity.name();
+            printOk("Kivalasztva: " + entity.type() + " " + entity.name());
+        }
+
+        private void handleLoadFromFile(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "betolt [fajlnev]");
+            String file = args.get(0);
+            String normalized = file.toLowerCase(Locale.ROOT);
+            if (!state.fileLoadStack.add(normalized)) {
+                throw new IllegalArgumentException("Rekurziv betoltes tiltva: " + file);
+            }
+            int count = 0;
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String trimmed = line.trim();
+                    if (trimmed.isEmpty() || trimmed.startsWith("#") || trimmed.startsWith("//")) {
+                        continue;
+                    }
+                    count++;
+                    executeLine(trimmed);
+                }
+            } catch (IOException ex) {
+                throw new IllegalArgumentException("Nem sikerult megnyitni a fajlt: " + file + " (" + ex.getMessage() + ")");
+            } finally {
+                state.fileLoadStack.remove(normalized);
+            }
+            printOk("Betoltes kesz. Lefuttatott parancsok szama: " + count);
+        }
+
+        private void handleCreateRoad(CommandContext context, List<String> args) {
+            ensureArgCount(args, 6, 6, "utletrehoz [nev] [cs1] [cs2] [hossz] [tipus] [savszam]");
+            String name = args.get(0);
+            String cs1 = args.get(1);
+            String cs2 = args.get(2);
+            int length = parsePositiveInt(args.get(3), "hossz");
+            RoadType type = RoadType.fromInput(args.get(4));
+            int laneCount = parsePositiveInt(args.get(5), "savszam");
+            if (type == null) {
+                throw new IllegalArgumentException("Ervenytelen uttipus: " + args.get(4));
+            }
+            ensureUniqueName(name);
+            if (cs1.equalsIgnoreCase(cs2)) {
+                throw new IllegalArgumentException("Az ut ket vegpontja nem lehet azonos.");
+            }
+            if (laneCount > 8) {
+                throw new IllegalArgumentException("Tul sok sav. Maximum 8 sav engedelyezett.");
+            }
+            Road road = new Road(name, cs1, cs2, length, type, laneCount);
+            state.putRoad(road);
+            printOk("Ut letrehozva: " + name + " (" + laneCount + " sav).");
+        }
+
+        private void handleDeposit(CommandContext context, List<String> args) {
+            ensureArgCount(args, 4, 4, "lerakodas [utnev] [sav] [tipus] [ertek]");
+            Road road = requireRoad(args.get(0));
+            int laneIndex = parseLaneIndex(road, args.get(1));
+            DepositType depositType = DepositType.fromInput(args.get(2));
+            if (depositType == null) {
+                throw new IllegalArgumentException("Ervenytelen lerakodas tipus: " + args.get(2));
+            }
+            int value = parseNonNegativeInt(args.get(3), "ertek");
+            road.lane(laneIndex).applyDeposit(depositType, value);
+            printOk("Lerakodas rogzitve: " + road.name + " sav " + laneIndex + " -> " + depositType.name());
+        }
+
+        private void handleMove(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 2, "lepes [ut] [sav-opcionalis]");
+            Vehicle vehicle = requireSelectedVehicle();
+            if (!vehicle.canMove()) {
+                throw new IllegalArgumentException("A jarmu mozgaskepetlen meg " + vehicle.disabledRounds + " korig.");
+            }
+
+            Road target = requireRoad(args.get(0));
+            int targetLane = vehicle.laneIndex;
+            if (args.size() == 2) {
+                targetLane = parseLaneIndex(target, args.get(1));
+            }
+
+            if (vehicle.currentRoad != null) {
+                Road current = requireRoad(vehicle.currentRoad);
+                boolean sharesNode = current.hasNode(target.nodeA) || current.hasNode(target.nodeB);
+                if (!sharesNode && !current.name.equalsIgnoreCase(target.name)) {
+                    throw new IllegalArgumentException("A celut nem szomszedos a jelenlegi uttal.");
+                }
+            }
+
+            vehicle.currentRoad = target.name;
+            vehicle.laneIndex = targetLane;
+
+            maybeCrash(vehicle, target.lane(targetLane));
+            if (vehicle instanceof Busz) {
+                maybeRegisterBusTrip((Busz) vehicle, target);
+            }
+
+            printOk("'" + vehicle.name + "' a(z) '" + target.name + "' " + targetLane + ". savjaba lepett.");
+        }
+
+        private void maybeRegisterBusTrip(Busz busz, Road target) {
+            if (target.hasNode("Vegallomas") || target.hasNode("Vegallomas_1") || target.hasNode("Vegallomas_2")) {
+                busz.completedTrips += 1;
+                Player owner = state.getTypedEntity(busz.owner, Player.class);
+                if (owner != null) {
+                    owner.money += 40;
+                    state.enqueueEvent("Busz kor teljesitve: " + busz.name + ", jovairas +40.");
+                }
+            }
+        }
+
+        private void maybeCrash(Vehicle vehicle, Lane lane) {
+            if (vehicle instanceof Hokotro) {
+                return;
+            }
+            if (lane.ice <= 0) {
+                return;
+            }
+            double modifier = lane.grittedRounds > 0 ? -0.12 : 0.0;
+            double chance = Math.max(0.0, Math.min(0.95, state.difficulty.baseCrashChance() + (lane.ice * 0.03) + modifier));
+            if (state.random.nextDouble() < chance) {
+                vehicle.disabledRounds = 2;
+                state.accidents += 1;
+                state.enqueueEvent(vehicle.name + " megcsuszott jeges savon, 2 korre kiesett.");
+            }
+        }
+
+        private void handleWait(CommandContext context, List<String> args) {
+            ensureArgCount(args, 0, 1, "wait [nev-opcionalis]");
+            String who = args.isEmpty() ? "jelenlegi jatekos" : args.get(0);
+            state.tickRound();
+            printOk("Varakozas vegrehajtva: " + who);
+        }
+
+        private void handleBuySnowplow(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "hokotrovasarlas [nev]");
+            ensureUniqueName(args.get(0));
+            TakaritoJatekos player = requireSelectedCleanerPlayer();
+            if (!state.playerAtDepot(player)) {
+                throw new IllegalArgumentException("A jatekos nem telephelyen van.");
+            }
+            int price = 300;
+            if (!player.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz. Szukseges: " + price);
+            }
+            player.charge(price);
+            Hokotro h = new Hokotro(args.get(0));
+            h.owner = player.name;
+            state.putEntity(h);
+            player.addVehicle(h.name);
+            printOk("Hokotro vasarlas sikeres: " + h.name + ". Penz levonva: " + price);
+        }
+
+        private void handleStatus(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "allapot [nev|Mind]");
+            String name = args.get(0);
+            if ("Mind".equalsIgnoreCase(name)) {
+                for (NamedEntity entity : state.entities.values()) {
+                    System.out.println(entity.statusLine(state));
+                }
+                for (Road road : state.roads.values()) {
+                    System.out.println(road.describeCompact());
+                }
+                printOk("Allapot lekerdezes kesz: Mind.");
+                return;
+            }
+
+            NamedEntity entity = state.getEntity(name);
+            if (entity != null) {
+                System.out.println(entity.statusLine(state));
+                printOk("Allapot lekerdezes kesz: " + name);
+                return;
+            }
+
+            Road road = state.getRoad(name);
+            if (road != null) {
+                System.out.println(road.describeCompact());
+                printOk("Allapot lekerdezes kesz: " + name);
+                return;
+            }
+
+            throw new IllegalArgumentException("Nincs ilyen objektum: " + name);
+        }
+
+        private void handleMap(CommandContext context, List<String> args) {
+            ensureArgCount(args, 0, 0, "terkep");
+            if (state.roads.isEmpty()) {
+                throw new IllegalArgumentException("Nincs letrehozott ut a terkepen.");
+            }
+
+            Map<String, List<Road>> byNode = new LinkedHashMap<>();
+            for (Road road : state.roads.values()) {
+                byNode.computeIfAbsent(road.nodeA, key -> new ArrayList<>()).add(road);
+                byNode.computeIfAbsent(road.nodeB, key -> new ArrayList<>()).add(road);
+            }
+
+            for (Map.Entry<String, List<Road>> entry : byNode.entrySet()) {
+                System.out.println("Csomopont " + entry.getKey());
+                for (Road road : entry.getValue()) {
+                    String opposite = road.opposite(entry.getKey());
+                    System.out.println("  -> " + opposite + " : " + road.name + " (" + road.laneCount() + " sav)");
+                }
+            }
+            printOk("Terkep listazva.");
+        }
+
+        private void handleHeadSwap(CommandContext context, List<String> args) {
+            ensureArgCount(args, 2, 2, "fejcsere [hokotro] [ujfej]");
+            TakaritoJatekos player = resolveCleanerForSnowplowAction(args.get(0));
+            if (!state.playerAtDepot(player)) {
+                throw new IllegalArgumentException("Fejcsere csak telephelyen engedelyezett.");
+            }
+
+            Hokotro h = requireOwnedSnowplow(player, args.get(0));
+            HeadType newHead = HeadType.fromInput(args.get(1));
+            if (newHead == null) {
+                throw new IllegalArgumentException("Ismeretlen fejtipus: " + args.get(1));
+            }
+            if (!player.removeHeadFromInventory(newHead)) {
+                throw new IllegalArgumentException("A kivant fej nincs a raktarban: " + newHead.name());
+            }
+
+            if (h.activeHead != null) {
+                player.addHeadToInventory(h.activeHead);
+            }
+            h.activeHead = newHead;
+            printOk("Fejcsere sikeres: " + h.name + " -> " + newHead.name());
+        }
+
+        private void handleHeadBuy(CommandContext context, List<String> args) {
+            ensureArgCount(args, 2, 2, "fejvasarlas [hokotro] [fejtipus]");
+            TakaritoJatekos player = resolveCleanerForSnowplowAction(args.get(0));
+            if (!state.playerAtDepot(player)) {
+                throw new IllegalArgumentException("Fejvasarlas csak telephelyen engedelyezett.");
+            }
+            requireOwnedSnowplow(player, args.get(0));
+            HeadType type = HeadType.fromInput(args.get(1));
+            if (type == null) {
+                throw new IllegalArgumentException("Ismeretlen fejtipus: " + args.get(1));
+            }
+            int price = 80;
+            if (!player.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz a fej vasarlashoz.");
+            }
+            player.charge(price);
+            player.addHeadToInventory(type);
+            printOk("Fejvasarlas sikeres: " + type.name() + ", levonas: " + price);
+        }
+
+        private void handleSaltRefill(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "sotoltes [hokotro]");
+            TakaritoJatekos player = resolveCleanerForSnowplowAction(args.get(0));
+            if (!state.playerAtDepot(player)) {
+                throw new IllegalArgumentException("Sotoltes csak telephelyen engedelyezett.");
+            }
+            Hokotro h = requireOwnedSnowplow(player, args.get(0));
+            int price = 50;
+            if (!player.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz sotolteshez.");
+            }
+            player.charge(price);
+            h.so = 100;
+            printOk("'" + h.name + "' sokeszlete feltoltve. Penz levonva: " + price);
+        }
+
+        private void handleFuelRefill(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "kerozintoltes [hokotro]");
+            TakaritoJatekos player = resolveCleanerForSnowplowAction(args.get(0));
+            if (!state.playerAtDepot(player)) {
+                throw new IllegalArgumentException("Kerozintoltes csak telephelyen engedelyezett.");
+            }
+            Hokotro h = requireOwnedSnowplow(player, args.get(0));
+            int price = 60;
+            if (!player.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz kerozintolteshez.");
+            }
+            player.charge(price);
+            h.kerozin = 100;
+            printOk("'" + h.name + "' kerozinkeszlete feltoltve. Penz levonva: " + price);
+        }
+
+        private void handleGritRefill(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "zuzalektoltes [hokotro]");
+            TakaritoJatekos player = resolveCleanerForSnowplowAction(args.get(0));
+            if (!state.playerAtDepot(player)) {
+                throw new IllegalArgumentException("Zuzalektoltes csak telephelyen engedelyezett.");
+            }
+            Hokotro h = requireOwnedSnowplow(player, args.get(0));
+            int price = 40;
+            if (!player.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz zuzalektolteshez.");
+            }
+            player.charge(price);
+            h.zuzottko = 100;
+            printOk("'" + h.name + "' zuzalekkeszlete feltoltve. Penz levonva: " + price);
+        }
+
+        private void handleCleanLane(CommandContext context, List<String> args) {
+            ensureArgCount(args, 2, 2, "takarit [hokotro] [sav]");
+            Hokotro h = requireSnowplow(args.get(0));
+            if (h.currentRoad == null) {
+                throw new IllegalArgumentException("A hokotro nincs uton, nincs mit takaritani.");
+            }
+            Road road = requireRoad(h.currentRoad);
+            int laneIndex = parseLaneIndex(road, args.get(1));
+            Lane lane = road.lane(laneIndex);
+            applyHeadEffect(h, lane, road, laneIndex);
+            printOk("'" + h.name + "' takaritasa lefutott a(z) " + road.name + " " + laneIndex + ". savon.");
+        }
+
+        private void applyHeadEffect(Hokotro h, Lane lane, Road road, int laneIndex) {
+            HeadType head = Objects.requireNonNullElse(h.activeHead, HeadType.SOPROFEJ);
+            if (head == HeadType.SOPROFEJ) {
+                int movedSnow = lane.snow + lane.brokenIce;
+                lane.snow = 0;
+                lane.brokenIce = 0;
+                pushSnowToRightLaneOrRoad(road, laneIndex, movedSnow);
+                state.enqueueEvent("Soprofej atterelte a csapadekot.");
+                return;
+            }
+            if (head == HeadType.HANYOFEJ) {
+                lane.snow = 0;
+                lane.brokenIce = 0;
+                state.enqueueEvent("Hanyofej az ut melle tavolitotta a csapadekot.");
+                return;
+            }
+            if (head == HeadType.JEGTOROFEJ) {
+                lane.brokenIce += lane.ice;
+                lane.ice = 0;
+                lane.snow += lane.brokenIce;
+                lane.brokenIce = 0;
+                state.enqueueEvent("Jegtorofej feltorte a jeget, ho jellegu retegre valtott.");
+                return;
+            }
+            if (head == HeadType.SOSZOROFEJ) {
+                if (h.so < 10) {
+                    throw new IllegalArgumentException("Nincs eleg so a soszorofejhez.");
+                }
+                h.so -= 10;
+                lane.snow = 0;
+                lane.ice = 0;
+                lane.saltedRounds = 3;
+                state.enqueueEvent("Soszoro fej aktiv: ho es jeg eltunt, 3 korig vedett a sav.");
+                return;
+            }
+            if (head == HeadType.SARKANYFEJ) {
+                if (h.kerozin < 10) {
+                    throw new IllegalArgumentException("Nincs eleg kerozin a sarkanyfejhez.");
+                }
+                h.kerozin -= 10;
+                lane.snow = 0;
+                lane.ice = 0;
+                lane.brokenIce = 0;
+                state.enqueueEvent("Sarkanyfej aktiv: azonnali olvasztas vegrehajtva.");
+                return;
+            }
+            if (head == HeadType.ZUZOTTKOSZOROFEJ) {
+                if (h.zuzottko < 10) {
+                    throw new IllegalArgumentException("Nincs eleg zuzottko a zuzottkoszorofejhez.");
+                }
+                h.zuzottko -= 10;
+                lane.grittedRounds = 3;
+                state.enqueueEvent("Zuzottko kiszorva: csuszasveszely csokkent 3 korre.");
+            }
+        }
+
+        private void pushSnowToRightLaneOrRoad(Road road, int laneIndex, int amount) {
+            if (amount <= 0) {
+                return;
+            }
+            int rightIndex = laneIndex + 1;
+            if (rightIndex < road.laneCount()) {
+                Lane rightLane = road.lane(rightIndex);
+                rightLane.snow += amount;
+            }
+        }
+
+        private void handleSnowfall(CommandContext context, List<String> args) {
+            ensureArgCount(args, 0, 0, "havazas");
+            if (state.roads.isEmpty()) {
+                throw new IllegalArgumentException("Nincs ut a halozatban.");
+            }
+            printOk("Havazas szimulacio elinditva.");
+            for (Road road : state.roads.values()) {
+                int before = sumSnow(road);
+                for (Lane lane : road.lanes) {
+                    lane.snowingOneUnit(road.type == RoadType.ALAGUT);
+                }
+                int after = sumSnow(road);
+                if (after != before) {
+                    state.enqueueEvent(road.name + " savjain a ho +" + (after - before) + " egyseggel nott.");
+                } else {
+                    state.enqueueEvent(road.name + " savjain nem valtozott a horetag.");
+                }
+            }
+            state.tickRound();
+            evaluateGameOver();
+        }
+
+        private int sumSnow(Road road) {
+            int total = 0;
+            for (Lane lane : road.lanes) {
+                total += lane.snow;
+            }
+            return total;
+        }
+
+        private void evaluateGameOver() {
+            long busCount = state.entities.values().stream().filter(e -> e instanceof Busz).count();
+            long disabledBusCount = state.entities.values().stream()
+                .filter(e -> e instanceof Busz)
+                .map(e -> (Busz) e)
+                .filter(b -> !b.canMove())
+                .count();
+            if (busCount > 0 && disabledBusCount == busCount) {
+                state.enqueueEvent("JATEK VEGE: minden busz mozgaskepetlen.");
+                state.running = false;
+                return;
+            }
+            if (state.accidents >= 5) {
+                state.enqueueEvent("JATEK VEGE: kijarasi tilalom, kritikus balesetszam.");
+                state.running = false;
+            }
+        }
+
+        private void handleListByType(CommandContext context, List<String> args) {
+            ensureArgCount(args, 1, 1, "lista [tipus]");
+            String type = args.get(0).toLowerCase(Locale.ROOT);
+            int count = 0;
+            for (NamedEntity entity : state.entities.values()) {
+                if (entity.type().toLowerCase(Locale.ROOT).equals(type)) {
+                    System.out.println(entity.statusLine(state));
+                    count++;
+                }
+            }
+            if (count == 0) {
+                throw new IllegalArgumentException("Nincs ilyen tipusu objektum: " + args.get(0));
+            }
+            printOk("Listazas kesz. Talalat: " + count);
+        }
+
+        private int parsePositiveInt(String raw, String fieldName) {
+            int value;
+            try {
+                value = Integer.parseInt(raw);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("A(z) " + fieldName + " nem szam: " + raw);
+            }
+            if (value <= 0) {
+                throw new IllegalArgumentException("A(z) " + fieldName + " pozitiv kell legyen.");
+            }
+            return value;
+        }
+
+        private int parseNonNegativeInt(String raw, String fieldName) {
+            int value;
+            try {
+                value = Integer.parseInt(raw);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("A(z) " + fieldName + " nem szam: " + raw);
+            }
+            if (value < 0) {
+                throw new IllegalArgumentException("A(z) " + fieldName + " nem lehet negativ.");
+            }
+            return value;
+        }
+
+        private int parseLaneIndex(Road road, String raw) {
+            int idx = parseNonNegativeInt(raw, "sav");
+            if (idx >= road.laneCount()) {
+                throw new IllegalArgumentException("Ervenytelen sav index: " + idx + ", max: " + (road.laneCount() - 1));
+            }
+            return idx;
+        }
+
+        private Road requireRoad(String name) {
+            Road road = state.getRoad(name);
+            if (road == null) {
+                throw new IllegalArgumentException("Nincs ilyen ut: " + name);
+            }
+            return road;
+        }
+
+        private Vehicle requireSelectedVehicle() {
+            NamedEntity selected = state.selected();
+            if (!(selected instanceof Vehicle)) {
+                throw new IllegalArgumentException("Nincs kivalasztott jarmu. Hasznald: kivalaszt [jarmuNev]");
+            }
+            return (Vehicle) selected;
+        }
+
+        private TakaritoJatekos requireSelectedCleanerPlayer() {
+            NamedEntity selected = state.selected();
+            if (!(selected instanceof TakaritoJatekos)) {
+                throw new IllegalArgumentException("A muvelethez TakaritoJatekos kivalasztasa szukseges.");
+            }
+            return (TakaritoJatekos) selected;
+        }
+
+        private TakaritoJatekos resolveCleanerForSnowplowAction(String snowplowName) {
+            NamedEntity selected = state.selected();
+            if (selected instanceof TakaritoJatekos) {
+                return (TakaritoJatekos) selected;
+            }
+
+            Hokotro h = state.getTypedEntity(snowplowName, Hokotro.class);
+            if (h != null && h.owner != null) {
+                TakaritoJatekos owner = state.getTypedEntity(h.owner, TakaritoJatekos.class);
+                if (owner != null) {
+                    return owner;
+                }
+            }
+
+            throw new IllegalArgumentException("A muvelethez TakaritoJatekos kivalasztasa szukseges.");
+        }
+
+        private Hokotro requireOwnedSnowplow(TakaritoJatekos player, String name) {
+            Hokotro h = state.getTypedEntity(name, Hokotro.class);
+            if (h == null) {
+                throw new IllegalArgumentException("Nincs ilyen hokotro: " + name);
+            }
+            if (!player.vehicles.contains(h.name)) {
+                throw new IllegalArgumentException("A hokotro nem a kivalasztott jatekoshoz tartozik: " + name);
+            }
+            return h;
+        }
+
+        private Hokotro requireSnowplow(String name) {
+            Hokotro h = state.getTypedEntity(name, Hokotro.class);
+            if (h == null) {
+                throw new IllegalArgumentException("Nincs ilyen hokotro: " + name);
+            }
+            return h;
+        }
     }
 }

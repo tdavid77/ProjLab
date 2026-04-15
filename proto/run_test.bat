@@ -1,20 +1,17 @@
 @echo off
-REM Prototipus teszt futtatas Windows alatt.
-REM Hasznalat: run_test.bat <testszam> [bemenet.txt] [kimenet.txt]
+REM Prototipus futtatas Windows alatt.
+REM Hasznalat:
+REM   run_test.bat [script.txt]
+REM Pelda:
+REM   run_test.bat input.txt
 
-if "%~1"=="" (
-  echo Hasznalat: run_test.bat ^<testszam^> [bemenet.txt] [kimenet.txt]
-  echo Pelda: run_test.bat 4 input.txt output.txt
-  goto :eof
+set SCRIPT=%~1
+if "%SCRIPT%"=="" set SCRIPT=input.txt
+
+if not exist "%SCRIPT%" (
+  echo Hiba: a script fajl nem talalhato: %SCRIPT%
+  exit /b 1
 )
 
-set TEST=%~1
-set INPUT=%~2
-set OUTPUT=%~3
-
-set CMD=java skeletonprogram.SzkeletonProgram --test=%TEST%
-if not "%INPUT%"=="" set CMD=%CMD% --input=%INPUT%
-if not "%OUTPUT%"=="" set CMD=%CMD% --output=%OUTPUT%
-
-echo Futtatas: %CMD%
-%CMD%
+echo Futtatas script alapjan: %SCRIPT%
+java skeletonprogram.SzkeletonProgram --input="%SCRIPT%"

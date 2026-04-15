@@ -1,0 +1,7 @@
+# Alap palya letrehozas parancsokkal
+utletrehoz Fo_ut Telephely_1 Csomopont_A 10 normal 2
+utletrehoz Mellek_ut Csomopont_A Csomopont_B 8 hid 1
+utletrehoz Alagut_1 Csomopont_B Vegallomas_1 6 alagut 1
+lerakodas Fo_ut 0 Ho 2
+lerakodas Fo_ut 0 Jeg 1
+lerakodas Mellek_ut 0 Ho 1

@@ -1,68 +1,119 @@
-﻿Használati útmutató a prototípushoz
+﻿Hasznalati utmutato a parancs-alapu prototipushoz
+==================================================
 
-1. Előfeltételek
-- Java JDK telepítve (legalább JDK 8).
-- Parancssor használata (Command Prompt).
-- A fájlok a proto mappában vannak.
+1. Elofeltetelek
+----------------
+- Java JDK 8 vagy ujabb telepitve.
+- Windows CMD vagy Unix terminal.
 
-2. Fordítás
-1. Nyisd meg a parancssort.
-2. Lépj be a proto mappába:
-   cd proto
-3. Fordítsd le a forrásokat Windows rendszeren:
-   javac -d . jarmuvek\*.java jatekosok\*.java takaritofejek\*.java terkep\*.java skeletonprogram\*.java
-4. Linux/Unix rendszeren:
-   javac -d . jarmuvek/*.java jatekosok/*.java takaritofejek/*.java terkep/*.java skeletonprogram/*.java
+2. Forditas
+-----------
+Lepj be a proto mappaba, majd:
 
-3. Futtatás
-- Interaktív menü:
+  EZ A BASZÓ PARACS, EZT HASZNÁLJÁTOK,
+  NE FOSSATOK BE HA AZ ELSŐ PARANCS UTÁN PIROS ÜZENETET KAPTOK:
+
+  del /s /q *.class
+  javac -d . terkep\*.java takaritofejek\*.java jarmuvek\*.java jatekosok\*.java skeletonprogram\*.java
   java skeletonprogram.SzkeletonProgram
-- Egy konkrét teszt:
-  java skeletonprogram.SzkeletonProgram --test=4
-- Az összes teszt:
-  java skeletonprogram.SzkeletonProgram --all
-- Bemenet fájlból:
-  java skeletonprogram.SzkeletonProgram --test=4 --input=input.txt
-- Kimenet fájlba:
-  java skeletonprogram.SzkeletonProgram --test=4 --output=output.txt
-- Közvetlen opcióválasztás:
-  java skeletonprogram.SzkeletonProgram 4
 
-4. Menüpontok
-1: Hókotró fejének cserélése
-2: Új hókotró vásárlása
-3: Új fej vásárlása
-4: Busz haladása és fizetés
-5: Sárkány fej működése
-6: Hányó fej működése
-7: Sószóró fej működése
-8: Söprő fej működése
-9: Jégtörő fej működése
-10: Játék vége ellenőrzés
-12: Jármű megcsúszása
-13: Havazás szimulációja
-14: Só töltése a sószóró fejbe
-15: Biokerozin töltése a sárkány fejbe
-16: Autó áthaladása és jéggé tömörülés
-17: Leszórt só
-0: Kilépés
+  ezt a hármat kell ebben a sorrendben futtatni külön külön és minden fasza lesz
 
-5. Logolás
-- A program minden főbb műveletet és metódushívást naplóz a konzolra.
-- A logolás segíti a működés és a tesztkimenet követését.
-- A felület karakteres, nincs grafikus megjelenés.
+  Windows:
+    del /q sources.txt 2>nul
+    for /r %i in (*.java) do @echo %i>>sources.txt
+    javac @sources.txt
 
-6. Fájl alapú vezérlés
-- --input=FILE használható a bemenet fájlból történő beolvasására.
-- --output=FILE használható a kimenet fájlba írására.
-- A run_test.bat és run_test.sh segít a gyors futtatásban.
+  Linux/Mac:
+    find . -name "*.java" > sources.txt
+    javac @sources.txt
 
-7. Gyors futtatás Windows alatt
-- run_test.bat 4
-- run_test.bat 4 input.txt output.txt
+3. Futtatas
+-----------
+  Interaktiv mod (parancsokat kezi begepelesre varja):
+    java skeletonprogram.SzkeletonProgram
 
-8. Hibakeresés
-- Ha a javac nem találja a fájlokat, ellenőrizze, hogy a proto könyvtárban van-e.
-- Ha class not found hiba lép fel, győződjön meg róla, hogy a fordítás -d . opcióval történt.
-- A helyes indítás:
-  java skeletonprogram.SzkeletonProgram
+  Script fajlbol vezerelt mod:
+    java skeletonprogram.SzkeletonProgram --input=input.txt
+
+  Gyors inditas a segedscripttel:
+    run_test.bat [script.txt]       (Windows)
+    ./run_test.sh [script.txt]      (Linux/Mac)
+
+4. Parancsok teljes listaja
+----------------------------
+  Altalanos:
+    help                            - parancsok listaja
+    kilepes                         - kilepes a programbol
+    nehezseg [easy|medium|hard]     - nehezsegi szint beallitasa
+
+  Objektumok:
+    letrehoz [tipus] [nev]          - entity letrehozasa
+      tipus: TakaritoJatekos | BuszosJatekos | Hokotro | Busz | Auto
+    szerkeszt [nev] [ujnev]         - atnevezas
+    kivalaszt [nev]                 - aktiv entity kivalasztasa
+    lista [tipus]                   - adott tipusu entityk listazasa
+
+  Palya:
+    utletrehoz [nev] [cs1] [cs2] [hossz] [tipus] [savszam]
+      tipus: normal | hid | alagut
+    lerakodas [utnev] [sav] [anyag] [ertek]
+      anyag: Ho | Jeg | So | Feltortjeg | Zuzalek
+    betolt [fajlnev]                - parancsok betoltese txt fajlbol
+    terkep                          - utvazlat kiirasa
+
+  Jarmu iranyitasa:
+    lepes [ut] [sav]                - kivalasztott jarmu mozgatasa
+    wait [nev]                      - varakozas (kor eltelik)
+
+  Hokotro muveletei (telephelyen):
+    hokotrovasarlas [nev]           - uj hokotro vasarlasa (300 Ft)
+    fejvasarlas [hokotro] [fejtipus] - uj fej vasarlasa (80 Ft)
+      fejtipus: SoproFej | HanyoFej | JegtoroFej | SoszoroFej | SarkanyFej | ZuzottkoszoroFej
+    fejcsere [hokotro] [fejtipus]   - aktiv fej csereje a raktarbol
+    sotoltes [hokotro]              - sokeszlet feltoltese (50 Ft)
+    kerozintoltes [hokotro]         - kerozinkeszlet feltoltese (60 Ft)
+    zuzalektoltes [hokotro]         - zuzalekkeszlet feltoltese (40 Ft)
+
+  Takaritas es idojaras:
+    takarit [hokotro] [sav]         - sav takaritasa az aktiv fejjel
+    havazas                         - havazas szimulalasa (kor eltelik)
+
+  Informacio:
+    allapot [nev|Mind]              - egy vagy osszes entity allapota
+
+5. Palyabetoltes txt-bol
+------------------------
+A betolt [fajlnev] parancs soronkent olvassa a fajlt es minden sort
+parancskeent hajt vegre, mintha konzolba irtad volna be.
+
+Komment sorok: # vagy // karakterekkel kezdodo sorok figyelmen kivul maradnak.
+Rekurziv betoltes tiltva (A nem tolthet be A-t ismet).
+
+Minta palyafajl (palya_alap.txt):
+  utletrehoz Fo_ut Telephely_1 Csomopont_A 10 normal 2
+  lerakodas Fo_ut 0 Ho 2
+
+Betolotest elvegezni:
+  betolt palya_alap.txt
+
+6. Jatek menete
+---------------
+1. Allisd be a nehezseget: nehezseg medium
+2. Hozz letre jatekosokat: letrehoz TakaritoJatekos t1
+3. Toltsd be a palyat: betolt palya_alap.txt
+4. Valaszd ki a jatekost: kivalaszt t1
+5. Vasarolj hokotrot: hokotrovasarlas kotro1
+6. Told fel a keszleteket: sotoltes kotro1
+7. Valaszd ki a hokotrot: kivalaszt kotro1
+8. Lepj az utra: lepes Fo_ut 0
+9. Takaritsd a savot: takarit kotro1 0
+10. Havazast szimulalj: havazas
+11. Ellenorizd az allapotot: allapot Mind
+
+7. Hibakezeles
+--------------
+- Sikeres muvelet: OK: [uzenet]
+- Hiba eseten:    ERROR: [uzenet]
+- A rendszer ellenorzi: parameterszamot, tipusokat, savindexeket,
+  telephelyen-letet, penzegyenleget es tulajdonosi jogokat.

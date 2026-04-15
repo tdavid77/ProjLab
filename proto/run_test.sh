@@ -1,24 +1,18 @@
 #!/bin/sh
-# Prototipus teszt futtatas Unix-szeru rendszereken.
-# Hasznalat: ./run_test.sh <testszam> [bemenet.txt] [kimenet.txt]
+# Prototipus futtatas Unix-szeru rendszereken.
+# Hasznalat:
+#   ./run_test.sh [script.txt]
 
-if [ "$1" = "" ]; then
-  echo "Hasznalat: ./run_test.sh <testszam> [bemenet.txt] [kimenet.txt]"
-  echo "Pelda: ./run_test.sh 4 input.txt output.txt"
+SCRIPT="$1"
+if [ -z "$SCRIPT" ]; then
+  SCRIPT="input.txt"
+fi
+
+if [ ! -f "$SCRIPT" ]; then
+  echo "Hiba: script fajl nem talalhato: $SCRIPT"
   exit 1
 fi
 
-TEST="$1"
-INPUT="$2"
-OUTPUT="$3"
-
-CMD="java skeletonprogram.SzkeletonProgram --test=$TEST"
-if [ -n "$INPUT" ]; then
-  CMD="$CMD --input=$INPUT"
-fi
-if [ -n "$OUTPUT" ]; then
-  CMD="$CMD --output=$OUTPUT"
-fi
-
+CMD="java skeletonprogram.SzkeletonProgram --input=$SCRIPT"
 echo "Futtatas: $CMD"
-sh -c "$CMD"
+exec $CMD

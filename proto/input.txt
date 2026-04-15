@@ -1,1 +1,16 @@
-I 
+help
+nehezseg medium
+letrehoz TakaritoJatekos takarito1
+kivalaszt takarito1
+letrehoz Hokotro kotro_01
+betolt palya_alap.txt
+kivalaszt kotro_01
+lepes Fo_ut 0
+sotoltes kotro_01
+fejvasarlas kotro_01 SoszoroFej
+fejcsere kotro_01 SoszoroFej
+takarit kotro_01 0
+havazas
+allapot Mind
+terkep
+kilepes
