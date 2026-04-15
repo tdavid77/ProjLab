@@ -194,6 +194,9 @@ Példák a bemeneti nyelvre:
     \classitem{+statusLine(state: GameState): String \textit{(NamedEntity)}}{A jármű állapotának szöveges reprezentációját adja vissza (pozíció + állapot).}
     \classitem{+canMove(): boolean}{Mozgásképesség ellenőrzése. Igaz, ha \texttt{disabledTime <= 0}, egyébként hamis.}
     \classitem{+tickTime(): void}{Körléptetés. Ha \texttt{disabledTime > 0}, eggyel csökkenti az értéket.}
+    \classitem{+vegrehajtLepes(target: Ut, targetSav: int, state: GameState): void}{Lépést hajt végre a célútra/célsávba. Ellenőrzi a szomszédosságot a jelenlegi úthoz képest, frissíti a pozíciót, majd lefuttatja az esetleges baleseti logikát és a célút-elérési hookot.}
+    \classitem{\#onCelUtElerve(target: Ut, state: GameState): void}{Védett kiterjesztési pont. Alapértelmezésben nem végez műveletet; a leszármazottak (pl. \texttt{Busz}) felüldefiniálhatják célút-eléréskor.}
+    \classitem{-maybeCrash(sav: Sav, state: GameState): void}{Privát segédmetódus. Nem hókotró járműnél a sáv jégviszonyai és nehézség alapján balesetet sorsol; siker esetén \texttt{disabledTime := 2}, balesetszámlálót növel és eseményt naplóz.}
 \end{class-template-method}
 
 
@@ -242,6 +245,7 @@ Példák a bemeneti nyelvre:
     \classitem{+statusLine(state: GameState): String \textit{(örökölt)}}{A busz szöveges állapotképét adja vissza (pozíció és mozgásképesség).}
     \classitem{+canMove(): boolean \textit{(örökölt)}}{Igazat ad vissza, ha a busz nem mozgásképtelen (\texttt{disabledTime <= 0}).}
     \classitem{+tickTime(): void \textit{(örökölt)}}{Idő frissítés. Ha \texttt{disabledTime > 0}, akkor eggyel csökkenti; egyébként változatlanul hagyja.}
+    \classitem{\#onCelUtElerve(target: Ut, state: GameState): void \textit{(Override)}}{Célút-eléréskor, ha az út végállomáshoz kapcsolódik, növeli a \texttt{completedTrips} értékét, majd a tulajdonos játékosnak +40 pénzt jóváír és eseményt naplóz.}
 \end{class-template-method}
 
 
@@ -271,6 +275,12 @@ Példák a bemeneti nyelvre:
     \classitem{+renameTo(newName: String): void \textit{(örökölt)}}{Frissíti az objektum nevét.}
     \classitem{+canMove(): boolean \textit{(örökölt)}}{Igazat ad vissza, ha a hókotró mozgásképes (\texttt{disabledTime <= 0}).}
     \classitem{+tickTime(): void \textit{(örökölt)}}{Időfrissítéskor csökkenti a mozgásképtelen időt, ha szükséges.}
+    \classitem{+aktualisUt(state: GameState): Ut}{Visszaadja a hókotró aktuális útját. Hibát dob, ha a hókotró nincs úton vagy az út nem létezik.}
+    \classitem{+takaritSav(ut: Ut, savIndex: int, state: GameState): void}{A megadott úton és sávon végrehajtja a takarítást az aktív fejjel. Ha nincs aktív fej, alapértelmezett \texttt{SoproFej}-et hoz létre.}
+    \classitem{+fejCsere(jatekos: Jatekos, ujFej: FejTipus): void}{Lecseréli az aktív fejet a játékos raktárából. Hibát dob, ha az új fej nincs készleten; a korábbi aktív fejet visszateszi a raktárba.}
+    \classitem{+sotoltes(jatekos: Jatekos): void}{A játékostól levonja a sótöltés árát (50), majd \texttt{so := 100}. Hibát dob, ha nincs elég pénz.}
+    \classitem{+kerozintoltes(jatekos: Jatekos): void}{A játékostól levonja a kerozintöltés árát (60), majd \texttt{kerozin := 100}. Hibát dob, ha nincs elég pénz.}
+    \classitem{+zuzalektoltes(jatekos: Jatekos): void}{A játékostól levonja a zúzaléktöltés árát (40), majd \texttt{zuzottko := 100}. Hibát dob, ha nincs elég pénz.}
 \end{class-template-method}
 
 \textbf{Pszeudokód a takarítás menetéhez:}
@@ -499,12 +509,76 @@ METHOD: SoszoroFej.takaritHatas(h, sav, ut, savIndex, state)
 END METHOD
 \end{verbatim}
 
+\subsection{Ut}
+\begin{class-template-responsibility}
+    Az úthálózat egy élét (szakaszát) reprezentáló osztály, amely összeköt két csomópontot. Tartalmazza az úton kialakított sávokat, tárolja az út típusát (normál, híd, alagút) és hosszát. Felelős az irányítással kapcsolatos alapvető gráf-információk szolgáltatásáért (pl. egyik végpont alapján a másik megállapítása), valamint a rajta lévő sávok összefogásáért.
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Object \baseclass Ut
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-name: String}{Az út egyedi azonosítója (neve).}
+    \classitem{-nodeA: String}{Az utat határoló egyik csomópont neve.}
+    \classitem{-nodeB: String}{Az utat határoló másik csomópont neve.}
+    \classitem{-length: int}{Az út hossza.}
+    \classitem{-type: UtTipus}{Az út típusa (\texttt{NORMAL}, \texttt{HID}, \texttt{ALAGUT}).}
+    \classitem{-savok: List<Sav>}{Az úthoz tartozó sávok listája, melyek az akadályokat, lerakódásokat tárolják.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-Ut(name: String, nodeA: String, nodeB: String, length: int, type: UtTipus, savSzam: int)}{Privát konstruktor, inicializálja az utat és létrehozza a megadott számú sávot.}
+    \classitem{+name(): String}{Visszaadja az út azonosító nevét.}
+    \classitem{+renameTo(newName: String): void}{Segítségével megváltoztatható az út azonosítója a megfelelő esemény hatására.}
+    \classitem{+hasNode(node: String): boolean}{Ellenőrzi és visszaadja, hogy a paraméterként kapott csomópont az út valamelyik végpontja-e.}
+    \classitem{+opposite(node: String): String}{Visszaadja az út másik végpontját a paraméterként kapott (ismert) végponthoz képest, vagy \texttt{null}-t, ha az út nem tartalmazza a megadott végpontot.}
+    \classitem{+savSzam(): int}{Visszaadja az úthoz tartozó sávok darabszámát.}
+    \classitem{+sav(idx: int): Sav}{Visszaadja az úthoz tartozó felparaméterezett, adott sávindexeddel rendelkező sávot.}
+    \classitem{+sumHo(): int}{Összeadja az út összes sávjában található hó mennyiségét, és visszaadja az eredményt.}
+    \classitem{+alkalmazHofall(): int}{Minden sávon alkalmaz egy havazási lépést (alagút-védelem figyelembevételével), majd visszaadja a hó mennyiségének nettó növekményét (\texttt{after - before}).}
+    \classitem{+describeCompact(): String}{Tömör, olvasható állapotleírást biztosít a konzolos kimenetre az útról, szomszédairól és sávjairól.}
+\end{class-template-method}
+
+\subsection{Sav}
+\begin{class-template-responsibility}
+    Egy út (Ut) adott sávját reprezentáló osztály. Felelős az adott sávon történő időjárás okozta lerakódások (hó, jég, feltört jég) tárolásáért, valamint a takarítási védelem (sózás, zúzottkő) hátralévő idejének nyilvántartásáért. Ő kezeli a hóesés hatásait és a védelem körönkénti csökkenését (idő telése).
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Object \baseclass Sav
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-index: int}{A sáv indexe (azonosítója) a befogadó úton belül.}
+    \classitem{-snow: int}{A sávon felgyülemlett hó aktuális mennyisége.}
+    \classitem{-ice: int}{A sávon lévő jég aktuális mennyisége.}
+    \classitem{-brokenIce: int}{A sávon lévő, jégtörő fejjel már feltört jég mennyisége.}
+    \classitem{-saltedRounds: int}{A hátralévő körök száma, ameddig a sáv sózva van (ezalatt a ráhulló hó/jég elolvad).}
+    \classitem{-grittedRounds: int}{A hátralévő körök száma, ameddig a sáv zúzottkővel szórt (csökkenti a csúszásveszélyt).}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-Sav(index: int)}{Privát konstruktor. Beállítja a sáv indexét, a lerakódásokat és a védelmeket alapesetben nullára inicializálva.}
+    \classitem{+applyDeposit(type: DepositType, value: int): void}{Célzottan helyez el a sávon különböző típusú lerakódásokat (\texttt{HO}, \texttt{JEG}, \texttt{SO}, \texttt{ZUZALEK}, \texttt{FELTORTJEG}) a megadott mennyiségben vagy értéken.}
+    \classitem{+snowingOneUnit(protectedByTunnel: boolean): void}{Egy egységnyi havat próbál a sávhoz adni havazás esemény esetén, figyelembe véve, hogy az út alagútban van-e (védve a havazástól), vagy éppen sózva van-e a sáv.}
+    \classitem{+tickTime(): void}{Körléptetés. Eggyel csökkenti a sózott és a zúzottköves állapotból hátralévő körök számát, ha azok nagyobbak nullánál.}
+    \classitem{+describeCompact(): String}{Tömör, kifejező karakteres leírást nyújt a sáv indexéről, hószintjéről, jégszintjéről és egyedi flaggel a sózottságáról a konzolos kimenet számára.}
+\end{class-template-method}
+
+\subsection{Jatekos}
+\begin{class-template-responsibility}
+    A menedzser-játékosokat reprezentáló osztály, amely kezeli a pénzügyeket, járműlistát és fejraktárt. Refaktor után ide került a vásárlási logika egy része.
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Object \baseclass Jatekos
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{\#name: String}{A játékos neve/azonosítója.}
+    \classitem{\#money: int}{A játékos aktuális pénze.}
+    \classitem{\#vehicles: List<String>}{A játékoshoz tartozó járművek neveinek listája.}
+    \classitem{\#inventory: List<FejTipus>}{A játékos raktárában elérhető fejtípusok listája.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+vasarolHokotro(hokotroNev: String): Hokotro}{Levásárolja a hókotró árát (300), létrehozza az új hókotrót, hozzárendeli a tulajdonost és a játékos járműlistájához adja. Hibát dob, ha nincs elég pénz.}
+    \classitem{+vasarolFej(fejTipus: FejTipus): void}{Levásárolja a fej árát (80), majd a választott fejtípust hozzáadja a játékos raktárához. Hibát dob, ha nincs elég pénz.}
+\end{class-template-method}
+
 \section{A tesztek részletes tervei, leírásuk a teszt nyelvén}
-
-
-
-
-
 
 
 

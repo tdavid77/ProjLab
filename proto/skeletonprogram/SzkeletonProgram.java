@@ -210,6 +210,23 @@ public class SzkeletonProgram {
             return savok.get(idx);
         }
 
+        public int sumHo() {
+            int total = 0;
+            for (Sav sav : savok) {
+                total += sav.ho;
+            }
+            return total;
+        }
+
+        public int alkalmazHoEses() {
+            int before = sumHo();
+            for (Sav sav : savok) {
+                sav.hoingOneUnit(type == UtTipus.ALAGUT);
+            }
+            int after = sumHo();
+            return after - before;
+        }
+
         public String describeCompact() {
             StringBuilder sb = new StringBuilder();
             sb.append("Ut ").append(name).append(" (").append(type.name()).append(")")
@@ -329,6 +346,27 @@ public class SzkeletonProgram {
         public void addFejToInventory(FejTipus fejTipus) {
             inventory.add(fejTipus);
         }
+
+        public Hokotro vasarolHokotro(String hokotroNev) {
+            int price = 300;
+            if (!canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz. Szukseges: " + price);
+            }
+            charge(price);
+            Hokotro h = new Hokotro(hokotroNev);
+            h.owner = name;
+            addVehicle(h.name);
+            return h;
+        }
+
+        public void vasarolFej(FejTipus fejTipus) {
+            int price = 80;
+            if (!canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz a fej vasarlashoz.");
+            }
+            charge(price);
+            addFejToInventory(fejTipus);
+        }
     }
 
     private static final class TakaritoJatekos extends Jatekos {
@@ -403,6 +441,45 @@ public class SzkeletonProgram {
                 disabledTime -= 1;
             }
         }
+
+        public void vegrehajtLepes(Ut target, int targetSav, GameState state) {
+            if (currentUt != null) {
+                Ut current = state.getUt(currentUt);
+                if (current == null) {
+                    throw new IllegalArgumentException("Nincs ilyen ut: " + currentUt);
+                }
+                boolean sharesNode = current.hasNode(target.nodeA) || current.hasNode(target.nodeB);
+                if (!sharesNode && !current.name.equalsIgnoreCase(target.name)) {
+                    throw new IllegalArgumentException("A celut nem szomszedos a jelenlegi uttal.");
+                }
+            }
+
+            currentUt = target.name;
+            savIndex = targetSav;
+
+            maybeCrash(target.sav(targetSav), state);
+            onCelUtElerve(target, state);
+        }
+
+        protected void onCelUtElerve(Ut target, GameState state) {
+            // alapertelmezetten nincs extra logika
+        }
+
+        private void maybeCrash(Sav sav, GameState state) {
+            if (this instanceof Hokotro) {
+                return;
+            }
+            if (sav.ice <= 0) {
+                return;
+            }
+            double modifier = sav.zuzalekHatralevoIdeje > 0 ? -0.12 : 0.0;
+            double chance = Math.max(0.0, Math.min(0.95, state.difficulty.baseCrashChance() + (sav.ice * 0.03) + modifier));
+            if (state.random.nextDouble() < chance) {
+                disabledTime = 2;
+                state.accidents += 1;
+                state.enqueueEvent(name + " megcsuszott jeges savon, 2 korre kiesett.");
+            }
+        }
     }
 
     private static final class Hokotro extends Jarmu {
@@ -440,6 +517,62 @@ public class SzkeletonProgram {
                 + " | Keszletek:[So:" + so + ", Kerozin:" + kerozin + ", Zuzottko:" + zuzottko + "]"
                 + " | Allapot:" + allapot;
         }
+
+        public Ut aktualisUt(GameState state) {
+            if (currentUt == null) {
+                throw new IllegalArgumentException("A hokotro nincs uton, nincs mit takaritani.");
+            }
+            Ut ut = state.getUt(currentUt);
+            if (ut == null) {
+                throw new IllegalArgumentException("Nincs ilyen ut: " + currentUt);
+            }
+            return ut;
+        }
+
+        public void takaritSav(Ut ut, int savIndex, GameState state) {
+            Sav sav = ut.sav(savIndex);
+            if (aktivFej == null) {
+                aktivFej = FejFactory.create(FejTipus.SOPROFEJ);
+            }
+            aktivFej.takaritHatas(this, sav, ut, savIndex, state);
+        }
+
+        public void fejCsere(Jatekos jatekos, FejTipus ujFej) {
+            if (!jatekos.removeFejFromInventory(ujFej)) {
+                throw new IllegalArgumentException("A kivant fej nincs a raktarban: " + ujFej.name());
+            }
+            if (aktivFej != null) {
+                jatekos.addFejToInventory(aktivFej.tipus());
+            }
+            aktivFej = FejFactory.create(ujFej);
+        }
+
+        public void sotoltes(Jatekos jatekos) {
+            int price = 50;
+            if (!jatekos.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz sotolteshez.");
+            }
+            jatekos.charge(price);
+            so = 100;
+        }
+
+        public void kerozintoltes(Jatekos jatekos) {
+            int price = 60;
+            if (!jatekos.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz kerozintolteshez.");
+            }
+            jatekos.charge(price);
+            kerozin = 100;
+        }
+
+        public void zuzalektoltes(Jatekos jatekos) {
+            int price = 40;
+            if (!jatekos.canAfford(price)) {
+                throw new IllegalArgumentException("Nincs eleg penz zuzalektolteshez.");
+            }
+            jatekos.charge(price);
+            zuzottko = 100;
+        }
     }
 
     private static final class Busz extends Jarmu {
@@ -453,6 +586,18 @@ public class SzkeletonProgram {
         @Override
         public String type() {
             return "Busz";
+        }
+
+        @Override
+        protected void onCelUtElerve(Ut target, GameState state) {
+            if (target.hasNode("Vegallomas") || target.hasNode("Vegallomas_1") || target.hasNode("Vegallomas_2")) {
+                completedTrips += 1;
+                Jatekos ownerEntity = state.getTypedEntity(owner, Jatekos.class);
+                if (ownerEntity != null) {
+                    ownerEntity.money += 40;
+                    state.enqueueEvent("Busz kor teljesitve: " + name + ", jovairas +40.");
+                }
+            }
         }
     }
 
@@ -712,6 +857,24 @@ public class SzkeletonProgram {
                 }
             }
         }
+
+        public void evaluateGameOver() {
+            long busCount = entities.values().stream().filter(e -> e instanceof Busz).count();
+            long disabledBusCount = entities.values().stream()
+                .filter(e -> e instanceof Busz)
+                .map(e -> (Busz) e)
+                .filter(b -> !b.canMove())
+                .count();
+            if (busCount > 0 && disabledBusCount == busCount) {
+                enqueueEvent("JATEK VEGE: minden busz mozgaskepetlen.");
+                running = false;
+                return;
+            }
+            if (accidents >= 5) {
+                enqueueEvent("JATEK VEGE: kijarasi tilalom, kritikus balesetszam.");
+                running = false;
+            }
+        }
     }
 
     private static final class GameEngine {
@@ -779,7 +942,7 @@ public class SzkeletonProgram {
             commands.put("kerozintoltes", actions::handleFuelRefill);
             commands.put("zuzalektoltes", actions::handleGritRefill);
             commands.put("takarit", actions::handleCleanSav);
-            commands.put("havazas", actions::handleHofall);
+            commands.put("havazas", actions::handleHoeses);
             commands.put("lista", actions::handleListByType);
         }
 
@@ -867,7 +1030,7 @@ public class SzkeletonProgram {
         }
     }
 
-    private static final class GameActions {
+    private static final class GameActions { //Ez hivatalosan nem létezik
         private final GameState state;
 
         private GameActions(GameState state) {
@@ -1103,50 +1266,9 @@ public class SzkeletonProgram {
                 targetSav = parseSavIndex(target, args.get(1));
             }
 
-            if (vehicle.currentUt != null) {
-                Ut current = requireUt(vehicle.currentUt);
-                boolean sharesNode = current.hasNode(target.nodeA) || current.hasNode(target.nodeB);
-                if (!sharesNode && !current.name.equalsIgnoreCase(target.name)) {
-                    throw new IllegalArgumentException("A celut nem szomszedos a jelenlegi uttal.");
-                }
-            }
-
-            vehicle.currentUt = target.name;
-            vehicle.savIndex = targetSav;
-
-            maybeCrash(vehicle, target.sav(targetSav));
-            if (vehicle instanceof Busz) {
-                maybeRegisterBusTrip((Busz) vehicle, target);
-            }
+            vehicle.vegrehajtLepes(target, targetSav, state);
 
             ok("'" + vehicle.name + "' a(z) '" + target.name + "' " + targetSav + ". savjaba lepett.");
-        }
-
-        private void maybeRegisterBusTrip(Busz busz, Ut target) {
-            if (target.hasNode("Vegallomas") || target.hasNode("Vegallomas_1") || target.hasNode("Vegallomas_2")) {
-                busz.completedTrips += 1;
-                Jatekos owner = state.getTypedEntity(busz.owner, Jatekos.class);
-                if (owner != null) {
-                    owner.money += 40;
-                    state.enqueueEvent("Busz kor teljesitve: " + busz.name + ", jovairas +40.");
-                }
-            }
-        }
-
-        private void maybeCrash(Jarmu vehicle, Sav sav) {
-            if (vehicle instanceof Hokotro) {
-                return;
-            }
-            if (sav.ice <= 0) {
-                return;
-            }
-            double modifier = sav.zuzalekHatralevoIdeje > 0 ? -0.12 : 0.0;
-            double chance = Math.max(0.0, Math.min(0.95, state.difficulty.baseCrashChance() + (sav.ice * 0.03) + modifier));
-            if (state.random.nextDouble() < chance) {
-                vehicle.disabledTime = 2;
-                state.accidents += 1;
-                state.enqueueEvent(vehicle.name + " megcsuszott jeges savon, 2 korre kiesett.");
-            }
         }
 
         private void handleWait(CommandContext context, List<String> args) {
@@ -1163,16 +1285,10 @@ public class SzkeletonProgram {
             if (!state.jatekosAtTelephely(jatekos)) {
                 throw new IllegalArgumentException("A jatekos nem telephelyen van.");
             }
-            int price = 300;
-            if (!jatekos.canAfford(price)) {
-                throw new IllegalArgumentException("Nincs eleg penz. Szukseges: " + price);
-            }
-            jatekos.charge(price);
-            Hokotro h = new Hokotro(args.get(0));
-            h.owner = jatekos.name;
+
+            Hokotro h = jatekos.vasarolHokotro(args.get(0));
             state.putEntity(h);
-            jatekos.addVehicle(h.name);
-            ok("Hokotro vasarlas sikeres: " + h.name + ". Penz levonva: " + price);
+            ok("Hokotro vasarlas sikeres: " + h.name + ". Penz levonva: 300");
         }
 
         private void handleStatus(CommandContext context, List<String> args) {
@@ -1240,14 +1356,7 @@ public class SzkeletonProgram {
             if (ujFej == null) {
                 throw new IllegalArgumentException("Ismeretlen fejtipus: " + args.get(1));
             }
-            if (!jatekos.removeFejFromInventory(ujFej)) {
-                throw new IllegalArgumentException("A kivant fej nincs a raktarban: " + ujFej.name());
-            }
-
-            if (h.aktivFej != null) {
-                jatekos.addFejToInventory(h.aktivFej.tipus());
-            }
-            h.aktivFej = FejFactory.create(ujFej);
+            h.fejCsere(jatekos, ujFej);
             ok("Fejcsere sikeres: " + h.name + " -> " + ujFej.name());
         }
 
@@ -1262,13 +1371,8 @@ public class SzkeletonProgram {
             if (type == null) {
                 throw new IllegalArgumentException("Ismeretlen fejtipus: " + args.get(1));
             }
-            int price = 80;
-            if (!jatekos.canAfford(price)) {
-                throw new IllegalArgumentException("Nincs eleg penz a fej vasarlashoz.");
-            }
-            jatekos.charge(price);
-            jatekos.addFejToInventory(type);
-            ok("Fejvasarlas sikeres: " + type.name() + ", levonas: " + price);
+            jatekos.vasarolFej(type);
+            ok("Fejvasarlas sikeres: " + type.name() + ", levonas: 80");
         }
 
         private void handleSaltRefill(CommandContext context, List<String> args) {
@@ -1278,13 +1382,8 @@ public class SzkeletonProgram {
                 throw new IllegalArgumentException("Sotoltes csak telephelyen engedelyezett.");
             }
             Hokotro h = requireOwnedHokotro(jatekos, args.get(0));
-            int price = 50;
-            if (!jatekos.canAfford(price)) {
-                throw new IllegalArgumentException("Nincs eleg penz sotolteshez.");
-            }
-            jatekos.charge(price);
-            h.so = 100;
-            ok("'" + h.name + "' sokeszlete feltoltve. Penz levonva: " + price);
+            h.sotoltes(jatekos);
+            ok("'" + h.name + "' sokeszlete feltoltve. Penz levonva: 50");
         }
 
         private void handleFuelRefill(CommandContext context, List<String> args) {
@@ -1294,13 +1393,8 @@ public class SzkeletonProgram {
                 throw new IllegalArgumentException("Kerozintoltes csak telephelyen engedelyezett.");
             }
             Hokotro h = requireOwnedHokotro(jatekos, args.get(0));
-            int price = 60;
-            if (!jatekos.canAfford(price)) {
-                throw new IllegalArgumentException("Nincs eleg penz kerozintolteshez.");
-            }
-            jatekos.charge(price);
-            h.kerozin = 100;
-            ok("'" + h.name + "' kerozinkeszlete feltoltve. Penz levonva: " + price);
+            h.kerozintoltes(jatekos);
+            ok("'" + h.name + "' kerozinkeszlete feltoltve. Penz levonva: 60");
         }
 
         private void handleGritRefill(CommandContext context, List<String> args) {
@@ -1310,77 +1404,35 @@ public class SzkeletonProgram {
                 throw new IllegalArgumentException("Zuzalektoltes csak telephelyen engedelyezett.");
             }
             Hokotro h = requireOwnedHokotro(jatekos, args.get(0));
-            int price = 40;
-            if (!jatekos.canAfford(price)) {
-                throw new IllegalArgumentException("Nincs eleg penz zuzalektolteshez.");
-            }
-            jatekos.charge(price);
-            h.zuzottko = 100;
-            ok("'" + h.name + "' zuzalekkeszlete feltoltve. Penz levonva: " + price);
+            h.zuzalektoltes(jatekos);
+            ok("'" + h.name + "' zuzalekkeszlete feltoltve. Penz levonva: 40");
         }
 
         private void handleCleanSav(CommandContext context, List<String> args) {
             ensureArgCount(args, 2, 2, "takarit [hokotro] [sav]");
             Hokotro h = requireHokotro(args.get(0));
-            if (h.currentUt == null) {
-                throw new IllegalArgumentException("A hokotro nincs uton, nincs mit takaritani.");
-            }
-            Ut ut = requireUt(h.currentUt);
+            Ut ut = h.aktualisUt(state);
             int savIndex = parseSavIndex(ut, args.get(1));
-            Sav sav = ut.sav(savIndex);
-            if (h.aktivFej == null) {
-                h.aktivFej = FejFactory.create(FejTipus.SOPROFEJ);
-            }
-            h.aktivFej.takaritHatas(h, sav, ut, savIndex, state);
+            h.takaritSav(ut, savIndex, state);
             ok("'" + h.name + "' takaritasa lefutott a(z) " + ut.name + " " + savIndex + ". savon.");
         }
 
-        private void handleHofall(CommandContext context, List<String> args) {
+        private void handleHoeses(CommandContext context, List<String> args) {
             ensureArgCount(args, 0, 0, "havazas");
             if (state.utak.isEmpty()) {
                 throw new IllegalArgumentException("Nincs ut a halozatban.");
             }
             ok("Havazas szimulacio elinditva.");
             for (Ut ut : state.utak.values()) {
-                int before = sumHo(ut);
-                for (Sav sav : ut.savok) {
-                    sav.hoingOneUnit(ut.type == UtTipus.ALAGUT);
-                }
-                int after = sumHo(ut);
-                if (after != before) {
-                    state.enqueueEvent(ut.name + " savjain a ho +" + (after - before) + " egyseggel nott.");
+                int delta = ut.alkalmazHoEses();
+                if (delta != 0) {
+                    state.enqueueEvent(ut.name + " savjain a ho +" + delta + " egyseggel nott.");
                 } else {
                     state.enqueueEvent(ut.name + " savjain nem valtozott a horetag.");
                 }
             }
             state.tickTime();
-            evaluateGameOver();
-        }
-
-        private int sumHo(Ut ut) {
-            int total = 0;
-            for (Sav sav : ut.savok) {
-                total += sav.ho;
-            }
-            return total;
-        }
-
-        private void evaluateGameOver() {
-            long busCount = state.entities.values().stream().filter(e -> e instanceof Busz).count();
-            long disabledBusCount = state.entities.values().stream()
-                .filter(e -> e instanceof Busz)
-                .map(e -> (Busz) e)
-                .filter(b -> !b.canMove())
-                .count();
-            if (busCount > 0 && disabledBusCount == busCount) {
-                state.enqueueEvent("JATEK VEGE: minden busz mozgaskepetlen.");
-                state.running = false;
-                return;
-            }
-            if (state.accidents >= 5) {
-                state.enqueueEvent("JATEK VEGE: kijarasi tilalom, kritikus balesetszam.");
-                state.running = false;
-            }
+            state.evaluateGameOver();
         }
 
         private void handleListByType(CommandContext context, List<String> args) {
