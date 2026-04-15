@@ -278,13 +278,13 @@ public class SzkeletonProgram {
         }
     }
 
-    private static class Player implements NamedEntity {
+    private static class Jatekos implements NamedEntity {
         protected String name;
         protected int money = 1000;
         protected final List<String> vehicles = new ArrayList<>();
         protected final List<HeadType> inventory = new ArrayList<>();
 
-        private Player(String name) {
+        private Jatekos(String name) {
             this.name = name;
         }
 
@@ -331,7 +331,7 @@ public class SzkeletonProgram {
         }
     }
 
-    private static final class TakaritoJatekos extends Player {
+    private static final class TakaritoJatekos extends Jatekos {
         private TakaritoJatekos(String name) {
             super(name);
         }
@@ -342,7 +342,7 @@ public class SzkeletonProgram {
         }
     }
 
-    private static final class BuszosJatekos extends Player {
+    private static final class BuszosJatekos extends Jatekos {
         private BuszosJatekos(String name) {
             super(name);
         }
@@ -353,14 +353,14 @@ public class SzkeletonProgram {
         }
     }
 
-    private static class Vehicle implements NamedEntity {
+    private static class Jarmu implements NamedEntity {
         protected String name;
         protected String owner;
         protected String currentRoad;
         protected int laneIndex;
         protected int disabledRounds;
 
-        private Vehicle(String name) {
+        private Jarmu(String name) {
             this.name = name;
             this.currentRoad = null;
             this.laneIndex = 0;
@@ -405,7 +405,7 @@ public class SzkeletonProgram {
         }
     }
 
-    private static final class Hokotro extends Vehicle {
+    private static final class Hokotro extends Jarmu {
         private Fej activeHead;
         private int so;
         private int kerozin;
@@ -442,7 +442,7 @@ public class SzkeletonProgram {
         }
     }
 
-    private static final class Busz extends Vehicle {
+    private static final class Busz extends Jarmu {
         private int completedTrips;
 
         private Busz(String name) {
@@ -456,7 +456,7 @@ public class SzkeletonProgram {
         }
     }
 
-    private static final class Auto extends Vehicle {
+    private static final class Auto extends Jarmu {
         private Auto(String name) {
             super(name);
         }
@@ -673,9 +673,9 @@ public class SzkeletonProgram {
             roads.remove(name.toLowerCase(Locale.ROOT));
         }
 
-        public boolean playerAtDepot(Player player) {
+        public boolean playerAtDepot(Jatekos player) {
             for (String vehicleName : player.vehicles) {
-                Vehicle vehicle = getTypedEntity(vehicleName, Vehicle.class);
+                Jarmu vehicle = getTypedEntity(vehicleName, Jarmu.class);
                 if (vehicle == null) {
                     continue;
                 }
@@ -707,8 +707,8 @@ public class SzkeletonProgram {
                 }
             }
             for (NamedEntity entity : entities.values()) {
-                if (entity instanceof Vehicle) {
-                    ((Vehicle) entity).tickRound();
+                if (entity instanceof Jarmu) {
+                    ((Jarmu) entity).tickRound();
                 }
             }
         }
@@ -964,23 +964,23 @@ public class SzkeletonProgram {
                 created = new BuszosJatekos(name);
             } else if (entityType == EntityType.HOKOTRO) {
                 created = new Hokotro(name);
-                attachVehicleToSelectedPlayer((Vehicle) created);
+                attachVehicleToSelectedPlayer((Jarmu) created);
             } else if (entityType == EntityType.BUSZ) {
                 created = new Busz(name);
-                attachVehicleToSelectedPlayer((Vehicle) created);
+                attachVehicleToSelectedPlayer((Jarmu) created);
             } else {
                 created = new Auto(name);
-                attachVehicleToSelectedPlayer((Vehicle) created);
+                attachVehicleToSelectedPlayer((Jarmu) created);
             }
 
             state.putEntity(created);
             ok(created.type() + " '" + created.name() + "' sikeresen letrehozva.");
         }
 
-        private void attachVehicleToSelectedPlayer(Vehicle vehicle) {
+        private void attachVehicleToSelectedPlayer(Jarmu vehicle) {
             NamedEntity selected = state.selected();
-            if (selected instanceof Player) {
-                Player player = (Player) selected;
+            if (selected instanceof Jatekos) {
+                Jatekos player = (Jatekos) selected;
                 player.addVehicle(vehicle.name);
                 vehicle.owner = player.name;
             }
@@ -1011,8 +1011,8 @@ public class SzkeletonProgram {
                 road.renameTo(newName);
                 state.putRoad(road);
                 for (NamedEntity e : state.entities.values()) {
-                    if (e instanceof Vehicle) {
-                        Vehicle v = (Vehicle) e;
+                    if (e instanceof Jarmu) {
+                        Jarmu v = (Jarmu) e;
                         if (oldName.equalsIgnoreCase(v.currentRoad)) {
                             v.currentRoad = newName;
                         }
@@ -1027,16 +1027,16 @@ public class SzkeletonProgram {
 
         private void relinkReferences(String oldName, String newName) {
             for (NamedEntity e : state.entities.values()) {
-                if (e instanceof Player) {
-                    Player p = (Player) e;
+                if (e instanceof Jatekos) {
+                    Jatekos p = (Jatekos) e;
                     for (int i = 0; i < p.vehicles.size(); i++) {
                         if (p.vehicles.get(i).equalsIgnoreCase(oldName)) {
                             p.vehicles.set(i, newName);
                         }
                     }
                 }
-                if (e instanceof Vehicle) {
-                    Vehicle v = (Vehicle) e;
+                if (e instanceof Jarmu) {
+                    Jarmu v = (Jarmu) e;
                     if (oldName.equalsIgnoreCase(v.owner)) {
                         v.owner = newName;
                     }
@@ -1092,7 +1092,7 @@ public class SzkeletonProgram {
 
         private void handleMove(CommandContext context, List<String> args) {
             ensureArgCount(args, 1, 2, "lepes [ut] [sav-opcionalis]");
-            Vehicle vehicle = requireSelectedVehicle();
+            Jarmu vehicle = requireSelectedVehicle();
             if (!vehicle.canMove()) {
                 throw new IllegalArgumentException("A jarmu mozgaskepetlen meg " + vehicle.disabledRounds + " korig.");
             }
@@ -1125,7 +1125,7 @@ public class SzkeletonProgram {
         private void maybeRegisterBusTrip(Busz busz, Road target) {
             if (target.hasNode("Vegallomas") || target.hasNode("Vegallomas_1") || target.hasNode("Vegallomas_2")) {
                 busz.completedTrips += 1;
-                Player owner = state.getTypedEntity(busz.owner, Player.class);
+                Jatekos owner = state.getTypedEntity(busz.owner, Jatekos.class);
                 if (owner != null) {
                     owner.money += 40;
                     state.enqueueEvent("Busz kor teljesitve: " + busz.name + ", jovairas +40.");
@@ -1133,7 +1133,7 @@ public class SzkeletonProgram {
             }
         }
 
-        private void maybeCrash(Vehicle vehicle, Lane lane) {
+        private void maybeCrash(Jarmu vehicle, Lane lane) {
             if (vehicle instanceof Hokotro) {
                 return;
             }
@@ -1441,12 +1441,12 @@ public class SzkeletonProgram {
             return road;
         }
 
-        private Vehicle requireSelectedVehicle() {
+        private Jarmu requireSelectedVehicle() {
             NamedEntity selected = state.selected();
-            if (!(selected instanceof Vehicle)) {
+            if (!(selected instanceof Jarmu)) {
                 throw new IllegalArgumentException("Nincs kivalasztott jarmu. Hasznald: kivalaszt [jarmuNev]");
             }
-            return (Vehicle) selected;
+            return (Jarmu) selected;
         }
 
         private TakaritoJatekos requireSelectedCleanerPlayer() {
