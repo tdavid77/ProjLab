@@ -1,32 +1,514 @@
 \chapter{Részletes tervek}
 \comment{A dokumentum célja, hogy pontosan specifikálja az implementálandó osztályokat, beleértve a privát attribútumokat és metódusokat, ezek definícióját is.A dokumentum második fele részletesen be kell mutassa a korábban definiált be-és kimeneti nyelv szintakszisát felhasználva, hogy mely tesztekkel lesz a prototípus ellenőrizve.}
+\section{Módosítások az előző dokumentumhoz képest}
+\subsection{Bemeneti nyelv}
+\begin{itemize}
+%INICIALIZÁLÓS PARANCSOK
+    \item nehezseg [ertek]
+    \begin{itemize}
+        \item Leírás: Beállítja a játék nehézségét.
+        \item \texttt{[érték]}: easy, medium, hard
+    \end{itemize}
+
+    \item letrehoz [tipus] [nev]
+    \begin{itemize}
+        \item Leírás: Létrehoz egy adott objektumot: típusa lehet TakarítóJátékos, BuszosJátékos, Hókotró (maximum egyet lehet létrehozni kezdésként), Busz, Autó
+        \item \texttt{[tipus]}: TakarítóJátékos, BuszosJátékos, Hókotró, Busz, Autó
+        \item \texttt{[nev]}: egyedi azonosító, amely a későbbiekben a parancsokban használható
+    \end{itemize}
+
+    \item szerkeszt [nev] [ujnev] 
+    \begin{itemize}
+        \item Leírás: Változtatja a korábban létrehozott objektum nevét.
+        \item \texttt{[nev]}: a szerkesztendő objektum neve
+        \item \texttt{[ujnev]}: az új név, amely egyedi azonosító kell, hogy legyen
+    \end{itemize}
+
+    \item kivalaszt [nev]
+    \begin{itemize}
+        \item Leírás: Kiválasztja a megadott nevű objektumot, amelyre a további parancsok hatni fognak.
+        \item \texttt{[nev]}: A kiválasztandó objektum neve
+    \end{itemize}
+
+    \item betolt [fajlnev]
+    \begin{itemize}
+        \item Leírás: Betölti a megadott fájlból az objektumokat.
+        \item \texttt{[fajlnev]}: A betöltendő fájl neve
+    \end{itemize}
+
+    %PÁLYA ÉS TÉRKÉP PARANCSOK
+    \item utletrehoz [nev] [cs1] [cs2] [hossz] [tipus] [savszam]
+    \begin{itemize}
+        \item Leírás: Létrehoz egy új utat a pályán.
+        \item \texttt{[nev]}: Az út neve.
+        \item \texttt{[cs1]}: Az utat kezdő csomópontja.
+        \item \texttt{[cs2]}: Az utat végző csomópontja.
+        \item \texttt{[hossz]}: Az út hossza.
+        \item \texttt{[tipus]}: Az út típusa: alagut, normal, hid
+        \item \texttt{[savszam]}: Az út sávainak száma.
+    \end{itemize}
+
+    \item lerakodas [utnev] [sav] [tipus] [ertek]
+    \begin{itemize}
+        \item Leírás: Megadja, hogy mi van lerakódva egy adott út adott sávján. 
+        \item \texttt{[utnev]}: Az út neve, amelyen a lerakódás történik.
+        \item \texttt{[sav]}: Az út sávjának azonosítója.
+        \item \texttt{[tipus]}: Ho, Jeg, So, Feltortjeg, Zuzalek
+        \item \texttt{[ertek]}: A lerakódott tárgy értéke.
+    \end{itemize}
+
+    %MOZGATÓ PARANCSOK
+    \item lepes [ut] [sav]
+    \begin{itemize}
+        \item Leírás: Egy jármű mozgatása a pályán, egy szomszédos útra. 
+        \item \texttt{[ut]} : Az út neve amire szeretne lépni a játékos, amelynek a jelenlegi út szomszédságában kell lennie.
+        \item \texttt{[sav]} : Opcionális paraméter, amely megadja, hogy a jármű melyik sávba szeretne lépni az adott úton, amennyiben az út több sávos.
+    \end{itemize}
+
+    \item wait [nev]
+    \begin{itemize}
+        \item Leírás: Lépés kihagyása, a játékos nem hajt végre lépést.
+    \end{itemize}
+
+    %Menedzsment parancsok
+
+    \item hokotrovasarlas [nev]
+    \begin{itemize}
+        \item Leírás: A játékos megvásárol egy új hókotró járművet, amennyiben telephelyen tartózkodik és rendelkezik a megfelelő összeggel.
+        \item \texttt{[nev]}: a megvásárolni kívánt hókotró neve, amely egyedi azonosító kell, hogy legyen
+    \end{itemize}
+
+    \item allapot [nev]
+    \begin{itemize}
+        \item Leírás: Kiírja egy adott objektum (játékos, hókotró, út) aktuális tulajdonságait.
+        \item \texttt{[nev]}: az állapot lekérdezni kívánt objektum neve. "Mind" esetén mindegyiket kiírja. 
+    \end{itemize}
+    
+    \item terkep
+    \begin{itemize}
+        \item Leírás: Szövegesen kilistázza a csomópontokat és a köztük lévő utakat, hogy lehessen tudni, honnan hova lehet lépni.
+    \end{itemize}
+    
+%HÓKOTRÓS PARANCSOK
+    \item fejcsere [hokotro] [ujfej]
+    \begin{itemize}
+        \item Leírás: Kicseréli a hókotró fejét egy új fejre, amennyiben a játékos rendelkezik a megfelelő fejjel a készletében, és telephelyen tartózkodik.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amin fejet szeretnénk cserélni
+        \item \texttt{[ujfej]}: a kívánt új fej típusa, amire cserélni szeretnénk a jelenlegi fejet
+    \end{itemize}
+
+    \item fejvasarlas [hokotro] [fejtipus]
+    \begin{itemize}
+        \item Leírás: Új fejet vásárol a játékos a készletére, amennyiben telephelyen tartózkodik és rendelkezik a megfelelő összeggel.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelyhez fejvásárlást szeretnénk végrehajtani
+        \item \texttt{[fejtipus]}: a kívánt fej típusa, amelyet vásárolni szeretnénk
+    \end{itemize}
+
+    \item sotoltes [hokotro]
+    \begin{itemize}
+        \item Leírás: Amennyiben a játékos telephelyen tartózkodik, feltölti a hókotró sókészletét maxra. 
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelynek sókészletét szeretnénk feltölteni
+    \end{itemize}
+
+    \item kerozintoltes [hokotro]
+    \begin{itemize}
+        \item Leírás: Amennyiben a játékos telephelyen tartózkodik, feltölti a hókotró kerozinkészletét maxra.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelynek kerozinkészletét szeretnénk feltölteni
+    \end{itemize}
+
+    \item zuzalektoltes [hokotro]
+    \begin{itemize}
+        \item Leírás: Amennyiben a játékos telephelyen tartózkodik, feltölti a hókotró zuzalékkészletét maxra.
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelynek zuzalékkészletét szeretnénk feltölteni
+    \end{itemize}
+
+    \item takarit [hokotro] [sav]
+    \begin{itemize}
+        \item Leírás: A hókotro vévigmegy két csomópont között, és takarít az adott sávon. 
+        \item \texttt{[hokotro]}: a jelenlegi hókotró, amelyik takarítani fog
+        \item \texttt{[sav]}: az út azon sávja, amit takarítani tervezünk
+    \end{itemize}
+
+%RENDSZER PARANCSOK
+    \item havazas 
+    \begin{itemize}
+        \item Leírás: Havazás eseményét indítja el, amelynek hatására a pályán hó jelenik meg. 
+    \end{itemize}
+
+    \item kilepes
+    \begin{itemize}
+        \item Leírás: Kilép a játékból
+    \end{itemize}
+
+    \item help
+    \begin{itemize}
+        \item Leírás: Megjeleníti a parancsok listáját
+    \end{itemize}
+
+
+\end{itemize}
+Példák a bemeneti nyelvre:
+\begin{verbatim}
+    utletrehoz a cs1 cs2 50 alagut 1
+    utletrehoz b cs2 cs3 50 normal 1
+    lerakodas b 1 ho 10
+    utletrehoz c cs3 cs4 50 normal 1   lerakodas c 1 feltortjeg 10
+    utletrehoz d cs4 cs5 50 normal 1
+    lerakodas d 1 jeg 5
+    utletrehoz e cs4 cs5 50 normal 1
+    lerakodas e 1 zuzalek 5
+    lerakodas e 1 jeg 5
+    utletrehoz f cs4 cs5 50 normal 1
+    lerakodas e 1 zuzalek 5
+    lerakodas e 1 ho 10
+
+    Letrehoz Hokotro H1
+    Kivalaszt H1
+    Lepes a
+    Lepes b
+    Lepes c
+    Lepes e
+    Allapot mind
+\end{verbatim}
+
 \section{Osztályok és metódusok tervei}
-\subsection{Osztály1}
+
+
+\subsection{Jarmu}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    Absztrakt ősosztály az összes mozgó entitás számára. Kezeli a baleset miatti ideiglenes mozgásképtelenséget, amely az utat is eltorlaszolja
 \end{class-template-responsibility}
-\begin{class-template-interface}
-    Megvalósított interfészek felsorolása
-\end{class-template-interface}
-\begin{class-template-baseclass}
-    Ős-Ősosztály \baseclass Ősosztály... 
-\end{class-template-baseclass}
+
 \begin{class-template-attribute}
-    \classitem{+A [0..*]}{adattag A}
+    \classitem{\#name: String}{A jármű neve/azonosítója.}
+    \classitem{\#owner: String}{A jármű tulajdonos játékosának neve.}
+    \classitem{\#currentUt: String}{Az aktuális út neve; \texttt{null} esetén a jármű telephelyen van.}
+    \classitem{\#savIndex: int}{Az aktuális sáv indexe az adott úton.}
+    \classitem{\#disabledTime: int}{A hátralévő mozgásképtelen körök száma. 0 vagy kisebb érték esetén a jármű mozgásképes.}
 \end{class-template-attribute}
-\comment{Milyen publikus, protected és privát  metódusokkal rendelkezik. Metódusonként precíz leírás, ha szükséges, activity diagram is a metódusban megvalósítandó algoritmusról. Minden olyan metódusnak szerepelnie kell, amelyiket az osztály megvalósít vagy felüldefiniál.}
 \begin{class-template-method}
-    \classitem{+B(A a) : void}{metódus B}
+    \classitem{-Jarmu(name: String)}{Privát konstruktor. Inicializálja az alapállapotot: \texttt{name := bemenet}, \texttt{currentUt := null}, \texttt{savIndex := 0}, \texttt{disabledTime := 0}.}
+    \classitem{+name(): String \textit{(NamedEntity)}}{Visszaadja a jármű azonosító nevét.}
+    \classitem{+renameTo(newName: String): void \textit{(NamedEntity)}}{Frissíti a jármű nevét a megadott új névre.}
+    \classitem{+type(): String \textit{(NamedEntity)}}{Alapértelmezett típusnév: \texttt{"Jarmu"}. Leszármazottak felüldefiniálhatják.}
+    \classitem{+statusLine(state: GameState): String \textit{(NamedEntity)}}{A jármű állapotának szöveges reprezentációját adja vissza (pozíció + állapot).}
+    \classitem{+canMove(): boolean}{Mozgásképesség ellenőrzése. Igaz, ha \texttt{disabledTime <= 0}, egyébként hamis.}
+    \classitem{+tickTime(): void}{Körléptetés. Ha \texttt{disabledTime > 0}, eggyel csökkenti az értéket.}
 \end{class-template-method}
 
-\subsection{Osztály2}
+
+
+\subsection{Auto}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    Önműködő (NPC) jármű, amely az otthona és a munkahelye között próbál eljutni a legrövidebb úton. Lépéseivel, súlyát felhasználva hozzájárul a hó jéggé tömörítéséhez. Kiemelt felelőssége a várakozási logika: ha az út elzáródik, nem tervez újra, nem fordul meg, hanem a legutolsó pontnál feltorlódva várakozik, amíg a hókotrók fel nem szabadítják az utat.\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Jarmu \baseclass Auto
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{(nincs saját attribútum)}{Az Auto osztály nem deklarál új adattagot, minden állapotát a \texttt{Jarmu} osztályból örökli.}
+    \classitem{\#name: String (örökölt)}{A jármű azonosító neve.}
+    \classitem{\#owner: String (örökölt)}{A tulajdonos játékos neve.}
+    \classitem{\#currentUt: String (örökölt)}{Az aktuális út neve; \texttt{null} esetén telephelyen van.}
+    \classitem{\#savIndex: int (örökölt)}{Az aktuális sáv indexe az úton.}
+    \classitem{\#disabledTime: int (örökölt)}{A még hátralévő mozgásképtelen körök száma.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-Auto(name: String)}{Privát konstruktor. Inicializálja a \texttt{Jarmu} ősosztály állapotát: \texttt{name = bemenet}, \texttt{currentUt = null}, \texttt{savIndex = 0}, \texttt{disabledTime = 0}. Az \texttt{Auto} példány létrehozása a parancskezelőn keresztül történik.}
+    \classitem{+name(): String \textit{(örökölt)}}{Visszaadja az azonosító nevet.}
+    \classitem{+renameTo(newName: String): void \textit{(örökölt)}}{Frissíti az objektum nevét. A hívó oldali logika felel azért, hogy az új név egyedi legyen.}
+    \classitem{+statusLine(state: GameState): String \textit{(örökölt)}}{Szöveges állapotképet ad vissza. A metódus determinisztikusan képezi le a belső állapotot emberileg olvasható formára (pozíció + állapot + típus + név).}
+    \classitem{+canMove(): boolean \textit{(örökölt)}}{Mozgásképesség vizsgálata. Igazat ad vissza, ha \texttt{disabledTime <= 0}, különben hamisat.}
+    \classitem{+tickTime(): void \textit{(örökölt)}}{Idő frissítés. Ha \texttt{disabledTime > 0}, akkor eggyel csökkenti; egyébként változatlanul hagyja.}
+\end{class-template-method}
+
+\subsection{Busz}
+\begin{class-template-responsibility}
+    Megadott állomások között ingázó, a buszsofőr menedzser által irányított jármű. Feladata a pénzteremtés a megtett körök alapján. Az autókhoz hasonlóan súlyával tömöríti a havat. Baleset esetén mozgásképtelenné válik és eltorlaszolja az utat. \end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Object \baseclass Jarmu \baseclass Busz
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-completedTrips: int}{A busz által teljesített fordulók száma. Kezdeti értéke 0, és a rendszer növeli, amikor a busz végállomáshoz kapcsolódó útra lép.}
+    \classitem{\#name: String (örökölt)}{A jármű azonosító neve.}
+    \classitem{\#owner: String (örökölt)}{A tulajdonos játékos neve.}
+    \classitem{\#currentUt: String (örökölt)}{Az aktuális út neve; \texttt{null} esetén telephelyen van.}
+    \classitem{\#savIndex: int (örökölt)}{Az aktuális sáv indexe az úton.}
+    \classitem{\#disabledTime: int (örökölt)}{A még hátralévő mozgásképtelen körök száma.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-Busz(name: String)}{Privát konstruktor. Meghívja a \texttt{Jarmu} konstruktorát a név inicializálásához, majd \texttt{completedTrips := 0}.}
+    \classitem{+name(): String \textit{(örökölt)}}{Visszaadja az azonosító nevet.}
+    \classitem{+renameTo(newName: String): void \textit{(örökölt)}}{Frissíti az objektum nevét. Az egyediség ellenőrzése a hívó logika feladata.}
+    \classitem{+statusLine(state: GameState): String \textit{(örökölt)}}{A busz szöveges állapotképét adja vissza (pozíció és mozgásképesség).}
+    \classitem{+canMove(): boolean \textit{(örökölt)}}{Igazat ad vissza, ha a busz nem mozgásképtelen (\texttt{disabledTime <= 0}).}
+    \classitem{+tickTime(): void \textit{(örökölt)}}{Idő frissítés. Ha \texttt{disabledTime > 0}, akkor eggyel csökkenti; egyébként változatlanul hagyja.}
+\end{class-template-method}
+
+
+
+\subsection{Hokotro}
+\begin{class-template-responsibility}
+    A takarító menedzser által mozgatott jármű, amely az aktuálisan rászerelt fej segítségével tisztítja az utakat. A hókotró különleges tulajdonsága, hogy fizikailag immunis az akadályokra. 
 \end{class-template-responsibility}
-\begin{class-template-statechart}
-    A belső működéshez tartozó állapotgép
-    \diagram{docs/img/BMElogo}{Az osztály állapotváltozásai}{3cm}
-\end{class-template-statechart}
+\begin{class-template-baseclass}
+    Object \baseclass Jarmu \baseclass Hokotro
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-aktivFej: Fej}{Az aktuálisan felszerelt takarítófej. Kezdetben \texttt{SoproFej}.}
+    \classitem{-so: int}{A sókészlet mennyisége.}
+    \classitem{-kerozin: int}{A kerozinkészlet mennyisége.}
+    \classitem{-zuzottko: int}{A zúzottkő készlet mennyisége.}
+    \classitem{\#name: String (örökölt)}{A jármű azonosító neve.}
+    \classitem{\#owner: String (örökölt)}{A tulajdonos játékos neve.}
+    \classitem{\#currentUt: String (örökölt)}{Az aktuális út neve; \texttt{null} esetén telephelyen van.}
+    \classitem{\#savIndex: int (örökölt)}{Az aktuális sáv indexe az úton.}
+    \classitem{\#disabledTime: int (örökölt)}{A még hátralévő mozgásképtelen körök száma.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-Hokotro(name: String)}{Privát konstruktor. Meghívja a \texttt{Jarmu} konstruktorát, beállítja az alap fejet (\texttt{SoproFej}), majd nullázza a készleteket (\texttt{so := 0}, \texttt{kerozin := 0}, \texttt{zuzottko := 0}).}
+    \classitem{+statusLine(state: GameState): String \textit{(Override)}}{Részletes állapotleírást ad: pozíció, aktív fej, készletek és mozgásállapot.}
+    \classitem{+name(): String \textit{(örökölt)}}{Visszaadja az azonosító nevet.}
+    \classitem{+renameTo(newName: String): void \textit{(örökölt)}}{Frissíti az objektum nevét.}
+    \classitem{+canMove(): boolean \textit{(örökölt)}}{Igazat ad vissza, ha a hókotró mozgásképes (\texttt{disabledTime <= 0}).}
+    \classitem{+tickTime(): void \textit{(örökölt)}}{Időfrissítéskor csökkenti a mozgásképtelen időt, ha szükséges.}
+\end{class-template-method}
+
+\textbf{Pszeudokód a takarítás menetéhez:}
+\begin{verbatim}
+METHOD Takarit(hokotroNev, savIndex)
+    IF hokotro.currentUt IS null THEN
+     PRINT "A hokotro nincs uton"
+    END IF
+
+    ut := FindUt(hokotro.currentUt)
+    sav := ut.GetSav(savIndex)
+
+    IF hokotro.aktivFej IS null THEN
+     hokotro.aktivFej := CreateFej(SOPROFEJ)
+    END IF
+
+    hokotro.aktivFej.ApplyCleaningEffect(hokotro, sav, ut, savIndex, state)
+    LogEvent("A takaritas vegrehajtva")
+END METHOD
+\end{verbatim}
+
+\textbf{Pszeudokód a hókotró fejének cseréjéhez:}
+\begin{verbatim}
+METHOD FejCsere(hokotroNev, ujFejTipus)
+ IF jatekos NOT atTelephely THEN
+  PRINT "Fejcsere csak telephelyen engedelyezett"
+ END IF
+
+ ujFej := FindFejInInventory(jatekos, ujFejTipus)
+ IF ujFej IS null THEN
+  PRINT "A kivant fej nincs a raktarban"
+ END IF
+
+ regiFej := hokotro.aktivFej
+ hokotro.aktivFej := ujFej
+ RemoveFejFromInventory(jatekos, ujFej)
+ IF regiFej IS NOT null THEN
+  AddFejToInventory(jatekos, regiFej.tipus())
+ END IF
+
+ LogEvent("A fejcsere sikeres")
+END METHOD
+\end{verbatim}
+
+
+\subsection{Fej}
+\begin{class-template-responsibility}
+    Absztrakt ősosztály a hókotrókra szerelhető különböző takarítóeszközök számára. Definiálja az egységes takarítási interfészt. 
+\end{class-template-responsibility}
+\begin{class-template-attribute}
+    \classitem{-tipus: FejTipus}{A fej típusa, amely meghatározza a takarítási viselkedést.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{#Fej(tipus: FejTipus)}{Protected konstruktor. Beállítja a fej típusát.}
+    \classitem{+tipus(): FejTipus}{Visszaadja az aktuális fej típusát.}
+    \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(abstract)}}{Absztrakt metódus. A konkrét fejek ebben adják meg a saját takarítási logikájukat.}
+\end{class-template-method}
+
+
+\subsection{SoproFej}
+\begin{class-template-responsibility}
+    Az alapértelmezett takarítófej, amely a csapadékot jobbra eső szomszédos sávba tolja át.
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Fej \baseclass SoproFej
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{(nincs saját attribútum)}{Nincs külön állapota.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-SoproFej()}{Privát konstruktor. A fej típusát \texttt{SOPROFEJ}-re állítja.}
+    \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(Override)}}{A sávon lévő hó és feltört jég mennyiségét összegyűjti, a sávot lenullázza, majd ha van jobb oldali sáv, oda átteszi az összegyűjtött mennyiséget. Eseményt naplóz.}
+\end{class-template-method}
+\textbf{Pszeudokód a SoproFej működéséhez:}
+\begin{verbatim}
+METHOD: SoproFej.takaritHatas(h, sav, ut, savIndex, state)
+    movedHo := sav.ho + sav.feltortJeg
+    sav.ho := 0
+    sav.feltortJeg := 0
+    
+    rightIndex := savIndex + 1
+    IF movedHo > 0 AND rightIndex < ut.savSzam() THEN
+        rightSav := ut.sav(rightIndex)
+        rightSav.ho := rightSav.ho + movedHo
+    END IF
+
+    LogEvent("SoproFej takaritas vegrehajtva: " + movedSnow + " ho es feltort jeg attolve a jobb oldali savba, ha letezik.")
+END METHOD
+\end{verbatim}
+
+\subsection{HanyoFej}
+\begin{class-template-responsibility}
+    Nagyteljesítményű fej, amely a hókotró nyomvonalából a havat és a feltört jeget a pályáról véglegesen eltávolítja. 
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Fej \baseclass HanyoFej
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{(nincs saját attribútum)}{Nincs külön állapota.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-HanyoFej()}{Privát konstruktor. A fej típusát \texttt{HANYOFEJ}-re állítja.}
+    \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(Override)}}{A sávon lévő hó és feltört jég mennyiségét nullázza, majd takarítási eseményt vesz fel.}
+\end{class-template-method}
+
+\textbf{Pszeudokód a HanyoFej működéséhez:}
+\begin{verbatim}
+METHOD: HanyoFej.takaritHatas(h, sav, ut, savIndex, state)
+    sav.ho := 0
+    sav.feltortJeg := 0
+    LogEvent("Hanyofej az ut melle tavolitotta a csapadekot.")
+END METHOD
+\end{verbatim}
+
+\subsection{JegtoroFej}
+\begin{class-template-responsibility}
+    A masszív jégpáncél fizikai feltörését végző fej. 
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Fej \baseclass JegtoroFej
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{(nincs saját attribútum)}{Nincs külön állapota.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-JegtoroFej()}{Privát konstruktor. A fej típusát \texttt{JEGTOROFEJ}-re állítja.}
+    \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(Override)}}{A jégréteget feltöri, a jégből feltört jégréteget hoz létre, majd ezt hóként kezeli a sávon. Eseményt naplóz.}
+\end{class-template-method}
+
+\textbf{Pszeudokód a JegtoroFej működéséhez:}
+\begin{verbatim}
+METHOD: JegtoroFej.takaritHatas(h, sav, ut, savIndex, state)
+    sav.feltortJeg := sav.feltortJeg + sav.jeg
+    sav.jeg := 0
+    sav.ho := sav.ho + sav.feltortJeg
+    sav.feltortJeg := 0
+    LogEvent("Jegtorofej feltorte a jeget, ho jellegu retegre valtott.")
+END METHOD
+\end{verbatim}
+
+\subsection{SoszoroFej}
+\begin{class-template-responsibility}
+    Só szórásával kémiai úton olvasztja el az akadályokat. Egyszerre egy sávot tud sózni. 
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Fejj \baseclass SoszoroFej
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{(nincs saját attribútum)}{Nincs külön állapota.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-SoszoroFej()}{Privát konstruktor. A fej típusát \texttt{SOSZOROFEJ}-re állítja.}
+    \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(Override)}}{10 egység sót fogyaszt, a sáv hó- és jégkészletét lenullázza, majd 3 körre sózott védelmet állít be.}
+\end{class-template-method}
+
+\textbf{Pszeudokód a SoszoroFej működéséhez:}
+\begin{verbatim}
+METHOD: SoszoroFej.takaritHatas(h, sav, ut, savIndex, state)
+    IF h.so < 10 THEN
+        PRINT "Nincs eleg so a soszorofejhez."
+        RETURN
+    END IF
+    h.so := h.so -10
+    sav.jeg := 0
+    sav.ho := 0
+    sav.saltedRounds := 3
+    LogEvent("Soszoro fej aktiv: ho es jeg eltunt, 3 korig vedett a sav.")
+END METHOD
+\end{verbatim}
+
+\subsection{SarkanyFej}
+\begin{class-template-responsibility}
+    Prémium takarítófej, amely biokerozint égetve azonnali jég- és hóolvasztást végez és kerozint fogyaszt.  
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Fej \baseclass SarkanyFej
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{(nincs saját attribútum)}{Nincs külön állapota.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-SarkanyFej()}{Privát konstruktor. A fej típusát \texttt{SARKANYFEJ}-re állítja.}
+    \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(Override)}}{10 egység kerozint fogyaszt, és a sáv minden csapadékalapú lerakódását eltávolítja.}
+\end{class-template-method}
+
+\textbf{Pszeudokód a SarkanyFej működéséhez:}
+\begin{verbatim}
+METHOD: SoszoroFej.takaritHatas(h, sav, ut, savIndex, state)
+    IF h.kerozin < 10 THEN
+        PRINT "Nincs eleg kerozin a sarkanyfejhez."
+        RETURN
+    END IF
+    h.kerozin := h.so -10
+    sav.jeg := 0
+    sav.ho := 0
+    sav.feltortJeg := 0
+    LogEvent("Sarkanyfej aktiv: azonnali olvasztas vegrehajtva.")
+END METHOD
+\end{verbatim}
+
+\subsection{ZuzottkoSzoroFej}
+\begin{class-template-responsibility}
+A    rendkívül veszélyes jégpáncél csúszósságának a megszűntetésére szolgáló fej, amely a sávra szórja a fejben tárolt zúzottkövet. Fontos felelőssége, hogy a sávon lévő csapadékot nem távolítja el.
+\end{class-template-responsibility}
+\begin{class-template-baseclass}
+    Fej \baseclass ZuzottkoSzoroFej
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{(nincs saját attribútum)}{Nincs külön állapota.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-ZuzottkoSzoroFej()}{Privát konstruktor. A fej típusát \texttt{ZUZOTTKOSZOROFEJ}-re állítja.}
+    \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(Override)}}{10 egység zúzottkövet fogyaszt, majd 3 körre csúszásvédelmet állít be a sávra.}
+\end{class-template-method}
+
+\textbf{Pszeudokód a SarkanyFej működéséhez:}
+\begin{verbatim}
+METHOD: SoszoroFej.takaritHatas(h, sav, ut, savIndex, state)
+    IF h.kerozin < 10 THEN
+        PRINT "Nincs eleg zuzottko a zuzottkoszorofejhez."
+        RETURN
+    END IF
+    h.zuzottko := h.zuzottko -10
+    sav.grittedRounds := 3
+    LogEvent("Zuzottko kiszorva: csuszasveszely csokkent 3 korre.")
+END METHOD
+\end{verbatim}
+
+\section{A tesztek részletes tervei, leírásuk a teszt nyelvén}
+
+
+
+
+
+
+
+
+
 
 \section{A tesztek részletes tervei, leírásuk a teszt nyelvén}
 \comment{A tesztek részletes tervei alatt meg kell adni azokat a bemeneti adatsorozatokat, amelyekkel a program működése ellenőrizhető. Minden bemenő adatsorozathoz definiálni kell, hogy az adatsorozat végrehajtásától a program mely részeinek, funkcióinak ellenőrzését várjuk és konkrétan milyen eredményekre számítunk, ezek az eredmények hogyan vethetők össze a bemenetekkel.A tesztek leírásakor az előző dokumentumban (proto koncepciója) megadott szintakszist kell használni.}
