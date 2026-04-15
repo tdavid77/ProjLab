@@ -49,8 +49,8 @@
 \section{Prototípus interface-definíciója}
 
 \subsection{Az interfész általános leírása}
-\subsection{Bemeneti nyelv}
 A prototípus egy konzol alapú parancsértelmező rendszer keretein belül lesz megvalósítva. A parancsok kiadásán kívül lehetőség lesz azok hatásának átfogó követésére, hiszen a parancsok kimenetét és hatását azonnal látni fogja a felhasználó. A parancsok egyértelműen definiáltak lesznek, és a program képes lesz értelmezni azokat, valamint végrehajtani a megfelelő műveleteket. A parancsoknak lehetnek paramétereik. Magukról a parancsokról és paramétereikről a felhasználó ezen dokumentumból, illetve a help parancs kimenetelének tanulmányozásából szerezhet információt. A parancsok között szerepelnek olyanok, amelyek a játékosok menedzsmentjére, a hókotrók működtetésére, valamint a rendszer általános működésére vonatkoznak.
+\subsection{Bemeneti nyelv}
 \begin{itemize}
 %INICIALIZÁLÓS PARANCSOK
     \item nehezseg [ertek]
@@ -213,7 +213,6 @@ Példák a bemeneti nyelvre:
 \end{verbatim}
 
 \subsection{Kimeneti nyelv}
-\comment{Egyértelműen definiálni kell, hogy az egyes bemeneti parancsok végrehajtása után előálló állapot milyen formában jelenik meg a szabványos kimeneten. A program képes legyen olyan kimenetet előállítani, amellyel az objektumok állapota ellenőrizhető (pl. save). Ebben az alfejezetben is precízen definiálni kell, hogy a kimenet nyelve milyen elemekből és milyen szintakszissal áll elő.}
 
 A kimeneti üzenetek négy fő kategóriába sorolhatók:
 
@@ -401,7 +400,6 @@ Csomópont_A (Kereszteződés)
 \end{use-case}
 
 \section{Tesztelési terv}
-\comment{A tesztelési tervben definiálni kell, hogy a be- és kimeneti fájlok egybevetésével miként végezhető el a program tesztelése. Meg kell adni teszt forgatókönyveket. Az egyes teszteket elég informálisan, szabad szövegként leírni. Teszt-esetenként egy-öt mondatban. Minden teszthez meg kell adni, hogy mi a célja, a proto mely funkcionalitását, osztályait stb. teszteli. Az alábbi táblázat minden teszt-esethez külön-külön elkészítendő.}
 
 % ==========================================
 % A tesztelés megvalósítása és a be-/kimeneti fájlok egybevetése
@@ -569,7 +567,6 @@ Csomópont_A (Kereszteződés)
 {A játék végét hajtó alternatív logika ellenőrzése: a rendszer észleli a teljes forgalmi blokádot és lezárja a szimulációt.}
 
 \section{Tesztelést támogató segéd- és fordítóprogramok specifikálása}
-\comment{Specifikálni kell a tesztelést támogató segédprogramokat. Rövid bemutatással (elvárt funkcionalitás) specifikálni kell a tesztelést támogató segédprogramokat.}
 
 A prototípus teszteléséhez nem használunk bonyolult, saját szintaktikájú pályaépítő vagy bemenet-generáló segédprogramokat, mivel a jelenlegi iterációban a konzolos interakciók és a soronkénti manuális bemenet-meghatározás elegendő a determinisztikus működéshez. A térkép inicializálását és a játékosok akcióit az előre megírt bemeneti parancsfájlok (input.txt) definiálják, amelyek a konzolos menüpontokra és kérdésekre adnak szekvenciális válaszokat.
 
