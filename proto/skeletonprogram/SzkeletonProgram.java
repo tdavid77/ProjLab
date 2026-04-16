@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.HashSet;
 
 public class SzkeletonProgram {
     private static int depth = 0;
@@ -323,6 +323,10 @@ public class SzkeletonProgram {
         @Override
         public String statusLine(GameState state) {
             return type() + " " + name + " | Penz:" + money + " | Jarmuvek:" + vehicles + " | Raktar:" + inventory;
+        }
+
+        public void setPenz(int amount) {
+            this.money = amount;
         }
 
         public boolean canAfford(int amount) {
@@ -944,6 +948,7 @@ public class SzkeletonProgram {
             commands.put("takarit", actions::handleCleanSav);
             commands.put("havazas", actions::handleHoeses);
             commands.put("lista", actions::handleListByType);
+            commands.put("penz", actions::handleSetPenz);
         }
 
         private void executeLine(String line) {
@@ -1083,6 +1088,7 @@ public class SzkeletonProgram {
                 "terkep",
                 "havazas",
                 "lista [tipus]",
+                "penz [nev] [osszeg]",
                 "kilepes"
             );
             ok("Elerheto parancsok:");
@@ -1543,6 +1549,22 @@ public class SzkeletonProgram {
                 throw new IllegalArgumentException("Nincs ilyen hokotro: " + name);
             }
             return h;
+        }
+
+        private void handleSetPenz(CommandContext context, List<String> args) {
+            ensureArgCount(args, 2, 2, "penz [nev] [osszeg]");
+            String name = args.get(0);
+            
+            // A te beépített parseNonNegativeInt metódusodat használjuk!
+            int amount = parseNonNegativeInt(args.get(1), "osszeg"); 
+
+            Jatekos jatekos = state.getTypedEntity(name, Jatekos.class);
+            if (jatekos == null) {
+                throw new IllegalArgumentException("Nincs ilyen jatekos: " + name);
+            }
+            
+            jatekos.setPenz(amount);
+            ok("'" + name + "' egyenlege beallitva: " + amount);
         }
     }
 }

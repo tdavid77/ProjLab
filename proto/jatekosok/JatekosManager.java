@@ -19,4 +19,8 @@ public abstract class JatekosManager {
         SzkeletonProgram.logCall("jm", "JatekosManager", "mozgatJarmuvet", "cel, j");
         SzkeletonProgram.logReturn("void");
     }
+
+    public void setPenz(int osszeg) {
+        this.vagyon = osszeg;
+    }
 }
