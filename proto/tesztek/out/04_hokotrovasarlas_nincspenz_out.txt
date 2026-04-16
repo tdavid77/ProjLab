@@ -1,0 +1,7 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: TakaritoJatekos 'takarito1' sikeresen letrehozva.
+OK: Kivalasztva: TakaritoJatekos takarito1
+OK: 'takarito1' egyenlege beallitva: 299
+ERROR: Nincs eleg penz. Szukseges: 300
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 5

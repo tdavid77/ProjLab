@@ -825,14 +825,7 @@ public class SzkeletonProgram {
         public boolean jatekosAtTelephely(Jatekos jatekos) {
             for (String vehicleName : jatekos.vehicles) {
                 Jarmu vehicle = getTypedEntity(vehicleName, Jarmu.class);
-                if (vehicle == null) {
-                    continue;
-                }
-                if (vehicle.currentUt == null) {
-                    return true;
-                }
-                Ut ut = getUt(vehicle.currentUt);
-                if (ut != null && (ut.hasNode(depotNode))) {
+                if (vehicle != null && vehicle.currentUt == null) {
                     return true;
                 }
             }
