@@ -1,0 +1,24 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: BuszosJatekos 'sofor1' sikeresen letrehozva.
+OK: Kivalasztva: BuszosJatekos sofor1
+OK: Ut letrehozva: Havas_Ut (1 sav).
+OK: Lerakodas rogzitve: Havas_Ut sav 0 -> HO
+OK: Auto 'a1' sikeresen letrehozva.
+OK: Auto 'a2' sikeresen letrehozva.
+OK: Auto 'a3' sikeresen letrehozva.
+OK: Auto 'a4' sikeresen letrehozva.
+OK: Auto 'a5' sikeresen letrehozva.
+OK: Kivalasztva: Auto a1
+OK: 'a1' a(z) 'Havas_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a2
+OK: 'a2' a(z) 'Havas_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a3
+OK: 'a3' a(z) 'Havas_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a4
+OK: 'a4' a(z) 'Havas_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a5
+OK: 'a5' a(z) 'Havas_Ut' 0. savjaba lepett.
+Ut Havas_Ut (NORMAL) | Szomszedok:[Telephely_1, Csomopont_A] | Savok: [Sav0(Ho:5, Jeg:0, Sozott:N)]
+OK: Allapot lekerdezes kesz: Havas_Ut
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 21

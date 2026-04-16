@@ -1,0 +1,16 @@
+letrehoz TakaritoJatekos takarito1
+kivalaszt takarito1
+penz takarito1 1000
+utletrehoz Havas_Ut Telephely_1 Csomopont_A 10 normal 1
+lerakodas Havas_Ut 0 Ho 5
+letrehoz Hokotro kotro_01
+fejvasarlas kotro_01 SoszoroFej
+fejcsere kotro_01 SoszoroFej
+sotoltes kotro_01
+kivalaszt kotro_01
+lepes Havas_Ut 0
+takarit kotro_01 0
+wait
+havazas
+allapot Havas_Ut
+kilepes

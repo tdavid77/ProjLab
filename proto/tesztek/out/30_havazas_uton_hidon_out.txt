@@ -1,0 +1,12 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: Ut letrehozva: Normal_Ut (1 sav).
+OK: Ut letrehozva: Hid_Ut (1 sav).
+OK: Havazas szimulacio elinditva.
+[ESEMENY] Normal_Ut savjain a ho +1 egyseggel nott.
+[ESEMENY] Hid_Ut savjain a ho +1 egyseggel nott.
+Ut Normal_Ut (NORMAL) | Szomszedok:[Csomopont_A, Csomopont_B] | Savok: [Sav0(Ho:1, Jeg:0, Sozott:N)]
+OK: Allapot lekerdezes kesz: Normal_Ut
+Ut Hid_Ut (HID) | Szomszedok:[Csomopont_B, Csomopont_C] | Savok: [Sav0(Ho:1, Jeg:0, Sozott:N)]
+OK: Allapot lekerdezes kesz: Hid_Ut
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 6

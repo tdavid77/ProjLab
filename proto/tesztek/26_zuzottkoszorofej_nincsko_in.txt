@@ -1,0 +1,12 @@
+letrehoz TakaritoJatekos takarito1
+kivalaszt takarito1
+penz takarito1 1000
+utletrehoz Jeges_Ut Telephely_1 Csomopont_A 10 normal 1
+lerakodas Jeges_Ut 0 Jeg 5
+letrehoz Hokotro kotro_01
+fejvasarlas kotro_01 ZuzottkoSzoroFej
+fejcsere kotro_01 ZuzottkoSzoroFej
+kivalaszt kotro_01
+lepes Jeges_Ut 0
+takarit kotro_01 0
+kilepes

@@ -1,0 +1,13 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: BuszosJatekos 'sofor1' sikeresen letrehozva.
+OK: Kivalasztva: BuszosJatekos sofor1
+OK: 'sofor1' egyenlege beallitva: 100
+OK: Ut letrehozva: Ut_Veg (1 sav).
+OK: Busz 'bkv_01' sikeresen letrehozva.
+OK: Kivalasztva: Busz bkv_01
+[ESEMENY] Busz kor teljesitve: bkv_01, jovairas +40.
+OK: 'bkv_01' a(z) 'Ut_Veg' 0. savjaba lepett.
+BuszosJatekos sofor1 | Penz:140 | Jarmuvek:[bkv_01] | Raktar:[]
+OK: Allapot lekerdezes kesz: sofor1
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 9

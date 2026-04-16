@@ -1,0 +1,21 @@
+letrehoz BuszosJatekos sofor1
+kivalaszt sofor1
+utletrehoz Havas_Ut Telephely_1 Csomopont_A 10 normal 1
+lerakodas Havas_Ut 0 Ho 5
+letrehoz Auto a1
+letrehoz Auto a2
+letrehoz Auto a3
+letrehoz Auto a4
+letrehoz Auto a5
+kivalaszt a1
+lepes Havas_Ut 0
+kivalaszt a2
+lepes Havas_Ut 0
+kivalaszt a3
+lepes Havas_Ut 0
+kivalaszt a4
+lepes Havas_Ut 0
+kivalaszt a5
+lepes Havas_Ut 0
+allapot Havas_Ut
+kilepes

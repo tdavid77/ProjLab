@@ -1,0 +1,10 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: TakaritoJatekos 'takarito1' sikeresen letrehozva.
+OK: Kivalasztva: TakaritoJatekos takarito1
+OK: 'takarito1' egyenlege beallitva: 100
+OK: Hokotro 'kotro_01' sikeresen letrehozva.
+OK: 'kotro_01' kerozinkeszlete feltoltve. Penz levonva: 60
+Hokotro kotro_01 | Poz:Telephely | Fej:SOPROFEJ | Keszletek:[So:0, Kerozin:100, Zuzottko:0] | Allapot:Aktiv
+OK: Allapot lekerdezes kesz: kotro_01
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 7

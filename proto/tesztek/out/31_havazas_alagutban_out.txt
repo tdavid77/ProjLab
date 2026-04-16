@@ -1,0 +1,8 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: Ut letrehozva: Alagut_Ut (1 sav).
+OK: Havazas szimulacio elinditva.
+[ESEMENY] Alagut_Ut savjain nem valtozott a horetag.
+Ut Alagut_Ut (ALAGUT) | Szomszedok:[Csomopont_A, Csomopont_B] | Savok: [Sav0(Ho:0, Jeg:0, Sozott:N)]
+OK: Allapot lekerdezes kesz: Alagut_Ut
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 4

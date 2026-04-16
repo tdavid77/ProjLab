@@ -1,0 +1,6 @@
+utletrehoz Normal_Ut Csomopont_A Csomopont_B 10 normal 1
+utletrehoz Hid_Ut Csomopont_B Csomopont_C 10 hid 1
+havazas
+allapot Normal_Ut
+allapot Hid_Ut
+kilepes

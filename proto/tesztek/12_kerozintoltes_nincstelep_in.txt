@@ -1,0 +1,10 @@
+letrehoz TakaritoJatekos takarito1
+kivalaszt takarito1
+penz takarito1 1000
+utletrehoz Fo_ut Telephely_1 Csomopont_A 10 normal 1
+letrehoz Hokotro kotro_01
+kivalaszt kotro_01
+lepes Fo_ut 0
+kivalaszt takarito1
+kerozintoltes kotro_01
+kilepes
