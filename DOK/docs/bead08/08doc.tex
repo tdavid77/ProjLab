@@ -178,7 +178,6 @@ Példák a bemeneti nyelvre:
 \begin{class-template-responsibility}
     Absztrakt ősosztály az összes mozgó entitás számára. Kezeli a baleset miatti ideiglenes mozgásképtelenséget, amely az utat is eltorlaszolja
 \end{class-template-responsibility}
-
 \begin{class-template-attribute}
     \classitem{\#name: String}{A jármű neve/azonosítója.}
     \classitem{\#owner: String}{A jármű tulajdonos játékosának neve.}
@@ -188,7 +187,16 @@ Példák a bemeneti nyelvre:
 \end{class-template-attribute}
 \begin{class-template-method}
     \classitem{-Jarmu(name: String)}{Privát konstruktor. Inicializálja az alapállapotot: \texttt{name := bemenet}, \texttt{currentUt := null}, \texttt{savIndex := 0}, \texttt{disabledTime := 0}.}
-    \classitem{+name(): String \textit{(NamedEntity)}}{Visszaadja a jármű azonosító nevét.}
+    \classitem{+getName(): String \textit{(NamedEntity)}}{Getter, amely visszaadja a jármű azonosító nevét.}
+    \classitem{+setName(name: String): void \textit{(NamedEntity)}}{Setter a jármű nevének beállítására.}
+    \classitem{+getOwner(): String \textit{(NamedEntity)}}{Getter, amely visszaadja a jármű tulajdonosának nevét.}
+    \classitem{+setOwner(owner: String): void \textit{(NamedEntity)}}{Setter a jármű tulajdonosának beállítására.}
+    \classitem{+getCurrentUt(): String \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a jármű éppen melyik úton van.}
+    \classitem{+setCurrentUt(currentUt: String): void \textit{(NamedEntity)}}{Setter a jármű aktuális útjának beállítására.}
+    \classitem{+getSavIndex(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a jármű az útnak melyik sávjában van.}
+    \classitem{+setSavIndex(savIndex: int): void \textit{(NamedEntity)}}{Setter a jármű aktuális sáv indexének beállítására.}
+    \classitem{+getDisabledTime(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a jármű még hány körig mozgásképtelen.}
+    \classitem{+setDisabledTime(disabledTime: int): void \textit{(NamedEntity)}}{Setter, amivel a jármű mozgásképtelen körök számát lehet beállítani.}
     \classitem{+renameTo(newName: String): void \textit{(NamedEntity)}}{Frissíti a jármű nevét a megadott új névre.}
     \classitem{+type(): String \textit{(NamedEntity)}}{Alapértelmezett típusnév: \texttt{"Jarmu"}. Leszármazottak felüldefiniálhatják.}
     \classitem{+statusLine(state: GameState): String \textit{(NamedEntity)}}{A jármű állapotának szöveges reprezentációját adja vissza (pozíció + állapot).}
@@ -209,7 +217,7 @@ Példák a bemeneti nyelvre:
 \end{class-template-baseclass}
 \begin{class-template-attribute}
     \classitem{(nincs saját attribútum)}{Az Auto osztály nem deklarál új adattagot, minden állapotát a \texttt{Jarmu} osztályból örökli.}
-    \classitem{\#name: String (örökölt)}{A jármű azonosító neve.}
+    \classitem{\#name: String (örökölt)}{Az autó azonosító neve.}
     \classitem{\#owner: String (örökölt)}{A tulajdonos játékos neve.}
     \classitem{\#currentUt: String (örökölt)}{Az aktuális út neve; \texttt{null} esetén telephelyen van.}
     \classitem{\#savIndex: int (örökölt)}{Az aktuális sáv indexe az úton.}
@@ -217,7 +225,16 @@ Példák a bemeneti nyelvre:
 \end{class-template-attribute}
 \begin{class-template-method}
     \classitem{-Auto(name: String)}{Privát konstruktor. Inicializálja a \texttt{Jarmu} ősosztály állapotát: \texttt{name = bemenet}, \texttt{currentUt = null}, \texttt{savIndex = 0}, \texttt{disabledTime = 0}. Az \texttt{Auto} példány létrehozása a parancskezelőn keresztül történik.}
-    \classitem{+name(): String \textit{(örökölt)}}{Visszaadja az azonosító nevet.}
+    %\classitem{+getName(): String \textit{(NamedEntity)}}{Getter, amely visszaadja az autó azonosító nevét.}
+    %\classitem{+setName(name: String): void \textit{(NamedEntity)}}{Setter az autó nevének beállítására.}
+    %\classitem{+getOwner(): String \textit{(NamedEntity)}}{Getter, amely visszaadja az autó tulajdonosának nevét.}
+    %\classitem{+setOwner(owner: String): void \textit{(NamedEntity)}}{Setter az autó tulajdonosának beállítására.}
+    %\classitem{+getCurrentUt(): String \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy az autó éppen melyik úton van.}
+    %\classitem{+setCurrentUt(currentUt: String): void \textit{(NamedEntity)}}{Setter az autó aktuális útjának beállítására.}
+    %\classitem{+getSavIndex(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy az autó az útnak melyik sávjában van.}
+    %\classitem{+setSavIndex(savIndex: int): void \textit{(NamedEntity)}}{Setter az autó aktuális sáv indexének beállítására.}
+    %\classitem{+getDisabledTime(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy az autó még hány körig mozgásképtelen.}
+    %\classitem{+setDisabledTime(disabledTime: int): void \textit{(NamedEntity)}}{Setter, amivel az autó mozgásképtelen körök számát lehet beállítani.}
     \classitem{+renameTo(newName: String): void \textit{(örökölt)}}{Frissíti az objektum nevét. A hívó oldali logika felel azért, hogy az új név egyedi legyen.}
     \classitem{+statusLine(state: GameState): String \textit{(örökölt)}}{Szöveges állapotképet ad vissza. A metódus determinisztikusan képezi le a belső állapotot emberileg olvasható formára (pozíció + állapot + típus + név).}
     \classitem{+canMove(): boolean \textit{(örökölt)}}{Mozgásképesség vizsgálata. Igazat ad vissza, ha \texttt{disabledTime <= 0}, különben hamisat.}
@@ -228,7 +245,7 @@ Példák a bemeneti nyelvre:
 \begin{class-template-responsibility}
     Megadott állomások között ingázó, a buszsofőr menedzser által irányított jármű. Feladata a pénzteremtés a megtett körök alapján. Az autókhoz hasonlóan súlyával tömöríti a havat. Baleset esetén mozgásképtelenné válik és eltorlaszolja az utat. \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Object \baseclass Jarmu \baseclass Busz
+   Jarmu \baseclass Busz
 \end{class-template-baseclass}
 \begin{class-template-attribute}
     \classitem{-completedTrips: int}{A busz által teljesített fordulók száma. Kezdeti értéke 0, és a rendszer növeli, amikor a busz végállomáshoz kapcsolódó útra lép.}
@@ -240,7 +257,16 @@ Példák a bemeneti nyelvre:
 \end{class-template-attribute}
 \begin{class-template-method}
     \classitem{-Busz(name: String)}{Privát konstruktor. Meghívja a \texttt{Jarmu} konstruktorát a név inicializálásához, majd \texttt{completedTrips := 0}.}
-    \classitem{+name(): String \textit{(örökölt)}}{Visszaadja az azonosító nevet.}
+    %\classitem{+getName(): String \textit{(NamedEntity)}}{Getter, amely visszaadja a busz azonosító nevét.}
+    %\classitem{+setName(name: String): void \textit{(NamedEntity)}}{Setter a busz nevének beállítására.}
+    %\classitem{+getOwner(): String \textit{(NamedEntity)}}{Getter, amely visszaadja a busz tulajdonosának nevét.}
+    %\classitem{+setOwner(owner: String): void \textit{(NamedEntity)}}{Setter a busz tulajdonosának beállítására.}
+    %\classitem{+getCurrentUt(): String \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a busz éppen melyik úton van.}
+    %\classitem{+setCurrentUt(currentUt: String): void \textit{(NamedEntity)}}{Setter a busz aktuális útjának beállítására.}
+    %\classitem{+getSavIndex(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a busz az útnak melyik sávjában van.}
+    %\classitem{+setSavIndex(savIndex: int): void \textit{(NamedEntity)}}{Setter a busz aktuális sáv indexének beállítására.}
+    %\classitem{+getDisabledTime(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a busz még hány körig mozgásképtelen.}
+    %\classitem{+setDisabledTime(disabledTime: int): void \textit{(NamedEntity)}}{Setter, amivel a busz mozgásképtelen körök számát lehet beállítani.}
     \classitem{+renameTo(newName: String): void \textit{(örökölt)}}{Frissíti az objektum nevét. Az egyediség ellenőrzése a hívó logika feladata.}
     \classitem{+statusLine(state: GameState): String \textit{(örökölt)}}{A busz szöveges állapotképét adja vissza (pozíció és mozgásképesség).}
     \classitem{+canMove(): boolean \textit{(örökölt)}}{Igazat ad vissza, ha a busz nem mozgásképtelen (\texttt{disabledTime <= 0}).}
@@ -255,7 +281,7 @@ Példák a bemeneti nyelvre:
     A takarító menedzser által mozgatott jármű, amely az aktuálisan rászerelt fej segítségével tisztítja az utakat. A hókotró különleges tulajdonsága, hogy fizikailag immunis az akadályokra. 
 \end{class-template-responsibility}
 \begin{class-template-baseclass}
-    Object \baseclass Jarmu \baseclass Hokotro
+    Jarmu \baseclass Hokotro
 \end{class-template-baseclass}
 \begin{class-template-attribute}
     \classitem{-aktivFej: Fej}{Az aktuálisan felszerelt takarítófej. Kezdetben \texttt{SoproFej}.}
@@ -271,7 +297,24 @@ Példák a bemeneti nyelvre:
 \begin{class-template-method}
     \classitem{-Hokotro(name: String)}{Privát konstruktor. Meghívja a \texttt{Jarmu} konstruktorát, beállítja az alap fejet (\texttt{SoproFej}), majd nullázza a készleteket (\texttt{so := 0}, \texttt{kerozin := 0}, \texttt{zuzottko := 0}).}
     \classitem{+statusLine(state: GameState): String \textit{(Override)}}{Részletes állapotleírást ad: pozíció, aktív fej, készletek és mozgásállapot.}
-    \classitem{+name(): String \textit{(örökölt)}}{Visszaadja az azonosító nevet.}
+    \classitem{+getAktivFej(): Fej f}{Getter, amely visszaadja a hókotróra jelenleg felszerelt fejet.}
+    \classitem{+setAktivFej(felrakandoFej: Fej): void}{Setter, amely felrakja a hókotróra az új fejet.}
+    \classitem{+getSo(): int}{Getter, amely visszaadja a hókotró sókészletét.}
+    \classitem{+setSo(so: int): void}{Setter, amely beállítja a hókotró sókészletét.}
+    \classitem{+getKerozin(): int}{Getter, amely visszaadja a hókotró kerozinkészletét.}
+    \classitem{+setKerozin(kerozin: int): void}{Setter, amely beállítja a hókotró kerozinkészletét.}
+    \classitem{+getZuzottko(): int}{Getter, amely visszaadja a hókotró zúzottkő készletét.}
+    \classitem{+setZuzottko(zuzottko: int): void}{Setter, amely beállítja a hókotró zúzottkő készletét.}
+    %\classitem{+getName(): String \textit{(NamedEntity)}}{Getter, amely visszaadja a hókotró azonosító nevét.}
+    %\classitem{+setName(name: String): void \textit{(NamedEntity)}}{Setter a hókotró nevének beállítására.}
+    %\classitem{+getOwner(): String \textit{(NamedEntity)}}{Getter, amely visszaadja a hókotró tulajdonosának nevét.}
+    %\classitem{+setOwner(owner: String): void \textit{(NamedEntity)}}{Setter a hókotró tulajdonosának beállítására.}
+    %\classitem{+getCurrentUt(): String \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a hókotró éppen melyik úton van.}
+    %\classitem{+setCurrentUt(currentUt: String): void \textit{(NamedEntity)}}{Setter a hókotró aktuális útjának beállítására.}
+    %\classitem{+getSavIndex(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a hókotró az útnak melyik sávjában van.}
+    %\classitem{+setSavIndex(savIndex: int): void \textit{(NamedEntity)}}{Setter a hókotró aktuális sáv indexének beállítására.}
+    %\classitem{+getDisabledTime(): int \textit{(NamedEntity)}}{Getter, amely visszaadja, hogy a hókotró még hány körig mozgásképtelen.}
+    %\classitem{+setDisabledTime(disabledTime: int): void \textit{(NamedEntity)}}{Setter, amivel a hókotró mozgásképtelen körök számát lehet beállítani.}
     \classitem{+renameTo(newName: String): void \textit{(örökölt)}}{Frissíti az objektum nevét.}
     \classitem{+canMove(): boolean \textit{(örökölt)}}{Igazat ad vissza, ha a hókotró mozgásképes (\texttt{disabledTime <= 0}).}
     \classitem{+tickTime(): void \textit{(örökölt)}}{Időfrissítéskor csökkenti a mozgásképtelen időt, ha szükséges.}
@@ -334,7 +377,9 @@ END METHOD
     \classitem{-tipus: FejTipus}{A fej típusa, amely meghatározza a takarítási viselkedést.}
 \end{class-template-attribute}
 \begin{class-template-method}
-    \classitem{#Fej(tipus: FejTipus)}{Protected konstruktor. Beállítja a fej típusát.}
+    \classitem{+getTipus(): Fejtipus}{Getter a takarítófej típusának lekérdezéséhez}
+    \classitem{+setTipus(tipus: FejTipus): void}{Setter a takarítófej típusának beállítására}
+    \classitem{\#Fej(tipus: FejTipus)}{Protected konstruktor. Beállítja a fej típusát.}
     \classitem{+tipus(): FejTipus}{Visszaadja az aktuális fej típusát.}
     \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(abstract)}}{Absztrakt metódus. A konkrét fejek ebben adják meg a saját takarítási logikájukat.}
 \end{class-template-method}
@@ -513,20 +558,26 @@ END METHOD
 \begin{class-template-responsibility}
     Az úthálózat egy élét (szakaszát) reprezentáló osztály, amely összeköt két csomópontot. Tartalmazza az úton kialakított sávokat, tárolja az út típusát (normál, híd, alagút) és hosszát. Felelős az irányítással kapcsolatos alapvető gráf-információk szolgáltatásáért (pl. egyik végpont alapján a másik megállapítása), valamint a rajta lévő sávok összefogásáért.
 \end{class-template-responsibility}
-\begin{class-template-baseclass}
-    Object \baseclass Ut
-\end{class-template-baseclass}
 \begin{class-template-attribute}
     \classitem{-name: String}{Az út egyedi azonosítója (neve).}
     \classitem{-nodeA: String}{Az utat határoló egyik csomópont neve.}
     \classitem{-nodeB: String}{Az utat határoló másik csomópont neve.}
     \classitem{-length: int}{Az út hossza.}
     \classitem{-type: UtTipus}{Az út típusa (\texttt{NORMAL}, \texttt{HID}, \texttt{ALAGUT}).}
-    \classitem{-savok: List<Sav>}{Az úthoz tartozó sávok listája, melyek az akadályokat, lerakódásokat tárolják.}
+    \classitem{-savok: \texttt{List<Sav>}}{Az úthoz tartozó sávok listája, melyek az akadályokat, lerakódásokat tárolják.}
 \end{class-template-attribute}
 \begin{class-template-method}
     \classitem{-Ut(name: String, nodeA: String, nodeB: String, length: int, type: UtTipus, savSzam: int)}{Privát konstruktor, inicializálja az utat és létrehozza a megadott számú sávot.}
-    \classitem{+name(): String}{Visszaadja az út azonosító nevét.}
+    \classitem{+getName(): String}{Getter, az út azonosító nevét adja vissza.}
+    \classitem{+setName(newName: String): void}{Setter, amellyel az út azonosító nevét lehet beállítani.}
+    \classitem{+getNodes(): \texttt{List<String>}}{Visszaadja az út végpontjainak listáját.}
+    \classitem{+setNodes(nodeA: String, nodeB: String): void}{Setter, amellyel az út végpontjait lehet beállítani.}
+    \classitem{+getLength(): int}{Getter, amely visszaadja az út hosszát.}
+    \classitem{+setLength(length: int): void}{Setter, amellyel az út hosszát lehet beállítani.}
+    \classitem{+getType(): UtTipus}{Getter, amely visszaadja az út típusát.}
+    \classitem{+setType(type: UtTipus): void}{Setter, amellyel az út típusát lehet beállítani.}
+    \classitem{+getSavok(): \texttt{List<Sav>}}{Getter, az úthoz tartozó sávok lekérdezésére.}
+    \classitem{+setSavok(savok: \texttt{List<Sav>}): void}{Setter, amellyel az úthoz tartozó sávok listáját lehet beállítani.}
     \classitem{+renameTo(newName: String): void}{Segítségével megváltoztatható az út azonosítója a megfelelő esemény hatására.}
     \classitem{+hasNode(node: String): boolean}{Ellenőrzi és visszaadja, hogy a paraméterként kapott csomópont az út valamelyik végpontja-e.}
     \classitem{+opposite(node: String): String}{Visszaadja az út másik végpontját a paraméterként kapott (ismert) végponthoz képest, vagy \texttt{null}-t, ha az út nem tartalmazza a megadott végpontot.}
@@ -541,9 +592,6 @@ END METHOD
 \begin{class-template-responsibility}
     Egy út (Ut) adott sávját reprezentáló osztály. Felelős az adott sávon történő időjárás okozta lerakódások (hó, jég, feltört jég) tárolásáért, valamint a takarítási védelem (sózás, zúzottkő) hátralévő idejének nyilvántartásáért. Ő kezeli a hóesés hatásait és a védelem körönkénti csökkenését (idő telése).
 \end{class-template-responsibility}
-\begin{class-template-baseclass}
-    Object \baseclass Sav
-\end{class-template-baseclass}
 \begin{class-template-attribute}
     \classitem{-index: int}{A sáv indexe (azonosítója) a befogadó úton belül.}
     \classitem{-snow: int}{A sávon felgyülemlett hó aktuális mennyisége.}
@@ -554,6 +602,18 @@ END METHOD
 \end{class-template-attribute}
 \begin{class-template-method}
     \classitem{-Sav(index: int)}{Privát konstruktor. Beállítja a sáv indexét, a lerakódásokat és a védelmeket alapesetben nullára inicializálva.}
+    \classitem{+getIndex(): int}{Getter, amely visszaadja a sáv indexét.}
+    \classitem{+setIndex(index: int): void}{Setter, amellyel a sáv indexét lehet beállítani.}
+    \classitem{+getSnow(): int}{Getter, amely visszaadja a sávon lévő hó mennyiségét.}
+    \classitem{+setSnow(snow: int): void}{Setter, amellyel a sávon lévő hó mennyiségét lehet beállítani.}
+    \classitem{+getIce(): int}{Getter, amely visszaadja a sávon lévő jég mennyiségét.}
+    \classitem{+setIce(ice: int): void}{Setter, amellyel a sávon lévő jég mennyiségét lehet beállítani.}
+    \classitem{+getBrokenIce(): int}{Getter, amely visszaadja a sávon lévő feltört jég mennyiségét.}
+    \classitem{+setBrokenIce(brokenIce: int): void}{Setter, amellyel a sávon lévő feltört jég mennyiségét lehet beállítani.}
+    \classitem{+getSaltedRounds(): int}{Getter, amely visszaadja, hogy a sáv még hány körig lesz sózott.}
+    \classitem{+setSaltedRounds(saltedRounds: int): void}{Setter, amellyel a sáv sózott állapotból hátralévő körök számát lehet beállítani.}
+    \classitem{+getGrittedRounds(): int}{Getter, amely visszaadja, hogy a sáv még hány körig lesz zúzottkővel szórt.}
+    \classitem{+setGrittedRounds(grittedRounds: int): void}{Setter, amellyel a sáv zúzottkővel szórt állapotból hátralévő körök számát lehet beállítani.}
     \classitem{+applyDeposit(type: DepositType, value: int): void}{Célzottan helyez el a sávon különböző típusú lerakódásokat (\texttt{HO}, \texttt{JEG}, \texttt{SO}, \texttt{ZUZALEK}, \texttt{FELTORTJEG}) a megadott mennyiségben vagy értéken.}
     \classitem{+snowingOneUnit(protectedByTunnel: boolean): void}{Egy egységnyi havat próbál a sávhoz adni havazás esemény esetén, figyelembe véve, hogy az út alagútban van-e (védve a havazástól), vagy éppen sózva van-e a sáv.}
     \classitem{+tickTime(): void}{Körléptetés. Eggyel csökkenti a sózott és a zúzottköves állapotból hátralévő körök számát, ha azok nagyobbak nullánál.}
@@ -564,16 +624,21 @@ END METHOD
 \begin{class-template-responsibility}
     A menedzser-játékosokat reprezentáló osztály, amely kezeli a pénzügyeket, járműlistát és fejraktárt. Refaktor után ide került a vásárlási logika egy része.
 \end{class-template-responsibility}
-\begin{class-template-baseclass}
-    Object \baseclass Jatekos
-\end{class-template-baseclass}
 \begin{class-template-attribute}
     \classitem{\#name: String}{A játékos neve/azonosítója.}
     \classitem{\#money: int}{A játékos aktuális pénze.}
-    \classitem{\#vehicles: List<String>}{A játékoshoz tartozó járművek neveinek listája.}
-    \classitem{\#inventory: List<FejTipus>}{A játékos raktárában elérhető fejtípusok listája.}
+    \classitem{\#vehicles: \texttt{List<String>}}{A játékoshoz tartozó járművek neveinek listája.}
+    \classitem{\#inventory: \texttt{List<FejTipus>}}{A játékos raktárában elérhető fejtípusok listája.}
 \end{class-template-attribute}
 \begin{class-template-method}
+    \classitem{+getName(): String}{Getter, amely visszaadja a játékos nevét.}
+    \classitem{+setName(name: String): void}{Setter a játékos nevének beállítására.}
+    \classitem{+getMoney(): int}{Getter, amely visszaadja a játékos aktuális vagyonát.}
+    \classitem{+setMoney(money: int): void}{Setter a játékos pénzének beállítására.}
+    \classitem{+getVehicles(): \texttt{List<String>}}{Getter, amely visszaadja a játékos járműveinek listáját.}
+    \classitem{+setVehicles(vehicles: \texttt{List<String>}): void}{Setter a játékos járműlistájának beállítására.}
+    \classitem{+getInventory(): \texttt{List<FejTipus>}}{Getter, amely visszaadja a játékos raktárában elérhető fejtípusok listáját.}
+    \classitem{+setInventory(inventory: \texttt{List<FejTipus>}): void}{Setter a játékos raktárában elérhető fejtípusok listájának beállítására.}
     \classitem{+vasarolHokotro(hokotroNev: String): Hokotro}{Levásárolja a hókotró árát (300), létrehozza az új hókotrót, hozzárendeli a tulajdonost és a játékos járműlistájához adja. Hibát dob, ha nincs elég pénz.}
     \classitem{+vasarolFej(fejTipus: FejTipus): void}{Levásárolja a fej árát (80), majd a választott fejtípust hozzáadja a játékos raktárához. Hibát dob, ha nincs elég pénz.}
 \end{class-template-method}
@@ -604,7 +669,7 @@ END METHOD
     \end{verbatim}
 \end{test-case-input}
 \begin{test-case-output}
-    A poro kimeneti nyelvén megadva, pl.:
+    A proto kimeneti nyelvén megadva, pl.:
     \begin{verbatim}
     worlddata
     ...
