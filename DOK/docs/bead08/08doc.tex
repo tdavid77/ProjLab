@@ -207,6 +207,26 @@ Példák a bemeneti nyelvre:
     \classitem{-maybeCrash(sav: Sav, state: GameState): void}{Privát segédmetódus. Nem hókotró járműnél a sáv jégviszonyai és nehézség alapján balesetet sorsol; siker esetén \texttt{disabledTime := 2}, balesetszámlálót növel és eseményt naplóz.}
 \end{class-template-method}
 
+\textbf{Pszeudokód a Jarmu.vegrehajtLepes működéséhez:}
+\begin{verbatim}
+METHOD: Jarmu.vegrehajtLepes(target, targetSav, state)
+    IF currentUt IS NOT null THEN
+        current := state.getUt(currentUt)
+        IF current IS null THEN
+            THROW IllegalArgumentException("Nincs ilyen ut")
+        END IF
+        IF NOT current.hasNode(target.nodeA) AND NOT current.hasNode(target.nodeB) AND current.name != target.name THEN
+            THROW IllegalArgumentException("A celut nem szomszedos a jelenlegi uttal.")
+        END IF
+    END IF
+    
+    currentUt := target.name
+    savIndex := targetSav
+    
+    maybeCrash(target.sav(targetSav), state)
+    onCelUtElerve(target, state)
+END METHOD
+\end{verbatim}
 
 
 \subsection{Auto}
@@ -274,7 +294,19 @@ Példák a bemeneti nyelvre:
     \classitem{\#onCelUtElerve(target: Ut, state: GameState): void \textit{(Override)}}{Célút-eléréskor, ha az út végállomáshoz kapcsolódik, növeli a \texttt{completedTrips} értékét, majd a tulajdonos játékosnak +40 pénzt jóváír és eseményt naplóz.}
 \end{class-template-method}
 
-
+\textbf{Pszeudokód a Busz.onCelUtElerve működéséhez:}
+\begin{verbatim}
+METHOD: Busz.onCelUtElerve(target, state)
+    IF target.hasNode("Vegallomas") OR target.hasNode("Vegallomas_1") OR target.hasNode("Vegallomas_2") THEN
+        completedTrips := completedTrips + 1
+        ownerEntity := state.getTypedEntity(owner, Jatekos)
+        IF ownerEntity IS NOT null THEN
+            ownerEntity.money := ownerEntity.money + 40
+            LogEvent("Busz kor teljesitve: " + name + ", jovairas +40.")
+        END IF
+    END IF
+END METHOD
+\end{verbatim}
 
 \subsection{Hokotro}
 \begin{class-template-responsibility}
@@ -325,6 +357,42 @@ Példák a bemeneti nyelvre:
     \classitem{+kerozintoltes(jatekos: Jatekos): void}{A játékostól levonja a kerozintöltés árát (60), majd \texttt{kerozin := 100}. Hibát dob, ha nincs elég pénz.}
     \classitem{+zuzalektoltes(jatekos: Jatekos): void}{A játékostól levonja a zúzaléktöltés árát (40), majd \texttt{zuzottko := 100}. Hibát dob, ha nincs elég pénz.}
 \end{class-template-method}
+
+\textbf{Pszeudokód a Hokotro.sotoltes működéséhez:}
+\begin{verbatim}
+METHOD: Hokotro.sotoltes(jatekos)
+    price := 50
+    IF NOT jatekos.canAfford(price) THEN
+        THROW IllegalArgumentException("Nincs eleg penz sotolteshez.")
+    END IF
+    jatekos.charge(price)
+    so := 100
+END METHOD
+\end{verbatim}
+
+\textbf{Pszeudokód a Hokotro.kerozintoltes működéséhez:}
+\begin{verbatim}
+METHOD: Hokotro.kerozintoltes(jatekos)
+    price := 60
+    IF NOT jatekos.canAfford(price) THEN
+        THROW IllegalArgumentException("Nincs eleg penz kerozintolteshez.")
+    END IF
+    jatekos.charge(price)
+    kerozin := 100
+END METHOD
+\end{verbatim}
+
+\textbf{Pszeudokód a Hokotro.zuzalektoltes működéséhez:}
+\begin{verbatim}
+METHOD: Hokotro.zuzalektoltes(jatekos)
+    price := 40
+    IF NOT jatekos.canAfford(price) THEN
+        THROW IllegalArgumentException("Nincs eleg penz zuzalektolteshez.")
+    END IF
+    jatekos.charge(price)
+    zuzottko := 100
+END METHOD
+\end{verbatim}
 
 \textbf{Pszeudokód a takarítás menetéhez:}
 \begin{verbatim}
@@ -657,6 +725,18 @@ METHOD: Jatekos.vasarolHokotro(hokotroNev)
     newHoktro.setOwner(name)
     vehicles.add(hokotroNev)
     return newHoktro
+END METHOD
+\end{verbatim}
+
+\textbf{Pszeudokód a Jatekos.vasarolFej működéséhez:}
+\begin{verbatim}
+METHOD: Jatekos.vasarolFej(fejTipus)
+    price := 80
+    IF NOT canAfford(price) THEN
+        THROW IllegalArgumentException("Nincs eleg penz a fej vasarlashoz.")
+    END IF
+    charge(price)
+    addFejToInventory(fejTipus)
 END METHOD
 \end{verbatim}
 
