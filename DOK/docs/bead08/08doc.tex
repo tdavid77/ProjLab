@@ -541,10 +541,10 @@ A    rendkívül veszélyes jégpáncél csúszósságának a megszűntetésére
     \classitem{+takaritHatas(h: Hokotro, sav: Sav, ut: Ut, savIndex: int, state: GameState): void \textit{(Override)}}{10 egység zúzottkövet fogyaszt, majd 3 körre csúszásvédelmet állít be a sávra.}
 \end{class-template-method}
 
-\textbf{Pszeudokód a SarkanyFej működéséhez:}
+\textbf{Pszeudokód a ZuzottkoSzoroFej működéséhez:}
 \begin{verbatim}
-METHOD: SoszoroFej.takaritHatas(h, sav, ut, savIndex, state)
-    IF h.kerozin < 10 THEN
+METHOD: ZuzottkoSzoroFej.takaritHatas(h, sav, ut, savIndex, state)
+    IF h.zuzottko < 10 THEN
         PRINT "Nincs eleg zuzottko a zuzottkoszorofejhez."
         RETURN
     END IF
@@ -642,6 +642,23 @@ END METHOD
     \classitem{+vasarolHokotro(hokotroNev: String): Hokotro}{Levásárolja a hókotró árát (300), létrehozza az új hókotrót, hozzárendeli a tulajdonost és a játékos járműlistájához adja. Hibát dob, ha nincs elég pénz.}
     \classitem{+vasarolFej(fejTipus: FejTipus): void}{Levásárolja a fej árát (80), majd a választott fejtípust hozzáadja a játékos raktárához. Hibát dob, ha nincs elég pénz.}
 \end{class-template-method}
+
+\textbf{Pszeudokód a Jatekos vasarolHokotro működéséhez:}
+\begin{verbatim}
+METHOD: Jatekos.vasarolHokotro(hokotroNev)
+    price := 300
+    IF money < price THEN
+        PRINT "Nincs eleg penz a hokotro vasarlasahoz."
+        RETURN null
+    END IF
+    money := money - price
+    h.zuzottko := h.zuzottko -10
+    Hoktro newHoktro := CreateHoktro(hokotroNev)
+    newHoktro.setOwner(name)
+    vehicles.add(hokotroNev)
+    return newHoktro
+END METHOD
+\end{verbatim}
 
 \section{A tesztek részletes tervei, leírásuk a teszt nyelvén}
 
