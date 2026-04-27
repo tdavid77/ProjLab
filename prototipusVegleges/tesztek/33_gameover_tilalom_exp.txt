@@ -1,0 +1,29 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: Ut letrehozva: Jeges_Ut (1 sav).
+OK: Lerakodas rogzitve: Jeges_Ut sav 0 -> JEG
+OK: BuszosJatekos 'sofor1' sikeresen letrehozva.
+OK: Auto 'a1' sikeresen letrehozva.
+OK: Auto 'a2' sikeresen letrehozva.
+OK: Auto 'a3' sikeresen letrehozva.
+OK: Auto 'a4' sikeresen letrehozva.
+OK: Auto 'a5' sikeresen letrehozva.
+OK: Kivalasztva: Auto a1
+[ESEMENY] a1 megcsuszott jeges savon, 2 korre kiesett.
+OK: 'a1' a(z) 'Jeges_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a2
+[ESEMENY] a2 megcsuszott jeges savon, 2 korre kiesett.
+OK: 'a2' a(z) 'Jeges_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a3
+[ESEMENY] a3 megcsuszott jeges savon, 2 korre kiesett.
+OK: 'a3' a(z) 'Jeges_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a4
+[ESEMENY] a4 megcsuszott jeges savon, 2 korre kiesett.
+OK: 'a4' a(z) 'Jeges_Ut' 0. savjaba lepett.
+OK: Kivalasztva: Auto a5
+[ESEMENY] a5 megcsuszott jeges savon, 2 korre kiesett.
+OK: 'a5' a(z) 'Jeges_Ut' 0. savjaba lepett.
+OK: Havazas szimulacio elinditva.
+[ESEMENY] Jeges_Ut savjain a ho +1 egyseggel nott.
+[ESEMENY] JATEK VEGE: kijarasi tilalom, kritikus balesetszam.
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 20

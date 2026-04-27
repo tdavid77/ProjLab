@@ -1,0 +1,14 @@
+Parancssori prototipus indult. A parancsok listajahoz: help
+OK: BuszosJatekos 'sofor1' sikeresen letrehozva.
+OK: Kivalasztva: BuszosJatekos sofor1
+OK: Ut letrehozva: Jeges_Ut (1 sav).
+OK: Lerakodas rogzitve: Jeges_Ut sav 0 -> JEG
+OK: Busz 'bkv_01' sikeresen letrehozva.
+OK: Kivalasztva: Busz bkv_01
+[ESEMENY] bkv_01 megcsuszott jeges savon, 2 korre kiesett.
+OK: 'bkv_01' a(z) 'Jeges_Ut' 0. savjaba lepett.
+OK: Havazas szimulacio elinditva.
+[ESEMENY] Jeges_Ut savjain a ho +1 egyseggel nott.
+[ESEMENY] JATEK VEGE: minden busz mozgaskepetlen.
+OK: A jatek leall.
+OK: Betoltes kesz. Lefuttatott parancsok szama: 9
