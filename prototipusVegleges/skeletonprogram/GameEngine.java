@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A jatek futtatasi ciklusat vezerlo motor, amely kezeli az interaktiv es fajlos bemenetet.
+ */
 public final class GameEngine {
     private final GameState state = new GameState();
     private final GameActions actions = new GameActions(state);

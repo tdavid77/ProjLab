@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Egy parancs vegrehajtasahoz tartozo kontextus: jatekallapot es nyers bemeneti sor.
+ */
 public final class CommandContext {
     private final GameState state;
     private final String rawLine;

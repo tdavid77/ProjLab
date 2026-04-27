@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Zuzottkot szoro fej, amely ideiglenesen csokkenti a csuszasveszelyt.
+ */
 public final class ZuzottkoSzoroFej extends Fej {
     public ZuzottkoSzoroFej() {
         super(FejTipus.ZUZOTTKOSZOROFEJ);

@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Alkalmazas belepesi pontja es egyszeru hivasnaplozo segedmetodusok taroloja.
+ */
 public class SzkeletonProgram {
     private static int depth = 0;
 

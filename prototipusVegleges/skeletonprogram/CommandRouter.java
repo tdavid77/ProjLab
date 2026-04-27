@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Parancsrouter: tokenizalja a bemenetet, kezelohoz koti a parancsot, es futtatja azt.
+ */
 public final class CommandRouter {
     private final GameState state;
     private final GameActions actions;

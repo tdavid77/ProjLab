@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Kozos nevvel azonosithato objektumok interfesze a parancskezeleshez.
+ */
 public interface NamedEntity {
     String name();
 

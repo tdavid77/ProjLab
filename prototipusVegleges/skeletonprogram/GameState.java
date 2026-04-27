@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * A teljes jatekallapot taroloja: entitasok, uthalozat, esemenyek es korallapot.
+ */
 public final class GameState {
     final Map<String, NamedEntity> entities = new LinkedHashMap<>();
     final Map<String, Ut> utak = new LinkedHashMap<>();

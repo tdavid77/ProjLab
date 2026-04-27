@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Sot hasznalo fej, amely eltunteti a ho-jeg reteget es ideiglenes vedelmet ad.
+ */
 public final class SoszoroFej extends Fej {
     public SoszoroFej() {
         super(FejTipus.SOSZOROFEJ);

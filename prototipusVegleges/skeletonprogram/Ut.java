@@ -3,6 +3,9 @@ package skeletonprogram;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Ket csomopont kozotti utat modellez, benne tobb savval es uttipussal.
+ */
 public final class Ut {
     private String name;
     final String nodeA;

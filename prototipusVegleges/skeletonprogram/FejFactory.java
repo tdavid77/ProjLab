@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Gyari segedosztaly, amely fejtipusbol konkret Fej peldanyt hoz letre.
+ */
 public final class FejFactory {
     private FejFactory() {
     }

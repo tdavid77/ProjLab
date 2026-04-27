@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Takarito jarmu, amely fejjel, so-kerozin-zuzottko keszlettel es tisztitasi muveletekkel rendelkezik.
+ */
 public final class Hokotro extends Jarmu {
     private Fej aktivFej;
     int so;

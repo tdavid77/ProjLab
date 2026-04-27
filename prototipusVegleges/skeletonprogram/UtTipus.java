@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Utszakasz tipusa a palyan (normal, hid, alagut).
+ */
 public enum UtTipus {
     NORMAL,
     HID,

@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Savokra kerulo lerakodasok tipusa a bemeneti nyelvben.
+ */
 public enum DepositType {
     HO,
     JEG,

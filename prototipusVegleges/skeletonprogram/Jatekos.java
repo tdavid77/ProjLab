@@ -3,6 +3,9 @@ package skeletonprogram;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Jatekos alaposztaly, amely penzt, jarmuparkot es fej-raktart kezel.
+ */
 public class Jatekos implements NamedEntity {
     protected String name;
     protected int money = 1000;

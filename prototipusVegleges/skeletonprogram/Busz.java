@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Buszt modellezo jarmu, amely vegallomasnal korszintu jovairast ad a tulajdonosnak.
+ */
 public final class Busz extends Jarmu {
     private int completedTrips;
 

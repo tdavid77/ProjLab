@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Sopro fej, amely a havat a szomszedos sav fele tereli.
+ */
 public final class SoproFej extends Fej {
     public SoproFej() {
         super(FejTipus.SOPROFEJ);

@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Olyan fej, amely a havat es feltort jeget teljesen eltavolitja a savrol.
+ */
 public final class HanyoFej extends Fej {
     public HanyoFej() {
         super(FejTipus.HANYOFEJ);

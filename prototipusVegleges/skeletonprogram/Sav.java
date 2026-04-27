@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Egy ut egy savjat modellezi, benne a ho-, jeg- es vedelmi reteg allapotaval.
+ */
 public final class Sav {
     final int index;
     int ho;

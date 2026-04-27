@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Jeget toro fej, amely a jegreteget tisztithato ho-jellegu retegre alakitja.
+ */
 public final class JegtoroFej extends Fej {
     public JegtoroFej() {
         super(FejTipus.JEGTOROFEJ);

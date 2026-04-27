@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Kerozint fogyaszto fej, amely azonnali olvasztast hajt vegre a savon.
+ */
 public final class SarkanyFej extends Fej {
     public SarkanyFej() {
         super(FejTipus.SARKANYFEJ);

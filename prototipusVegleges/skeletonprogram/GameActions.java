@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * A bemeneti nyelv parancsainak uzleti logikajat megvalosito akcioosztaly.
+ */
 public final class GameActions {
     private final GameState state;
 

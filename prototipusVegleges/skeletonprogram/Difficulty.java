@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Jatek nehezsegi szintje, amely az alap baleseti valoszinuseget adja.
+ */
 public enum Difficulty {
     EASY(0.08),
     MEDIUM(0.18),

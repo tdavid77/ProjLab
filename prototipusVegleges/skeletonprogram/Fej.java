@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Hokotrokra szerelheto takaritofejek absztrakt alaposztalya.
+ */
 public abstract class Fej {
     private final FejTipus tipus;
 

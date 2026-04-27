@@ -2,6 +2,9 @@ package skeletonprogram;
 
 import java.util.Locale;
 
+/**
+ * A tamogatott hokotrofejek tipusa.
+ */
 public enum FejTipus {
     SOPROFEJ,
     HANYOFEJ,

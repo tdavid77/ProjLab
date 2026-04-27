@@ -1,5 +1,8 @@
 package skeletonprogram;
 
+/**
+ * Mozgo entitasok kozos alaposztalya, amely kezeli a poziciot, tulajdonost es baleseti kiesest.
+ */
 public class Jarmu implements NamedEntity {
     protected String name;
     protected String owner;
