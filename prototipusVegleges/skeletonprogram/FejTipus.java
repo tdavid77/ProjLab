@@ -3,7 +3,11 @@ package skeletonprogram;
 import java.util.Locale;
 
 /**
- * A tamogatott hokotrofejek tipusa.
+ * A tamogatott hokotrofejek tipusat sorolja fel.
+ * Minden ertek egy konkret Fej alosztálynak felel meg:
+ * SOPROFEJ=SoproFej, HANYOFEJ=HanyoFej, JEGTOROFEJ=JegtoroFej,
+ * SARKANYFEJ=SarkanyFej, SOSZOROFEJ=SoszoroFej, ZUZOTTKOSZOROFEJ=ZuzottkoSzoroFej.
+ * A FejFactory.create() metódus ez alapjan peldanyosit.
  */
 public enum FejTipus {
     SOPROFEJ,
@@ -13,6 +17,7 @@ public enum FejTipus {
     SOSZOROFEJ,
     ZUZOTTKOSZOROFEJ;
 
+    /** Parszol egy bemeneti sztringet FejTipus ertekke (kis-nagybetu-fuggetlen). Null-t ad, ha ervenytelen. */
     public static FejTipus fromInput(String value) {
         if (value == null) {
             return null;

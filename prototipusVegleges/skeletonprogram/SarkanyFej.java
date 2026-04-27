@@ -1,7 +1,10 @@
 package skeletonprogram;
 
 /**
- * Kerozint fogyaszto fej, amely azonnali olvasztast hajt vegre a savon.
+ * Kerozint fogyaszto hokotrofej: azonnali teljes olvasztast hajt vegre a savon.
+ * Egy hasznalat 10 egyseg kerozint fogyaszt. Hatasara a sav ho, ice es feltortJeg
+ * mezöje nullara all. Leggyorsabb, de keszletigenyes takaritasi mod.
+ * Ha nincs eleg kerozin (< 10), kivetelt dob.
  */
 public final class SarkanyFej extends Fej {
     public SarkanyFej() {

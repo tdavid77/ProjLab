@@ -12,7 +12,13 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Parancsrouter: tokenizalja a bemenetet, kezelohoz koti a parancsot, es futtatja azt.
+ * A konzolos bemeneti reteg vezerleseert felelos osztaly.
+ * A registerCommands() beregisztralja az osszes ismert parancsnevet a megfelelo
+ * GameActions-kezelő metódushoz. Az executeLine() tokenizalja a bemenetet,
+ * megkeresi a kezelot, es lefuttatja azt hibakezeléssel egyutt.
+ * A handleLoadFromFile() lehetove teszi parancsok fajlbol valo betoltest,
+ * korköros betoltes elleni vedelem (fileLoadStack) mellett.
+ * A tokenize() tamogatja az idezojeles (szokoz-tartalmazo) argumentumokat is.
  */
 public final class CommandRouter {
     private final GameState state;
@@ -25,6 +31,7 @@ public final class CommandRouter {
         registerCommands();
     }
 
+    /** Felterkepezi az osszes ismert parancsnevet a megfelelo kezelő metódushoz. */
     private void registerCommands() {
         commands.put("help", actions::handleHelp);
         commands.put("kilepes", actions::handleExit);
@@ -51,6 +58,10 @@ public final class CommandRouter {
         commands.put("penz", actions::handleSetPenz);
     }
 
+    /**
+     * Tokenizalja es vegrehajtja a megadott parancssort.
+     * Megjegyzes- es ures sorokat kihagyja. Ismeretlen parancs eseten hibaüzenetet ir.
+     */
     public void executeLine(String line) {
         String trimmed = line == null ? "" : line.trim();
         if (trimmed.isEmpty() || trimmed.startsWith("#") || trimmed.startsWith("//")) {
@@ -80,6 +91,10 @@ public final class CommandRouter {
         }
     }
 
+    /**
+     * Szokoz szerint tokenekre bontja a parancssort, tamogatva az idezojeles
+     * (szokoz-tartalmazo) argumentumokat. Lezaratlan idezojel eseten kivetelt dob.
+     */
     private List<String> tokenize(String line) {
         List<String> tokens = new ArrayList<>();
         StringBuilder current = new StringBuilder();
@@ -108,6 +123,10 @@ public final class CommandRouter {
         return tokens;
     }
 
+    /**
+     * Beolvas egy parancsfajlt es soronkent vegrehajtja a parancsokat.
+     * Megakadályozza a korköros betoltest a fileLoadStack segitsegevel.
+     */
     private void handleLoadFromFile(CommandContext context, List<String> args) {
         actions.ensureArgCount(args, 1, 1, "betolt [fajlnev]");
         String file = args.get(0);

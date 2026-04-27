@@ -9,20 +9,28 @@ import java.util.Map;
 
 /**
  * A bemeneti nyelv parancsainak uzleti logikajat megvalosito akcioosztaly.
+ * Minden handle*() metodus egy-egy konzolparancshoz tartozik (pl. handleCreate,
+ * handleMove, handleCleanSav). A private segédmetodusok (parse*, require*,
+ * resolve*) a validaciot es az entitaskereseest centralizaljak.
+ * Ez az osztaly kommunikal a GameState-tel, a jatekos- es jarmu-peldanyokkal
+ * es az uthalozattal, de maga nem tarol allapotot a GameState-en kivul.
  */
 public final class GameActions {
     private final GameState state;
 
+    /** Letrehozza az akcioosztalyt a megadott jatekallapottal. */
     public GameActions(GameState state) {
         this.state = state;
     }
 
+    /** Ellenorzi, hogy az argumentumok szama [min, max] tartomanyban van-e; kivetelt dob, ha nem. */
     void ensureArgCount(List<String> args, int min, int max, String usage) {
         if (args.size() < min || args.size() > max) {
             throw new IllegalArgumentException("Hibas parameterlista. Hasznalat: " + usage);
         }
     }
 
+    /** Ellenorzi, hogy a megadott nev nem ures es meg nem foglalt; kivetelt dob, ha igen. */
     private void ensureUniqueName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Ures nev nem megengedett.");
@@ -32,14 +40,17 @@ public final class GameActions {
         }
     }
 
+    /** Konzolra irja az OK valaszt a megadott uzeneten. */
     void ok(String message) {
         System.out.println("OK: " + message);
     }
 
+    /** Konzolra irja az ERROR valaszt a megadott uzeneten. */
     void error(String message) {
         System.out.println("ERROR: " + message);
     }
 
+    /** Kiiratja az osszes elerheto parancs rovid leirast a konzolra. */
     void handleHelp(CommandContext context, List<String> args) {
         ensureArgCount(args, 0, 0, "help");
         List<String> lines = Arrays.asList(
@@ -72,12 +83,14 @@ public final class GameActions {
         }
     }
 
+    /** Leallitja a jatekmotort (state.running = false). */
     void handleExit(CommandContext context, List<String> args) {
         ensureArgCount(args, 0, 0, "kilepes");
         state.running = false;
         ok("A jatek leall.");
     }
 
+    /** Beallitja a jatek nehezsegi szintjet (easy/medium/hard). */
     void handleDifficulty(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "nehezseg [easy|medium|hard]");
         Difficulty difficulty = Difficulty.fromInput(args.get(0));
@@ -88,6 +101,11 @@ public final class GameActions {
         ok("Nehezseg beallitva: " + difficulty.name().toLowerCase(Locale.ROOT));
     }
 
+    /**
+     * Uj entitast hoz letre a megadott tipus es nev alapjan,
+     * es regisztralja a jatekallapotba. Jarmu-tipusok eseten hozzarendeli
+     * a jelenleg kivalasztott jatekoshoz (ha van).
+     */
     void handleCreate(CommandContext context, List<String> args) {
         ensureArgCount(args, 2, 2, "letrehoz [tipus] [nev]");
         String typeText = args.get(0).toUpperCase(Locale.ROOT);
@@ -121,15 +139,21 @@ public final class GameActions {
         ok(created.type() + " '" + created.name() + "' sikeresen letrehozva.");
     }
 
+    /**
+     * Ha van kivalasztott Jatekos, hozzarendeli az uj jarmut annak jarmulistajához.
+     * Ha nincs kivalasztva Jatekos (pl. Auto), nincs hatas.
+     */
     private void attachVehicleToSelectedJatekos(Jarmu vehicle) {
         NamedEntity selected = state.selected();
-        if (selected instanceof Jatekos) {
-            Jatekos jatekos = (Jatekos) selected;
-            jatekos.addVehicle(vehicle.name);
-            vehicle.owner = jatekos.name;
+        if (selected != null) {
+            selected.attachVehicle(vehicle);
         }
     }
 
+    /**
+     * Atnevez egy entitast vagy utat. Az atnevezes utan frissiti az osszes
+     * entitasban a regi nevere hivatkozo referenciat (relinkEntityName / relinkUtName).
+     */
     void handleRename(CommandContext context, List<String> args) {
         ensureArgCount(args, 2, 2, "szerkeszt [nev] [ujnev]");
         String oldName = args.get(0);
@@ -155,12 +179,7 @@ public final class GameActions {
             ut.renameTo(newName);
             state.putUt(ut);
             for (NamedEntity e : state.entities.values()) {
-                if (e instanceof Jarmu) {
-                    Jarmu v = (Jarmu) e;
-                    if (oldName.equalsIgnoreCase(v.currentUt)) {
-                        v.currentUt = newName;
-                    }
-                }
+                e.relinkUtName(oldName, newName);
             }
             ok("Atnevezve: '" + oldName + "' -> '" + newName + "'.");
             return;
@@ -169,25 +188,14 @@ public final class GameActions {
         throw new IllegalArgumentException("Nincs ilyen objektum vagy ut: " + oldName);
     }
 
+    /** Az osszes entitasban frissiti az atnevezett entitas regi neven tartott referenciait. */
     private void relinkReferences(String oldName, String newName) {
         for (NamedEntity e : state.entities.values()) {
-            if (e instanceof Jatekos) {
-                Jatekos p = (Jatekos) e;
-                for (int i = 0; i < p.vehicles.size(); i++) {
-                    if (p.vehicles.get(i).equalsIgnoreCase(oldName)) {
-                        p.vehicles.set(i, newName);
-                    }
-                }
-            }
-            if (e instanceof Jarmu) {
-                Jarmu v = (Jarmu) e;
-                if (oldName.equalsIgnoreCase(v.owner)) {
-                    v.owner = newName;
-                }
-            }
+            e.relinkEntityName(oldName, newName);
         }
     }
 
+    /** Beallitja az aktualis kivalasztasat a megadott nevu entitasra. */
     void handleSelect(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "kivalaszt [nev]");
         NamedEntity entity = state.getEntity(args.get(0));
@@ -198,6 +206,7 @@ public final class GameActions {
         ok("Kivalasztva: " + entity.type() + " " + entity.name());
     }
 
+    /** Letrehoz egy uj utszakaszt a halozatban a megadott parameterekkel. */
     void handleCreateUt(CommandContext context, List<String> args) {
         ensureArgCount(args, 6, 6, "utletrehoz [nev] [cs1] [cs2] [hossz] [tipus] [savszam]");
         String name = args.get(0);
@@ -221,6 +230,7 @@ public final class GameActions {
         ok("Ut letrehozva: " + name + " (" + savSzam + " sav).");
     }
 
+    /** Beallitja a megadott sav megadott lerakodas-mezejet a kapott ertekre (tesztseged). */
     void handleDeposit(CommandContext context, List<String> args) {
         ensureArgCount(args, 4, 4, "lerakodas [utnev] [sav] [tipus] [ertek]");
         Ut ut = requireUt(args.get(0));
@@ -234,6 +244,10 @@ public final class GameActions {
         ok("Lerakodas rogzitve: " + ut.name() + " sav " + savIndex + " -> " + depositType.name());
     }
 
+    /**
+     * A kivalasztott jarmut a megadott ut megadott savjara lepeti.
+     * Ellenorzi a mozgaskepesseget es a cel-savindex ervenyszegeset.
+     */
     void handleMove(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 2, "lepes [ut] [sav-opcionalis]");
         Jarmu vehicle = requireSelectedVehicle();
@@ -252,6 +266,7 @@ public final class GameActions {
         ok("'" + vehicle.name + "' a(z) '" + target.name() + "' " + targetSav + ". savjaba lepett.");
     }
 
+    /** Egy kor-lepest szimulal (tickTime), a jatekos varakozasat jelzi. */
     void handleWait(CommandContext context, List<String> args) {
         ensureArgCount(args, 0, 1, "wait [nev-opcionalis]");
         String who = args.isEmpty() ? "jelenlegi jatekos" : args.get(0);
@@ -259,6 +274,7 @@ public final class GameActions {
         ok("Varakozas vegrehajtva: " + who);
     }
 
+    /** A kivalasztott TakaritoJatekos szamara vasarol uj Hokotro jarmut (ar: 300). */
     void handleBuyHokotro(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "hokotrovasarlas [nev]");
         ensureUniqueName(args.get(0));
@@ -272,6 +288,7 @@ public final class GameActions {
         ok("Hokotro vasarlas sikeres: " + h.name + ". Penz levonva: 300");
     }
 
+    /** Kiiratja az allapotsort egy vagy minden entitashoz/uthoz. */
     void handleStatus(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "allapot [nev|Mind]");
         String name = args.get(0);
@@ -303,6 +320,7 @@ public final class GameActions {
         throw new IllegalArgumentException("Nincs ilyen objektum: " + name);
     }
 
+    /** Kiiratja a terkep osszes csomopontjat es a szomszedos utakat. */
     void handleMap(CommandContext context, List<String> args) {
         ensureArgCount(args, 0, 0, "terkep");
         if (state.utak.isEmpty()) {
@@ -325,6 +343,7 @@ public final class GameActions {
         ok("Terkep listazva.");
     }
 
+    /** Kicsereli a megadott Hokotro fejét az uj fejtipusra (csak telephelyen). */
     void handleFejSwap(CommandContext context, List<String> args) {
         ensureArgCount(args, 2, 2, "fejcsere [hokotro] [ujfej]");
         TakaritoJatekos jatekos = resolveCleanerForHokotroAction(args.get(0));
@@ -341,6 +360,7 @@ public final class GameActions {
         ok("Fejcsere sikeres: " + h.name + " -> " + ujFej.name());
     }
 
+    /** A kivalasztott jatekos szamara vasarol uj fejet a raktarba (ar: 80). */
     void handleFejBuy(CommandContext context, List<String> args) {
         ensureArgCount(args, 2, 2, "fejvasarlas [hokotro] [fejtipus]");
         TakaritoJatekos jatekos = resolveCleanerForHokotroAction(args.get(0));
@@ -356,6 +376,7 @@ public final class GameActions {
         ok("Fejvasarlas sikeres: " + type.name() + ", levonas: 80");
     }
 
+    /** Feltolti a Hokotro so-keszletet 100-ra (ar: 50, csak telephelyen). */
     void handleSaltRefill(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "sotoltes [hokotro]");
         TakaritoJatekos jatekos = resolveCleanerForHokotroAction(args.get(0));
@@ -367,6 +388,7 @@ public final class GameActions {
         ok("'" + h.name + "' sokeszlete feltoltve. Penz levonva: 50");
     }
 
+    /** Feltolti a Hokotro kerozin-keszletet 100-ra (ar: 60, csak telephelyen). */
     void handleFuelRefill(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "kerozintoltes [hokotro]");
         TakaritoJatekos jatekos = resolveCleanerForHokotroAction(args.get(0));
@@ -378,6 +400,7 @@ public final class GameActions {
         ok("'" + h.name + "' kerozinkeszlete feltoltve. Penz levonva: 60");
     }
 
+    /** Feltolti a Hokotro zuzottko-keszletet 100-ra (ar: 40, csak telephelyen). */
     void handleGritRefill(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "zuzalektoltes [hokotro]");
         TakaritoJatekos jatekos = resolveCleanerForHokotroAction(args.get(0));
@@ -389,6 +412,7 @@ public final class GameActions {
         ok("'" + h.name + "' zuzalekkeszlete feltoltve. Penz levonva: 40");
     }
 
+    /** A megadott Hokotro aktiv fejevel takaritja a megadott savot az aktualis uton. */
     void handleCleanSav(CommandContext context, List<String> args) {
         ensureArgCount(args, 2, 2, "takarit [hokotro] [sav]");
         Hokotro h = requireHokotro(args.get(0));
@@ -398,6 +422,10 @@ public final class GameActions {
         ok("'" + h.name + "' takaritasa lefutott a(z) " + ut.name() + " " + savIndex + ". savon.");
     }
 
+    /**
+     * Szimulal egy havazas-kort: minden uton alkalmazHoEses(), majd tickTime(),
+     * esemenyek kivaintenese es jatekvegezo ellenorzezes.
+     */
     void handleHoeses(CommandContext context, List<String> args) {
         ensureArgCount(args, 0, 0, "havazas");
         if (state.utak.isEmpty()) {
@@ -416,6 +444,7 @@ public final class GameActions {
         state.evaluateGameOver();
     }
 
+    /** Listazza az adott tipusu osszes entitast (szurt lista a type() alapjan). */
     void handleListByType(CommandContext context, List<String> args) {
         ensureArgCount(args, 1, 1, "lista [tipus]");
         String type = args.get(0).toLowerCase(Locale.ROOT);
@@ -432,6 +461,7 @@ public final class GameActions {
         ok("Listazas kesz. Talalat: " + count);
     }
 
+    /** Parszol egy pozitiv egesz szamot; kivetelt dob, ha nem szam vagy nem pozitiv. */
     private int parsePositiveInt(String raw, String fieldName) {
         int value;
         try {
@@ -445,6 +475,7 @@ public final class GameActions {
         return value;
     }
 
+    /** Parszol egy nem-negativ egesz szamot; kivetelt dob, ha nem szam vagy negativ. */
     private int parseNonNegativeInt(String raw, String fieldName) {
         int value;
         try {
@@ -458,6 +489,7 @@ public final class GameActions {
         return value;
     }
 
+    /** Parszol egy savindexet es ellenorzi, hogy ervenyes tartomanyban van-e a megadott uton. */
     private int parseSavIndex(Ut ut, String raw) {
         int idx = parseNonNegativeInt(raw, "sav");
         if (idx >= ut.savSzam()) {
@@ -466,6 +498,7 @@ public final class GameActions {
         return idx;
     }
 
+    /** Keres egy utat nev alapjan; kivetelt dob, ha nem letezik. */
     private Ut requireUt(String name) {
         Ut ut = state.getUt(name);
         if (ut == null) {
@@ -474,31 +507,41 @@ public final class GameActions {
         return ut;
     }
 
+    /** Visszaadja a kivalasztott Jarmut; kivetelt dob, ha nincs kivalasztott jarmu. */
     private Jarmu requireSelectedVehicle() {
         NamedEntity selected = state.selected();
-        if (!(selected instanceof Jarmu)) {
+        Jarmu vehicle = selected == null ? null : selected.asJarmu();
+        if (vehicle == null) {
             throw new IllegalArgumentException("Nincs kivalasztott jarmu. Hasznald: kivalaszt [jarmuNev]");
         }
-        return (Jarmu) selected;
+        return vehicle;
     }
 
+    /** Visszaadja a kivalasztott TakaritoJatekost; kivetelt dob, ha a kivalasztott nem az. */
     private TakaritoJatekos requireSelectedCleanerJatekos() {
         NamedEntity selected = state.selected();
-        if (!(selected instanceof TakaritoJatekos)) {
+        TakaritoJatekos jatekos = selected == null ? null : selected.asTakaritoJatekos();
+        if (jatekos == null) {
             throw new IllegalArgumentException("A muvelethez TakaritoJatekos kivalasztasa szukseges.");
         }
-        return (TakaritoJatekos) selected;
+        return jatekos;
     }
 
+    /**
+     * Megkeresi a TakaritoJatekost egy Hokotro-akciohoz.
+     * Elobb a kivalasztott entitast probalja, ha az TakaritoJatekos; egyebkent
+     * a Hokotro owner-mezon at keresi meg a tulajdonost.
+     */
     private TakaritoJatekos resolveCleanerForHokotroAction(String hokotroName) {
         NamedEntity selected = state.selected();
-        if (selected instanceof TakaritoJatekos) {
-            return (TakaritoJatekos) selected;
+        TakaritoJatekos fromSelected = selected == null ? null : selected.asTakaritoJatekos();
+        if (fromSelected != null) {
+            return fromSelected;
         }
 
-        Hokotro h = state.getTypedEntity(hokotroName, Hokotro.class);
+        Hokotro h = state.getHokotro(hokotroName);
         if (h != null && h.owner != null) {
-            TakaritoJatekos owner = state.getTypedEntity(h.owner, TakaritoJatekos.class);
+            TakaritoJatekos owner = state.getTakaritoJatekos(h.owner);
             if (owner != null) {
                 return owner;
             }
@@ -507,8 +550,9 @@ public final class GameActions {
         throw new IllegalArgumentException("A muvelethez TakaritoJatekos kivalasztasa szukseges.");
     }
 
+    /** Visszaadja a jatekos tulajdonaban levo Hokotrot; kivetelt dob, ha nem letezik vagy nem ovee. */
     private Hokotro requireOwnedHokotro(TakaritoJatekos jatekos, String name) {
-        Hokotro h = state.getTypedEntity(name, Hokotro.class);
+        Hokotro h = state.getHokotro(name);
         if (h == null) {
             throw new IllegalArgumentException("Nincs ilyen hokotro: " + name);
         }
@@ -518,20 +562,22 @@ public final class GameActions {
         return h;
     }
 
+    /** Visszaadja a megadott nevu Hokotrot; kivetelt dob, ha nem letezik. */
     private Hokotro requireHokotro(String name) {
-        Hokotro h = state.getTypedEntity(name, Hokotro.class);
+        Hokotro h = state.getHokotro(name);
         if (h == null) {
             throw new IllegalArgumentException("Nincs ilyen hokotro: " + name);
         }
         return h;
     }
 
+    /** Beallitja a megadott jatekos penzegyenleget a megadott ertekre (tesztsegéd). */
     void handleSetPenz(CommandContext context, List<String> args) {
         ensureArgCount(args, 2, 2, "penz [nev] [osszeg]");
         String name = args.get(0);
         int amount = parseNonNegativeInt(args.get(1), "osszeg");
 
-        Jatekos jatekos = state.getTypedEntity(name, Jatekos.class);
+        Jatekos jatekos = state.getJatekos(name);
         if (jatekos == null) {
             throw new IllegalArgumentException("Nincs ilyen jatekos: " + name);
         }

@@ -1,7 +1,13 @@
 package skeletonprogram;
 
 /**
- * Mozgo entitasok kozos alaposztalya, amely kezeli a poziciot, tulajdonost es baleseti kiesest.
+ * Minden mozgo jarmu (Auto, Busz, Hokotro) kozos alaposztalya.
+ * Tarolja a poziciot (aktualis ut neve, savindex), a tulajdonos (owner) nevet
+ * es a baleseti varakozasi szamlalot (disabledTime).
+ * A vegrehajtLepes() metodus vegzi az ut-szomszedossag-ellenorzest, a
+ * baleseti szamitast (maybeCrash) es az alosztaly-specifikus hook meghivasat.
+ * A canCrash() template method teszi lehetove, hogy bizonyos jarmuvek
+ * (pl. a Hokotro) immunisak legyenek a jegcsuszasi balesetre.
  */
 public class Jarmu implements NamedEntity {
     protected String name;
@@ -18,6 +24,25 @@ public class Jarmu implements NamedEntity {
     }
 
     @Override
+    public Jarmu asJarmu() { return this; }
+
+    /** Atnevezes eseten frissiti az owner hivatkozast, ha az egyezik a regi nevvel. */
+    @Override
+    public void relinkEntityName(String oldName, String newName) {
+        if (oldName.equalsIgnoreCase(owner)) {
+            owner = newName;
+        }
+    }
+
+    /** Atnevezes eseten frissiti a currentUt hivatkozast, ha az egyezik a regi ut nevevel. */
+    @Override
+    public void relinkUtName(String oldName, String newName) {
+        if (oldName.equalsIgnoreCase(currentUt)) {
+            currentUt = newName;
+        }
+    }
+
+    @Override
     public String name() {
         return name;
     }
@@ -27,6 +52,9 @@ public class Jarmu implements NamedEntity {
         this.name = newName;
     }
 
+    // Csak konzolos UI-hoz: statusLine kiírásánál és a 'lista' parancs szűrőjénél
+    // szerepel. Nem viselkedési elágazás alapja. GUI-s verzióban el fog tűnni,
+    // mert ott a típusazonosítás a nézet rétegben, statikus típusinformáció alapján történik.
     @Override
     public String type() {
         return "Jarmu";
@@ -44,16 +72,32 @@ public class Jarmu implements NamedEntity {
         return type() + " " + name + " | Poz:" + pos + " | Allapot:" + allapot;
     }
 
+    /** Igaz, ha a jarmu mozgaskeptelensege nem all fenn (disabledTime == 0, nincs aktiv baleset). */
     public boolean canMove() {
         return disabledTime <= 0;
     }
 
+    /**
+     * Template method: megadja, hogy a jarmu balesetet szenvedhet-e jeges savon.
+     * Alapertelmezetten igaz; Hokotro felulirja false-ra, mert takaritojarmukent immun.
+     */
+    protected boolean canCrash() {
+        return true;
+    }
+
+    /** Minden kor vegekor csokkenti a baleseti varakozasi szamlalot (disabledTime), ha aktiv. */
+    @Override
     public void tickTime() {
         if (disabledTime > 0) {
             disabledTime -= 1;
         }
     }
 
+    /**
+     * A jarmut a megadott ut megadott savjara lepeti.
+     * Ellenorzi, hogy a cel ut szomszedos-e a jelenlegivel, majd frissiti a poziciot,
+     * meghivja a baleseti szamitast (maybeCrash) es az alosztaly hookot (onCelUtElerve).
+     */
     public void vegrehajtLepes(Ut target, int targetSav, GameState state) {
         if (currentUt != null) {
             Ut current = state.getUt(currentUt);
@@ -73,12 +117,21 @@ public class Jarmu implements NamedEntity {
         onCelUtElerve(target, state);
     }
 
+    /**
+     * Hook metodus: a cel ut elerese utan fut le a vegrehajtLepes() vegen.
+     * Alosztaly felulirhatja egyedi viselkedes hozzaadasahoz (pl. Busz koreszamlalo novelese).
+     */
     protected void onCelUtElerve(Ut target, GameState state) {
         // alapertelmezetten nincs extra logika
     }
 
+    /**
+     * Valoszinusegi alapon eldonti, hogy a jarmu megcsuszik-e a jeges savon.
+     * A veszely merteket a nehezsegi szint, a jeg vastagasaga, es az esetleges
+     * zuzalek-vedelem befolyasolja. Baleset eseten 2 korre kiesik a jarmu.
+     */
     private void maybeCrash(Sav sav, GameState state) {
-        if (this instanceof Hokotro) {
+        if (!canCrash()) {
             return;
         }
         if (sav.ice <= 0) {

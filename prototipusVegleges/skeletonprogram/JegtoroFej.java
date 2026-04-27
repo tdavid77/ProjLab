@@ -1,7 +1,10 @@
 package skeletonprogram;
 
 /**
- * Jeget toro fej, amely a jegreteget tisztithato ho-jellegu retegre alakitja.
+ * Jegtoro hokotrofej: a savon levo jeget feltort jeg-jelleggel alakitja at,
+ * majd azt honak szamitja el, ami ezutan seprhetove, kiszorhatova valik.
+ * Nem hasznal keszletet. Hasznalata: jeges utakon a HanyoFej vagy SoproFej
+ * elott alkalmazando, mert azok a feltort jeget is el tudjak tüntetni.
  */
 public final class JegtoroFej extends Fej {
     public JegtoroFej() {

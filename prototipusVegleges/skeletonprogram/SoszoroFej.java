@@ -1,7 +1,10 @@
 package skeletonprogram;
 
 /**
- * Sot hasznalo fej, amely eltunteti a ho-jeg reteget es ideiglenes vedelmet ad.
+ * Sot hasznalo hokotrofej: eltavolitja a ho- es jegreget, es 3 kores ideig
+ * vedelmet biztosit az uj ho-kepzodes ellen.
+ * Egy hasznalat 10 egyseg sot fogyaszt. Ha nincs eleg so (< 10), kivetelt dob.
+ * Ideallis hosszabb tavon vedendo, fontos utakra, pl. vegallomas keze lebenek.
  */
 public final class SoszoroFej extends Fej {
     public SoszoroFej() {

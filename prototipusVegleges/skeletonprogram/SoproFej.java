@@ -1,7 +1,10 @@
 package skeletonprogram;
 
 /**
- * Sopro fej, amely a havat a szomszedos sav fele tereli.
+ * Sopro hokotrofej: a savon levo havat a szomszedos (magasabb indexu) savra tereli.
+ * Nem hasznal keszletet. Ha nincs jobbra szomszedos sav, az anyag elveszik.
+ * Az alapertelmezett fej: minden uj Hokotro ezzel indul.
+ * Hatekony, de a szomszedsavot megterheli; ott szükseges lehet ujabb takaritas.
  */
 public final class SoproFej extends Fej {
     public SoproFej() {

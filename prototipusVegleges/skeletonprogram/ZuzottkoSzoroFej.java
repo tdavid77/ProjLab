@@ -1,7 +1,10 @@
 package skeletonprogram;
 
 /**
- * Zuzottkot szoro fej, amely ideiglenesen csokkenti a csuszasveszelyt.
+ * Zuzottkot (grittet) szoro hokotrofej: ideiglenes csuszasveszely-csokkentö vedelmet ad.
+ * Egy hasznalat 10 egyseg zuzottkot fogyaszt. Ha nincs eleg (< 10), kivetelt dob.
+ * A vedelem 3 korig tart (zuzalekHatralevoIdeje = 3), es -0.12 modositorat
+ * ad a baleseti valoszinuseg szamitasakor.
  */
 public final class ZuzottkoSzoroFej extends Fej {
     public ZuzottkoSzoroFej() {

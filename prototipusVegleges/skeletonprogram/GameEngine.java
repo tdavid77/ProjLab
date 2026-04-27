@@ -6,13 +6,21 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A jatek futtatasi ciklusat vezerlo motor, amely kezeli az interaktiv es fajlos bemenetet.
+ * A jatek futtatasi ciklusat vezerlö motor.
+ * Feladata a GameState, GameActions es CommandRouter peldanyainak letrehozasa,
+ * az opcionalis --input= parancssori argumentum feldolgozasa (fajlbol auto-betoltes),
+ * es az interaktiv bemeneti ciklus (stdin) futtatasa amig a jatekmotor aktiv.
+ * Ez az osztaly koti ossze az alkalmazas retegeit, maga nem tartalmaz uzleti logikot.
  */
 public final class GameEngine {
     private final GameState state = new GameState();
     private final GameActions actions = new GameActions(state);
     private final CommandRouter router = new CommandRouter(state, actions);
 
+    /**
+     * Elinditja a jatekot. Opcionalis --input=fajlnev argumentum eseten elobb
+     * betolti a fajlt, majd interaktiv stdin-ciklusban fogadja a parancsokat.
+     */
     public void run(String[] args) {
         String autoInput = null;
         for (String arg : args) {

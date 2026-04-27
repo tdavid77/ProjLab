@@ -1,7 +1,10 @@
 package skeletonprogram;
 
 /**
- * Olyan fej, amely a havat es feltort jeget teljesen eltavolitja a savrol.
+ * Olyan hokotrofej, amely a havat es a feltort jeget teljesen eltavolitja a savrol.
+ * Nem hasznal keszletet. Hatasara a sav ho es feltortJeg mezieje nullara all.
+ * Az eltavolitott anyag az ut melle kerul (terleten marad, de nem akadalyozza
+ * a forgalmat). Legegyszerübb es legolcsobb takaritasi megoldas.
  */
 public final class HanyoFej extends Fej {
     public HanyoFej() {
