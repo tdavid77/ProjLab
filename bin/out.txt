@@ -1,0 +1,14 @@
+
+4. UseCase: Busz haladása es fizetés
+-> bsm: BuszsoforManager.mozgatJarmuvet(cel, j)
+	-> b: Busz.lep(cel)
+	<- void
+A cel csomopont vegallomas? (I/N)
+	-> b: Busz.korRegisztralasa()
+Busz korregisztralasa: osszes korok szama = 1
+	<- void
+BuszsoforManager.vagyon novelve.
+<- void
+4. UseCase vége
+
+Kimenet mentve: out.txt

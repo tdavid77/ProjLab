@@ -1,0 +1,194 @@
+0. A korábbi változathoz képest történt változások
+
+A Szkeleton prototípus alapja elkészült, és a rendszer modellje késznek tekinthető. A most következő iteráció nem új, radikális átalakításokat ír elő, hanem a meglévő modellt egészíti ki olyan módon, hogy a korábbi dokumentumokat ismerő szakember egyértelműen lássa, mi változott.
+
+0.1. Modell kiterjesztése a konzolos prototípus felé
+- A jelenlegi modell megtartja a core objektumokat: `Jarmu`, `Auto`, `Busz`, `Hokotro`, `Fej`, `Sav`, `Uthalozat`, `JatekosManager`, `TakaritoManager`, `BuszsoforManager`.
+- A változás abban van, hogy a prototípus most önálló konzolos alkalmazásként van kezeltetve, nem csak a belső logika demonstrálására szolgál.
+- A korábbi dokumentációban szereplő business objektumok algoritmusai továbbra is az irányadóak. A változás elsősorban az interfész és a tesztelési réteg felé irányul.
+- A `SzkeletonProgram` jelenlegi menüje és logolása kerül a prototípus interfészének középpontjába.
+- A rendszer modellje nem erőszakoltuk meg: a `Jarmu` és `Fej` hierarchia változatlan, de a konzolos vezérlés hozza létre a felhasználói és tesztelési sémát.
+
+0.2. A változások fókusza
+- Konzolvezérlés definiálása: menü, parancsok, bemeneti kérdések, log üzenetek.
+- Tesztelés támogatása: mely kimeneteknek kell megjelenniük, milyen viselkedés az elvárt.
+- Segédprogramok és futtatási módok: hogyan lesz a konzolos prototípust leellenőrizni, hogyan hozható létre automatizált kimenet-ellenőrzés.
+
+1. A prototípus interfésze
+
+A prototípus egy önálló, konzolos alkalmazás. A vezérlés a felhasználó számára a konzolról történik, a kimenet a konzolra írható, és később fájlba irányítható. A cél, hogy a konzol felület érthetően mutassa meg a program működését.
+
+1.1. Indítás
+- A programot a `java skeletonprogram.SzkeletonProgram` parancssal indítjuk.
+- További vezérlési módok:
+  - `java skeletonprogram.SzkeletonProgram --all` az összes beépített teszt egymás után futtatása.
+  - `java skeletonprogram.SzkeletonProgram --test=4` egy konkrét teszt futtatása.
+  - `java skeletonprogram.SzkeletonProgram --input=input.txt` bemenet olvasása fájlból.
+  - `java skeletonprogram.SzkeletonProgram --output=output.txt` kimenet naplózása fájlba a konzol mellett.
+  - `java skeletonprogram.SzkeletonProgram 4` egy menüpont közvetlen kiválasztása számmal.
+- Másolati működéshez a `proto` mappában a `javac` és `java` parancsok használhatók.
+
+1.2. Fő menü
+- A prototípus fő menüje számozott opciókat tartalmaz.
+- Az opciók közül a felhasználó számot választ, majd Entert nyom.
+- A menü megjeleníti a lehetséges teszt-szcenáriókat és a kilépés lehetőségét.
+
+1.3. Konzolos párbeszéd
+- A program kérdéseket tehet fel, amelyekre a felhasználó egyszerű `I/N` választ ad.
+- Minden kérdés és válasz a konzolon jelenik meg, így látható a döntési folyamat.
+- A logolás a képernyőn mutatja a metódushívásokat és visszatéréseket (`SzkeletonProgram.logCall`, `SzkeletonProgram.logReturn`).
+
+1.4. Konzolos kimenet
+- A prototípus kimenete elsősorban szöveges.
+- A konzolra írt sorok között szerepelnek a teszt nevei, a művelet leírásai, a felhasználói kérdések és válaszok, valamint a belső log sorok.
+- Ha szükséges, a kimenet átirányítható fájlba a standard shell eszközeivel.
+
+1.5. Interakciós bővítések és tényleges támogató funkciók
+- Parancssori argumentumok támogatottak a tesztek automatikus futtatásához: `--all`, `--test=N`, `--input=FILE`, `--output=FILE` és szám szerinti közvetlen opciók.
+- Fájl alapú vezérlés: a bemenet fájlból olvasható, a soronként megadott válaszokkal és opciókkal automatikus futtatás hozható létre.
+- Fájlba logolás: a kimenet a `--output=FILE` paraméterrel fájlba naplózható, miközben a konzolra is megmarad a kimenet.
+
+2. Tesztelési követelmények
+
+A prototípus ellenőrzése széleskörű, informális tesztekkel történik. A cél, hogy minden funkcionális útvonal legalább egyszer lefusson.
+
+2.1. Tesztek formátuma
+- Teszt neve: rövid, egyértelmű azonosító.
+- Rövid leírás: mi történik a tesztben.
+- Teszt célja: milyen viselkedést ellenőrizünk.
+- Nem szükséges még formális teszteset-sablon, de a dokumentációban elegendően részletesen kell felvázolni.
+
+2.2. Javasolt tesztesetek
+
+Teszt neve: "Busz eléri a végállomást"
+Rövid leírás: A `BuszsoforManager` mozgat egy buszt, és a cél egy végállomás.
+Teszt célja: Ellenőrizni, hogy a végállomásra érés regisztrálja a megtett kört és a bevételt.
+
+Teszt neve: "Busz nem végállomásra megy"
+Rövid leírás: A `BuszsoforManager` mozgat egy buszt, de a cél nem végállomás.
+Teszt célja: Ellenőrizni, hogy a rendszer nem regisztrál sikert és nem növeli a bevételt hibás cél esetén.
+
+Teszt neve: "Hókotró fej cseréje"
+Rövid leírás: A `TakaritoManager` kezdeményezi a `SarkanyFej` felszerelését egy hókotróra.
+Teszt célja: A fejcsere művelet helyes vezérlésének és a megfelelő objektumkapcsolatoknak az ellenőrzése.
+
+Teszt neve: "Új hókotró vásárlása"
+Rövid leírás: A menedzser új hókotrót vásárol.
+Teszt célja: A vásárlási feltételek ellenőrzése, a pénzlevonás és a beszerzés logikájának validálása.
+
+Teszt neve: "Új fej vásárlása"
+Rövid leírás: A menedzser speciális takarítófejet vásárol.
+Teszt célja: A fejvásárlás menetének, a készletkezelésnek és a pénzkövetésnek az ellenőrzése.
+
+Teszt neve: "Hókotró sárkány fej működése"
+Rövid leírás: A hókotró sárkány fejjel takarítja a sávot.
+Teszt célja: A sárkány fej fogyasztásának és takarítási viselkedésének ellenőrzése.
+
+Teszt neve: "Sószóró fej működése"
+Rövid leírás: A sószóró fej takarítja a sávot és sót helyez el.
+Teszt célja: A só kihelyezésének, a havazás elleni hatásnak és a kimenet logolásának ellenőrzése.
+
+Teszt neve: "Söprő fej működése"
+Rövid leírás: A söprő fej a havat oldalra tolja.
+Teszt célja: A takarítási effektus és a sáv állapotváltozásának ellenőrzése.
+
+Teszt neve: "Jégtörő fej működése"
+Rövid leírás: A jégtörő fej feltöri a jeget.
+Teszt célja: A jégtörő fej működésének és a hívások logjának ellenőrzése.
+
+Teszt neve: "Játék vége ellenőrzés"
+Rövid leírás: A `Uthalozat` ellenőrzi a buszok mozgásképességét és a balesetszámot.
+Teszt célja: A játékvéget hajtó feltételek helyességének validálása.
+
+Teszt neve: "Jármű megcsúszása"
+Rövid leírás: Jeges sávon baleset történik, a jármű balesetet szenved.
+Teszt célja: A balesetkalkuláció és a jármű baleseti állapotának ellenőrzése.
+
+Teszt neve: "Havazás szimulációja"
+Rövid leírás: A `Uthalozat` havazást szimulál az utakon.
+Teszt célja: A havazási folyamat és a hálózat állapotváltozásának ellenőrzése.
+
+Teszt neve: "Só töltése"
+Rövid leírás: A `TakaritoManager` sót tölt a sószóró fejbe.
+Teszt célja: A sótöltés logikájának és a telephelyi feltétel ellenőrzésének validálása.
+
+Teszt neve: "Kerozin töltése"
+Rövid leírás: A `TakaritoManager` kerozint tölt a sárkány fejbe.
+Teszt célja: A kerozin töltésének és a fej delegálásának ellenőrzése.
+
+Teszt neve: "Autó áthaladása és jéggé tömörülés"
+Rövid leírás: Az autó áthalad a sávon, és a hó jéggé tömörül.
+Teszt célja: A `Sav.autoAthalad()` és a sávállapot-változás helyes működésének ellenőrzése.
+
+Teszt neve: "Leszórt só"
+Rövid leírás: A sószóró fej sót helyez el és a sávon lévő havat eltávolítja.
+Teszt célja: A sókihelyezés hatásának, illetve a jég- és hóviszonyok változásának ellenőrzése.
+
+3. Tesztelést támogató segédprogramok és futtatási módok
+
+3.1. Általános futtatás
+- Egy konkrét teszt futtatásához a prototípus konzolos menüjében válasszuk ki az adott opció számát.
+- A program parancssori kapcsolókkal is vezérelhető: `--test=N`, `--all`, `--input=FILE`, `--output=FILE`.
+- Az összes teszt futtatásához használhatjuk az `--all` opciót, vagy egy külső tesztfuttató scriptet.
+- Windows rendszeren rendelkezésre áll a `run_test.bat`, Unix-szerű rendszeren pedig a `run_test.sh` segédprogram.
+
+3.2. Kimenet ellenőrzése
+- A konzolos kimenet helyességét a standard output vagy a `--output=FILE` opcióval készült napló alapján ellenőrizzük.
+- Windows rendszeren: `java skeletonprogram.SzkeletonProgram --output=output.txt` és `findstr`, `fc` használatával a várt kimenet összehasonlítása.
+- Linux rendszeren: `java skeletonprogram.SzkeletonProgram --output=output.txt` és `diff expected.txt output.txt` vagy `grep` használata.
+- A konzol átirányítása `> output.txt` is használható, de javasolt az alkalmazás beépített `--output=FILE` opciója.
+- Az ellenőrzéshez várt output definíciókat kell készíteni minden tesztre.
+
+3.3. Segédprogramok szükségessége
+- Bemeneti parancsfájl olvasó: a konzolhelyzetek automatikus lejátszásához (például `input.txt` alapú válaszok). Ez a program a bemeneti kérdésekre automatikusan ad választ.
+- Tesztesetek futtatási kerete: egy egyszerű script vagy batch fájl, amely sorban végrehajtja az egyes teszteket és a kimenetet naplózza.
+- A prototípus mappában már található `run_test.bat` és `run_test.sh` segédprogram, amelyek leegyszerűsítik az egyedi és az összes teszt futtatását.
+- Kimenet-összehasonlító eszköz: amely eldönti, hogy a program kimenete egyezik-e a várt „golden output”-tal.
+
+3.4. Funkcionális specifikáció a segédprogramokhoz
+
+3.4.1. Tesztfuttató script
+- Funkció: egyetlen teszt vagy az összes teszt futtatása.
+- Bemenet:
+  - `test_id` (pl. 4, 5, 6, ...), vagy `all` az összes teszthez.
+  - opcionálisan bemeneti parancsfájl (`input.txt`).
+- Kimenet:
+  - `output.txt`, amely a konzolra írt összes sor másolata.
+  - `exit code` 0, ha a teszt sikeres, nem 0, ha hiba történt.
+- működés:
+  - elindítja a Java programot a megfelelő opcióval,
+  - átadja a bemeneti válaszokat,
+  - menti a kimenetet.
+
+3.4.2. Kimenet-ellenőrző eszköz
+- Funkció: összehasonlítja a futtatott teszt outputját a várt outputtal.
+- Bemenet:
+  - `expected_output.txt`
+  - `actual_output.txt`
+- Kimenet:
+  - részletes különbség: mely sorok nem egyeznek,
+  - egyszerű státusz: siker / sikertelen.
+- Platformfüggetlen módszer:
+  - Windows: `fc expected.txt actual.txt`
+  - Linux: `diff expected.txt actual.txt`
+  - Alternatíva: saját `compare_outputs.py` vagy `compare_outputs.bat` script.
+
+3.4.3. Pálya- és bemenet-generátor
+- Ha a tesztek később több inputot használnak, szükség lehet egy pályaépítő vagy input fájl generáló segédprogramra.
+- Funkció: egyszerű szöveges formátumban létrehozni a bemeneti sávokat, járműveket és kezdőállapotokat.
+- Jelen prototípusban elegendő a manuális tesztmeghatározás és a konzolos kérdések.
+
+4. A tesztelés dokumentációja és nyomon követése
+
+- Minden tesztesethez érdemes létrehozni egy rövid leírást és várt output mintát.
+- A dokumentum célja, hogy a korábbi verziókat ismerő szakember értse, hogy a konzolos interfész és a tesztelési támogatás bővült.
+- A dokumentációban szerepeljen, hogy a jelenlegi prototípusban a vezérlés menü alapú, és a kimenet logolható.
+
+5. Következő lépések
+
+- A prototípus interfész további részletezése: pontos menüpontok, parancsformátumok és bemeneti fájlok szerkezete.
+- Automatikus tesztfuttató készítése: `run_test.bat` vagy `run_test.sh`, valamint `compare_outputs` script.
+- A várt kimenetek definiálása minden tesztesethez.
+- A prototípus kiterjesztése a fájl alapú bemenetre és kimenetre, hogy teljesen automatizálható legyen a tesztelés.
+
+Ez a dokumentum szolgálja a prototípus konzolos vezérlésének és tesztelésének első, informális specifikációját.

@@ -1,0 +1,7 @@
+utletrehoz U_norm A B 5 normal 1
+utletrehoz U_alag A C 5 alagut 1
+lerakodas U_norm 0 So 2
+havazas
+allapot U_norm
+allapot U_alag
+kilepes
