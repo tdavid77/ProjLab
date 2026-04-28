@@ -10,8 +10,8 @@ OK: Fejcsere sikeres: kotro_01 -> SOSZOROFEJ
 OK: 'kotro_01' sokeszlete feltoltve. Penz levonva: 50
 OK: Kivalasztva: Hokotro kotro_01
 OK: 'kotro_01' a(z) 'Havas_Ut' 0. savjaba lepett.
-[ESEMENY] Soszoro fej aktiv: ho es jeg eltunt, 3 korig vedett a sav.
 OK: 'kotro_01' takaritasa lefutott a(z) Havas_Ut 0. savon.
+[ESEMENY] Soszoro fej aktiv: ho es jeg eltunt, 3 korig vedett a sav.
 OK: Varakozas vegrehajtva: jelenlegi jatekos
 OK: Havazas szimulacio elinditva.
 [ESEMENY] Havas_Ut savjain nem valtozott a horetag.

@@ -22,6 +22,8 @@ public final class Sav {
     int soHatralevoIdeje;
     /** Zuzalek-szoras csuszasveszely-csokkentesének hátralevo köreinek szama. */
     int zuzalekHatralevoIdeje;
+    /** Forgalom számláló a hó jéggé tömörítéséhez */
+    public int trafficCount = 0;
 
     public Sav(int index) {
         this.index = index;

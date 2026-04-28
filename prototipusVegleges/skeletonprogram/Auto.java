@@ -19,4 +19,22 @@ public final class Auto extends Jarmu {
     public String type() {
         return "Auto";
     }
+
+    //ÚJ LOGIKA: Hó tömörítése az áthaladáskor
+    @Override
+    protected void onCelUtElerve(Ut target, GameState state) {
+        super.onCelUtElerve(target, state);
+        Sav sav = target.sav(this.savIndex);
+        
+        //Hó tömörítése az áthaladáskor
+        if (sav.ho > 0) {
+            sav.trafficCount++;
+            if (sav.trafficCount >= 5) {
+                sav.ice += sav.ho;
+                sav.ho = 0;
+                state.enqueueEvent(target.name() + " " + this.savIndex + ". savjan a ho jegpancella tomorodott a forgalom miatt.");
+                sav.trafficCount = 0; // Visszaállítjuk a számlálót
+            }
+        }
+    }
 }

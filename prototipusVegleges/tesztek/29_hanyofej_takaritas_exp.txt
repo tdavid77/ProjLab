@@ -9,8 +9,8 @@ OK: Fejvasarlas sikeres: HANYOFEJ, levonas: 80
 OK: Fejcsere sikeres: kotro_01 -> HANYOFEJ
 OK: Kivalasztva: Hokotro kotro_01
 OK: 'kotro_01' a(z) 'Havas_Ut' 0. savjaba lepett.
-[ESEMENY] Hanyofej az ut melle tavolitotta a csapadekot.
 OK: 'kotro_01' takaritasa lefutott a(z) Havas_Ut 0. savon.
+[ESEMENY] Hanyofej az ut melle tavolitotta a csapadekot.
 Ut Havas_Ut (NORMAL) | Szomszedok:[Telephely_1, Csomopont_A] | Savok: [Sav0(Ho:0, Jeg:0, Sozott:N)]
 OK: Allapot lekerdezes kesz: Havas_Ut
 OK: A jatek leall.

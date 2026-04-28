@@ -9,8 +9,8 @@ OK: Fejvasarlas sikeres: JEGTOROFEJ, levonas: 80
 OK: Fejcsere sikeres: kotro_01 -> JEGTOROFEJ
 OK: Kivalasztva: Hokotro kotro_01
 OK: 'kotro_01' a(z) 'Jeges_Ut' 0. savjaba lepett.
-[ESEMENY] Jegtorofej feltorte a jeget, ho jellegu retegre valtott.
 OK: 'kotro_01' takaritasa lefutott a(z) Jeges_Ut 0. savon.
+[ESEMENY] Jegtorofej feltorte a jeget, ho jellegu retegre valtott.
 Ut Jeges_Ut (NORMAL) | Szomszedok:[Telephely_1, Csomopont_A] | Savok: [Sav0(Ho:5, Jeg:0, Sozott:N)]
 OK: Allapot lekerdezes kesz: Jeges_Ut
 OK: A jatek leall.

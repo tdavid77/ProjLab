@@ -10,9 +10,9 @@ OK: Fejcsere sikeres: kotro_01 -> SOSZOROFEJ
 OK: 'kotro_01' sokeszlete feltoltve. Penz levonva: 50
 OK: Kivalasztva: Hokotro kotro_01
 OK: 'kotro_01' a(z) 'Havas_Ut' 0. savjaba lepett.
-[ESEMENY] Soszoro fej aktiv: ho es jeg eltunt, 3 korig vedett a sav.
 OK: 'kotro_01' takaritasa lefutott a(z) Havas_Ut 0. savon.
+[ESEMENY] Soszoro fej aktiv: ho es jeg eltunt, 3 korig vedett a sav.
 Ut Havas_Ut (NORMAL) | Szomszedok:[Telephely_1, Csomopont_A] | Savok: [Sav0(Ho:0, Jeg:0, Sozott:I)]
 OK: Allapot lekerdezes kesz: Havas_Ut
 OK: A jatek leall.
-OK: Betoltes kesz. Lefuttatott parancsok szama: 15
+OK: Betoltes kesz. Lefuttatott parancsok szama: 14

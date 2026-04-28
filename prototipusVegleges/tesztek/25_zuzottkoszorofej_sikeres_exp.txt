@@ -10,7 +10,7 @@ OK: Fejcsere sikeres: kotro_01 -> ZUZOTTKOSZOROFEJ
 OK: 'kotro_01' zuzalekkeszlete feltoltve. Penz levonva: 40
 OK: Kivalasztva: Hokotro kotro_01
 OK: 'kotro_01' a(z) 'Jeges_Ut' 0. savjaba lepett.
-[ESEMENY] Zuzottko kiszorva: csuszasveszely csokkent 3 korre.
 OK: 'kotro_01' takaritasa lefutott a(z) Jeges_Ut 0. savon.
+[ESEMENY] Zuzottko kiszorva: csuszasveszely csokkent 3 korre.
 OK: A jatek leall.
-OK: Betoltes kesz. Lefuttatott parancsok szama: 14
+OK: Betoltes kesz. Lefuttatott parancsok szama: 13

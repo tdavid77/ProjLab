@@ -28,6 +28,10 @@ public final class Hokotro extends Jarmu {
     @Override
     protected boolean canCrash() { return false; }
 
+    //A Hókotró nem akad el a nagy hóban sem
+    @Override
+    protected boolean canBeBlockedBySnow() { return false; }
+
     // Csak konzolos UI-hoz: statusLine kiírásánál és a 'lista' parancs szűrőjénél
     // szerepel. Nem viselkedési elágazás alapja. GUI-s verzióban el fog tűnni,
     // mert ott a típusazonosítás a nézet rétegben, statikus típusinformáció alapján történik.

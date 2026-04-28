@@ -93,6 +93,11 @@ public class Jarmu implements NamedEntity {
         }
     }
 
+    /** Alapból minden jármű elakad a hóban (a Hókotró ezt felülírja) */
+    protected boolean canBeBlockedBySnow() {
+        return true;
+    }
+
     /**
      * A jarmut a megadott ut megadott savjara lepeti.
      * Ellenorzi, hogy a cel ut szomszedos-e a jelenlegivel, majd frissiti a poziciot,
@@ -108,6 +113,11 @@ public class Jarmu implements NamedEntity {
             if (!sharesNode && !current.name().equalsIgnoreCase(target.name())) {
                 throw new IllegalArgumentException("A celut nem szomszedos a jelenlegi uttal.");
             }
+        }
+
+        // ÚJ LOGIKA: Ha a hó >= 20, a jármű elakad
+        if (target.sav(targetSav).ho >= 20) {
+            throw new IllegalArgumentException("A sav jarhatatlan a magas ho miatt, a lepes meghiusult.");
         }
 
         currentUt = target.name();

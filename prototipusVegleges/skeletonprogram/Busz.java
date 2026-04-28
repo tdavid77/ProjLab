@@ -41,5 +41,17 @@ public final class Busz extends Jarmu {
                 state.enqueueEvent("Busz kor teljesitve: " + name + ", jovairas +40.");
             }
         }
+
+        // ÚJ LOGIKA: Hó tömörítése az áthaladáskor (ua. mint az autóknál)
+        Sav sav = target.sav(this.savIndex);
+        if (sav.ho > 0) {
+            sav.trafficCount++;
+            if (sav.trafficCount >= 5) {
+                sav.ice += sav.ho;
+                sav.ho = 0;
+                state.enqueueEvent(target.name() + " " + this.savIndex + ". savjan a ho jegpancella tomorodott a forgalom miatt.");
+                sav.trafficCount = 0;
+            }
+        }
     }
 }

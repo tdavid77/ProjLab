@@ -8,20 +8,20 @@ OK: Auto 'a3' sikeresen letrehozva.
 OK: Auto 'a4' sikeresen letrehozva.
 OK: Auto 'a5' sikeresen letrehozva.
 OK: Kivalasztva: Auto a1
-[ESEMENY] a1 megcsuszott jeges savon, 2 korre kiesett.
 OK: 'a1' a(z) 'Jeges_Ut' 0. savjaba lepett.
+[ESEMENY] a1 megcsuszott jeges savon, 2 korre kiesett.
 OK: Kivalasztva: Auto a2
-[ESEMENY] a2 megcsuszott jeges savon, 2 korre kiesett.
 OK: 'a2' a(z) 'Jeges_Ut' 0. savjaba lepett.
+[ESEMENY] a2 megcsuszott jeges savon, 2 korre kiesett.
 OK: Kivalasztva: Auto a3
-[ESEMENY] a3 megcsuszott jeges savon, 2 korre kiesett.
 OK: 'a3' a(z) 'Jeges_Ut' 0. savjaba lepett.
+[ESEMENY] a3 megcsuszott jeges savon, 2 korre kiesett.
 OK: Kivalasztva: Auto a4
-[ESEMENY] a4 megcsuszott jeges savon, 2 korre kiesett.
 OK: 'a4' a(z) 'Jeges_Ut' 0. savjaba lepett.
+[ESEMENY] a4 megcsuszott jeges savon, 2 korre kiesett.
 OK: Kivalasztva: Auto a5
-[ESEMENY] a5 megcsuszott jeges savon, 2 korre kiesett.
 OK: 'a5' a(z) 'Jeges_Ut' 0. savjaba lepett.
+[ESEMENY] a5 megcsuszott jeges savon, 2 korre kiesett.
 OK: Havazas szimulacio elinditva.
 [ESEMENY] Jeges_Ut savjain a ho +1 egyseggel nott.
 [ESEMENY] JATEK VEGE: kijarasi tilalom, kritikus balesetszam.

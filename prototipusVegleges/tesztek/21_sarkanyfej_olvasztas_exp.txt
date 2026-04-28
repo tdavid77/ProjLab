@@ -11,8 +11,8 @@ OK: Fejcsere sikeres: kotro_01 -> SARKANYFEJ
 OK: 'kotro_01' kerozinkeszlete feltoltve. Penz levonva: 60
 OK: Kivalasztva: Hokotro kotro_01
 OK: 'kotro_01' a(z) 'Havas_Ut' 0. savjaba lepett.
-[ESEMENY] Sarkanyfej aktiv: azonnali olvasztas vegrehajtva.
 OK: 'kotro_01' takaritasa lefutott a(z) Havas_Ut 0. savon.
+[ESEMENY] Sarkanyfej aktiv: azonnali olvasztas vegrehajtva.
 Ut Havas_Ut (NORMAL) | Szomszedok:[Telephely_1, Csomopont_A] | Savok: [Sav0(Ho:0, Jeg:0, Sozott:N)]
 OK: Allapot lekerdezes kesz: Havas_Ut
 OK: A jatek leall.
