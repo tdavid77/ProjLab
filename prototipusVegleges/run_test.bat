@@ -2,12 +2,20 @@
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
+REM Beallitjuk a konzolt UTF-8 kodolasra, hogy ne legyen kódlap hiba
+chcp 65001 > nul
+
 echo === KOD TISZTITASA ===
-del /s /q skeletonprogram\*.class 2>nul
+if exist "bin" rmdir /s /q "bin"
+mkdir "bin"
 
 echo === KOD FORDITASA (JAVAC) ===
-REM Csak a skeletonprogram mappaban levo java fajlokat forditjuk
-javac -encoding UTF-8 skeletonprogram\*.java
+if exist sources_tmp.txt del sources_tmp.txt
+REM A dir parancs sokkal biztonsagosabb a fajllista letrehozasara Windows alatt
+dir /s /b src\*.java > sources_tmp.txt
+
+javac -d bin -encoding UTF-8 @sources_tmp.txt
+del sources_tmp.txt
 echo Forditas kesz!
 echo.
 
@@ -22,10 +30,10 @@ for %%f in (tesztek\*_in.txt) do (
     set "exp_file=tesztek\!base_name!_exp.txt"
     set "out_file=tesztek\out\!base_name!_out.txt"
     
-    REM Java program futtatasa
-    java skeletonprogram.SzkeletonProgram --input="!in_file!" > "!out_file!"
+    REM Mivel a SzkeletonProgram.java fajlban benne van a "package skeletonprogram;" sor, 
+    REM igy a teljes nevevel kell futtatni:
+    java -cp bin motor.SzkeletonProgram --input="!in_file!" > "!out_file!"
     
-    REM Osszehasonlitas
     fc /W "!exp_file!" "!out_file!" > nul
     
     if !errorlevel! equ 0 (

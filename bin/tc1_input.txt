@@ -1,7 +1,0 @@
-nehezseg medium
-letrehoz TakaritoJatekos takarito1
-kivalaszt takarito1
-letrehoz Hokotro h1
-utletrehoz Fo_ut Telephely_1 Csomopont_A 10 normal 2
-terkep
-kilepes
