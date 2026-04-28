@@ -2,12 +2,12 @@
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
+echo === KOD TISZTITASA ===
+del /s /q skeletonprogram\*.class 2>nul
+
 echo === KOD FORDITASA (JAVAC) ===
-REM Osszes .java fajl osszegyujtese egy ideiglenes listaba
-if exist sources_tmp.txt del sources_tmp.txt
-for /r . %%f in (*.java) do echo %%f >> sources_tmp.txt
-javac -encoding UTF-8 @sources_tmp.txt
-del sources_tmp.txt
+REM Csak a skeletonprogram mappaban levo java fajlokat forditjuk
+javac -encoding UTF-8 skeletonprogram\*.java
 echo Forditas kesz!
 echo.
 

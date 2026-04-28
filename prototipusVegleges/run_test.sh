@@ -1,8 +1,14 @@
 #!/bin/bash
 
+# Belepunk abba a konyvtarba, ahol a script fut
+cd "$(dirname "$0")"
+
+echo -e "=== KOD TISZTITASA ==="
+rm -f skeletonprogram/*.class
+
 echo -e "=== KOD FORDITASA (JAVAC) ==="
-# A mappak tartalmanak kozvetlen forditasa UTF-8 kodolassal
-javac -encoding UTF-8 skeletonprogram/*.java jarmuvek/*.java jatekosok/*.java takaritofejek/*.java terkep/*.java
+# Csak a skeletonprogram mappa tartalmanak forditasa UTF-8 kodolassal
+javac -encoding UTF-8 skeletonprogram/*.java
 echo -e "Forditas kesz!\n"
 
 echo -e "=== AUTOMATIKUS TESZTFUTTATO ==="
@@ -20,7 +26,7 @@ for in_file in tesztek/*_in.txt; do
     # Java program futtatasa es kimenet atiranyitasa
     java skeletonprogram.SzkeletonProgram --input="$in_file" > "$out_file"
     
-    # Osszehasonlitas a diff parnccsal, whitespace-ek ignoralasaval (-w)
+    # Osszehasonlitas a diff paranccsal, whitespace-ek ignoralasaval (-w)
     if diff -q -w "$exp_file" "$out_file" > /dev/null; then
         echo -e "[\033[32mPASS\033[0m] $base_name"
     else

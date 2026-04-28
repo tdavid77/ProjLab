@@ -1,6 +1,0 @@
-letrehoz TakaritoJatekos takarito1
-kivalaszt takarito1
-penz takarito1 50
-letrehoz Hokotro kotro_01
-fejvasarlas kotro_01 SarkanyFej
-kilepes

@@ -1,9 +1,0 @@
-letrehoz BuszosJatekos sofor1
-kivalaszt sofor1
-utletrehoz Jeges_Ut Telephely_1 Csomopont_A 10 normal 1
-lerakodas Jeges_Ut 0 Jeg 100
-letrehoz Busz bkv_01
-kivalaszt bkv_01
-lepes Jeges_Ut 0
-havazas
-kilepes

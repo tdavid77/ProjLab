@@ -1,7 +1,0 @@
-letrehoz TakaritoJatekos takarito1
-kivalaszt takarito1
-penz takarito1 100
-letrehoz Hokotro kotro_01
-sotoltes kotro_01
-allapot kotro_01
-kilepes

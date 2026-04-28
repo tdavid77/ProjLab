@@ -116,7 +116,7 @@ public class Jarmu implements NamedEntity {
         }
 
         // ÚJ LOGIKA: Ha a hó >= 20, a jármű elakad
-        if (target.sav(targetSav).ho >= 20) {
+        if (this.canBeBlockedBySnow() && target.sav(targetSav).ho >= 20) {
             throw new IllegalArgumentException("A sav jarhatatlan a magas ho miatt, a lepes meghiusult.");
         }
 

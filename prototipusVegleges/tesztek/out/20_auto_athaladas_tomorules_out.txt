@@ -18,7 +18,8 @@ OK: Kivalasztva: Auto a4
 OK: 'a4' a(z) 'Havas_Ut' 0. savjaba lepett.
 OK: Kivalasztva: Auto a5
 OK: 'a5' a(z) 'Havas_Ut' 0. savjaba lepett.
-Ut Havas_Ut (NORMAL) | Szomszedok:[Telephely_1, Csomopont_A] | Savok: [Sav0(Ho:5, Jeg:0, Sozott:N)]
+[ESEMENY] Havas_Ut 0. savjan a ho jegpancella tomorodott a forgalom miatt.
+Ut Havas_Ut (NORMAL) | Szomszedok:[Telephely_1, Csomopont_A] | Savok: [Sav0(Ho:0, Jeg:5, Sozott:N)]
 OK: Allapot lekerdezes kesz: Havas_Ut
 OK: A jatek leall.
 OK: Betoltes kesz. Lefuttatott parancsok szama: 21

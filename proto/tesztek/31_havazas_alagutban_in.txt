@@ -1,4 +1,0 @@
-utletrehoz Alagut_Ut Csomopont_A Csomopont_B 10 alagut 1
-havazas
-allapot Alagut_Ut
-kilepes
