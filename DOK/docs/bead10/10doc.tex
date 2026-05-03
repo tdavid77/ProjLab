@@ -1,43 +1,596 @@
 \chapter{Prototípus beadása}
 
 \section{Fordítási és futtatási útmutató}
-\comment{A feltöltött program fordításával és futtatásával kapcsolatos útmutatás. Ennek tartalmaznia kell leltárszerűen az egyes fájlok pontos nevét, méretét byte-ban, keletkezési idejét, valamint azt, hogy a fájlban mi került megvalósításra.}
-
 \subsection{Fájllista}
 
 \begin{fajllista}
     \fajl
-    {Demo.java} % Kezdet
-    {353 byte} % Méret
-    {2020.03.26~21:05~} % Időpont
-    {Demo programosztály} % Leírás
+    {\texttt{Auto.java}} % Kezdet
+    {1801 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Auto programosztály} % Leírás
+    \fajl
+    {\texttt{Busz.java}} % Kezdet
+    {2489 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Busz programosztály} % Leírás
+    \fajl
+    {\texttt{Hokotro.java}} % Kezdet
+    {4893 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Hokotro programosztály} % Leírás
+    \fajl
+    {\texttt{Jarmu.java}} % Kezdet
+    {5787 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Jarmu programosztály} % Leírás
+    \fajl
+    {\texttt{BuszosJatekos.java}} % Kezdet
+    {876 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {BuszosJatekos programosztály} % Leírás
+    \fajl
+    {\texttt{Jatekos.java}} % Kezdet
+    {4109 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Jatekos programosztály} % Leírás
+    \fajl
+    {\texttt{TakaritoJatekos.java}} % Kezdet
+    {956 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {TakaritoJatekos programosztály} % Leírás
+    \fajl
+    {\texttt{CommandContext.java}} % Kezdet
+    {846 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {CommandContext programosztály} % Leírás
+    \fajl
+    {\texttt{CommandHandler.java}} % Kezdet
+    {215 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {CommandHandler programosztály} % Leírás
+    \fajl
+    {\texttt{CommandRouter.java}} % Kezdet
+    {6395 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {CommandRouter programosztály} % Leírás
+    \fajl
+    {\texttt{Difficulty.java}} % Kezdet
+    {1098 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Difficulty programosztály} % Leírás
+    \fajl
+    {\texttt{EntityType.java}} % Kezdet
+    {629 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {EntityType programosztály} % Leírás
+    \fajl
+    {\texttt{GameActions.java}} % Kezdet
+    {25294 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {GameActions programosztály} % Leírás
+    \fajl
+    {\texttt{GameEngine.java}} % Kezdet
+    {1940 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {GameEngine programosztály} % Leírás
+    \fajl
+    {\texttt{GameState.java}} % Kezdet
+    {6916 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {GameState programosztály} % Leírás
+    \fajl
+    {\texttt{NamedEntity.java}} % Kezdet
+    {2322 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {NamedEntity programosztály} % Leírás
+    \fajl
+    {\texttt{SzkeletonProgram.java}} % Kezdet
+    {1433 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {SzkeletonProgram programosztály} % Leírás
+    \fajl
+    {\texttt{Fej.java}} % Kezdet
+    {1010 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Fej programosztály} % Leírás
+    \fajl
+    {\texttt{FejFactory.java}} % Kezdet
+    {1251 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {FejFactory programosztály} % Leírás
+    \fajl
+    {\texttt{FejTipus.java}} % Kezdet
+    {995 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {FejTipus programosztály} % Leírás
+    \fajl
+    {\texttt{HanyoFej.java}} % Kezdet
+    {798 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {HanyoFej programosztály} % Leírás
+    \fajl
+    {\texttt{JegtoroFej.java}} % Kezdet
+    {876 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {JegtoroFej programosztály} % Leírás
+    \fajl
+    {\texttt{SarkanyFej.java}} % Kezdet
+    {957 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {SarkanyFej programosztály} % Leírás
+    \fajl
+    {\texttt{SoproFej.java}} % Kezdet
+    {1017 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {SoproFej programosztály} % Leírás
+    \fajl
+    {\texttt{SoszoroFej.java}} % Kezdet
+    {957 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {SoszoroFej programosztály} % Leírás
+    \fajl
+    {\texttt{ZuzottkoSzoroFej.java}} % Kezdet
+    {966 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {ZuzottkoSzoroFej programosztály} % Leírás
+    \fajl
+    {\texttt{DepositType.java}} % Kezdet
+    {790 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {DepositType programosztály} % Leírás
+    \fajl
+    {\texttt{Sav.java}} % Kezdet
+    {2849 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Sav programosztály} % Leírás
+    \fajl
+    {\texttt{Ut.java}} % Kezdet
+    {3483 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Ut programosztály} % Leírás
+    \fajl
+    {\texttt{UtTipus.java}} % Kezdet
+    {569 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {UtTipus programosztály} % Leírás
+    \fajl
+    {\texttt{01 fejcsere sikeres exp.txt}} % Kezdet
+    {681 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{01 fejcsere sikeres in.txt}} % Kezdet
+    {211 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{02 fejcsere nincstelep exp.txt}} % Kezdet
+    {535 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{02 fejcsere nincstelep in.txt}} % Kezdet
+    {263 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{03 hokotrovasarlas sikeres exp.txt}} % Kezdet
+    {440 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{03 hokotrovasarlas sikeres in.txt}} % Kezdet
+    {129 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{04 hokotrovasarlas nincspenz exp.txt}} % Kezdet
+    {311 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{04 hokotrovasarlas nincspenz in.txt}} % Kezdet
+    {110 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{05 hokotrovasarlas nincstelep exp.txt}} % Kezdet
+    {520 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{05 hokotrovasarlas nincstelep in.txt}} % Kezdet
+    {248 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{06 fejvasarlas sikeres exp.txt}} % Kezdet
+    {490 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{06 fejvasarlas sikeres in.txt}} % Kezdet
+    {165 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{07 fejvasarlas nincspenz exp.txt}} % Kezdet
+    {361 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{07 fejvasarlas nincspenz in.txt}} % Kezdet
+    {145 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{08 fejvasarlas nincstelep exp.txt}} % Kezdet
+    {535 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{08 fejvasarlas nincstelep in.txt}} % Kezdet
+    {257 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{09 sotoltes sikeres exp.txt}} % Kezdet
+    {522 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{09 sotoltes sikeres in.txt}} % Kezdet
+    {150 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{10 sotoltes nincstelep exp.txt}} % Kezdet
+    {532 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{10 sotoltes nincstelep in.txt}} % Kezdet
+    {243 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{11 kerozintoltes sikeres exp.txt}} % Kezdet
+    {527 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{11 kerozintoltes sikeres in.txt}} % Kezdet
+    {155 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{12 kerozintoltes nincstelep exp.txt}} % Kezdet
+    {537 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{12 kerozintoltes nincstelep in.txt}} % Kezdet
+    {248 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{13 zuzalektoltes sikeres exp.txt}} % Kezdet
+    {527 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{13 zuzalektoltes sikeres in.txt}} % Kezdet
+    {155 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{14 zuzalektoltes nincstelep exp.txt}} % Kezdet
+    {537 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{14 zuzalektoltes nincstelep in.txt}} % Kezdet
+    {248 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{15 busz vegallomas exp.txt}} % Kezdet
+    {568 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{15 busz vegallomas in.txt}} % Kezdet
+    {201 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{16 busz koztes megallo exp.txt}} % Kezdet
+    {522 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{16 busz koztes megallo in.txt}} % Kezdet
+    {208 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{17 jarmu elakadas hoban exp.txt}} % Kezdet
+    {522 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{17 jarmu elakadas hoban in.txt}} % Kezdet
+    {217 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{18 hokotro immunitas exp.txt}} % Kezdet
+    {596 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{18 hokotro immunitas in.txt}} % Kezdet
+    {235 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{19 jarmu megcsuszas exp.txt}} % Kezdet
+    {608 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{19 jarmu megcsuszas in.txt}} % Kezdet
+    {233 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{20 auto athaladas tomorules exp.txt}} % Kezdet
+    {1060 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{20 auto athaladas tomorules in.txt}} % Kezdet
+    {410 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{21 sarkanyfej olvasztas exp.txt}} % Kezdet
+    {953 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{21 sarkanyfej olvasztas in.txt}} % Kezdet
+    {389 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{22 sarkanyfej nincskerozin exp.txt}} % Kezdet
+    {631 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{22 sarkanyfej nincskerozin in.txt}} % Kezdet
+    {319 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{23 soszorofej sikeres exp.txt}} % Kezdet
+    {910 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{23 soszorofej sikeres in.txt}} % Kezdet
+    {356 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{24 soszorofej nincsso exp.txt}} % Kezdet
+    {626 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{24 soszorofej nincsso in.txt}} % Kezdet
+    {319 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{25 zuzottkoszorofej sikeres exp.txt}} % Kezdet
+    {781 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{25 zuzottkoszorofej sikeres in.txt}} % Kezdet
+    {356 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{26 zuzottkoszorofej nincsko exp.txt}} % Kezdet
+    {651 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{26 zuzottkoszorofej nincsko in.txt}} % Kezdet
+    {332 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{27 soprofej takaritas exp.txt}} % Kezdet
+    {727 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{27 soprofej takaritas in.txt}} % Kezdet
+    {257 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{28 jegtorofej takaritas exp.txt}} % Kezdet
+    {854 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{28 jegtorofej takaritas in.txt}} % Kezdet
+    {338 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{29 hanyofej takaritas exp.txt}} % Kezdet
+    {839 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{29 hanyofej takaritas in.txt}} % Kezdet
+    {333 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{30 havazas uton hidon exp.txt}} % Kezdet
+    {620 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{30 havazas uton hidon in.txt}} % Kezdet
+    {163 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{31 havazas alagutban exp.txt}} % Kezdet
+    {402 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{31 havazas alagutban in.txt}} % Kezdet
+    {95 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{32 sotoltes vedelem havazas exp.txt}} % Kezdet
+    {1044 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{32 sotoltes vedelem havazas in.txt}} % Kezdet
+    {371 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{33 gameover tilalom exp.txt}} % Kezdet
+    {1236 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{33 gameover tilalom in.txt}} % Kezdet
+    {386 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
+    \fajl
+    {\texttt{34 gameover buszok exp.txt}} % Kezdet
+    {622 byte} % Méret
+    {2026.04.29~18:56~} % Időpont
+    {Teszt kimenet} % Leírás
+    \fajl
+    {\texttt{34 gameover buszok in.txt}} % Kezdet
+    {212 byte} % Méret
+    {2026.04.27~20:44~} % Időpont
+    {Teszt bemenet} % Leírás
 \end{fajllista}
 
 \subsection{Fordítás}
-\comment{A fenti listában szereplő forrásfájlokból milyen műveletekkel lehet a bináris, futtatható kódot előállítani. Az előállításhoz csak a 2. Követelmények c. dokumentumban leírt környezetet szabad előírni.}
-
 \begin{verbatim}
-javac -d bin *.java
+javac -d bin prototipusVegleges/src/jarmuvek/*java 
+prototipusVegleges/src/jatekosok/*.java 
+prototipusVegleges/src/motor/*.java
+prototipusVegleges/src/takaritofejek/*.java 
+prototipusVegleges/src/terkep/*.java 
+
+(tördelve, hogy kiférjen, de parancssorban egy sorban kell megadni)
 \end{verbatim}
 
 \subsection{Futtatás}
-\comment{A futtatható kód elindításával kapcsolatos teendők leírása. Az indításhoz csak a 2. Követelmények c. dokumentumban leírt környezetet szabad előírni.}
-
 \begin{verbatim}
 cd bin
-java Main.java
+java motor.SzkeletonProgram
 \end{verbatim}
 
 \section{Tesztek jegyzőkönyvei}
 
-\subsection{Teszteset1}
-\comment{Az alábbi táblázatot a megismételt (hibás) tesztek esetén kell kitölteni minden ismétléshez egyszer. Ha szükséges, akkor a valós kimenet is mellékelhető mint a teszt eredménye}
-\testFAIL{????}{Ápr. 25. 13:50}{ A teszt eredménye}{A teszt hibás futásának okai}{Változtatások}
-\comment{Az alábbi táblázatot az utolsó, sikeres tesztfuttatáshoz kell kitölteni}
-\testOK{????}{Ápr. 25. 14:00}
+\subsection{fejcsere sikeres}
+\testOK{G. András}{Ápr. 29. 10:15}
+\subsection{fejcsere nincstelep}
+\testOK{G. András}{Ápr. 29. 10:19}
+\subsection{hokotrovasarlas sikeres}
+\testOK{G. András}{Ápr. 29. 10:24}
+\subsection{hokotrovasarlas nincspenz}
+\testOK{G. András}{Ápr. 29. 10:28}
+\subsection{hokotrovasarlas nincstelep}
+\testOK{G. András}{Ápr. 29. 10:35}
+\subsection{fejvasarlas sikeres}
+\testOK{G. András}{Ápr. 29. 10:41}
+\subsection{fejvasarlas nincspenz}
+\testOK{G. András}{Ápr. 29. 10:47}
+\subsection{fejvasarlas nincstelep}
+\testOK{G. András}{Ápr. 29. 10:52}
+\subsection{sotoltes sikeres}
+\testOK{G. András}{Ápr. 29. 11:05}
+\subsection{sotoltes nincstelep}
+\testOK{G. András}{Ápr. 29. 11:10}
+\subsection{kerozintoltes sikeres}
+\testOK{G. András}{Ápr. 29. 11:18}
+\subsection{kerozintoltes nincstelep}
+\testOK{G. András}{Ápr. 29. 11:22}
+\subsection{zuzalektoltes sikeres}
+\testOK{G. András}{Ápr. 29. 11:31}
+\subsection{zuzalektoltes nincstelep}
+\testOK{G. András}{Ápr. 29. 11:39}
+\subsection{busz vegallomas}
+\testOK{G. András}{Ápr. 29. 12:05}
+\subsection{busz koztes megallo}
+\testOK{G. András}{Ápr. 29. 12:12}
+\subsection{jarmu elakadas hoban}
+\testOK{G. András}{Ápr. 29. 12:20}
+\subsection{hokotro immunitas}
+\testOK{G. András}{Ápr. 29. 12:28}
+\subsection{jarmu megcsuszas}
+\testOK{G. András}{Ápr. 29. 13:45}
+\subsection{auto athaladas tomorules}
+\testOK{G. András}{Ápr. 29. 13:51}
+\subsection{sarkanyfej olvasztas}
+\testOK{G. András}{Ápr. 29. 14:02}
+\subsection{sarkanyfej nincskerozin}
+\testOK{G. András}{Ápr. 29. 14:09}
+\subsection{soszorofej sikeres}
+\testOK{G. András}{Ápr. 29. 14:15}
+\subsection{soszorofej nincsso}
+\testOK{G. András}{Ápr. 29. 14:22}
+\subsection{zuzottkoszorofej sikeres}
+\testOK{G. András}{Ápr. 29. 14:31}
+\subsection{zuzottkoszorofej nincsko}
+\testOK{G. András}{Ápr. 29. 14:38}
+\subsection{soprofej takaritas}
+\testOK{G. András}{Ápr. 29. 15:01}
+\subsection{jegtorofej takaritas}
+\testOK{G. András}{Ápr. 29. 15:10}
+\subsection{hanyofej takaritas}
+\testOK{G. András}{Ápr. 29. 15:16}
+\subsection{havazas uton hidon}
+\testOK{G. András}{Ápr. 29. 15:25}
+\subsection{havazas alagutban}
+\testOK{G. András}{Ápr. 29. 15:32}
+\subsection{sotoltes vedelem havazas}
+\testOK{G. András}{Ápr. 29. 15:44}
+\subsection{gameover tilalom}
+\testOK{G. András}{Ápr. 29. 16:05}
+\subsection{gameover buszok}
+\testOK{G. András}{Ápr. 29. 16:12}
+
+
 
 \section{Értékelés}
-\comment{A projekt kezdete óta az értékelésig eltelt időben tagokra bontva, százalékban.}
 \begin{ertekeles}
-    \ertekelestag{Teszt János}{ ?????? }{100\%}
+    \ertekelestag{Görgényi András Levente}{ GSQEM0 }{20\%}
+    \ertekelestag{Dulcz Bence}{ Y9LPT9 }{20\%}
+    \ertekelestag{Varga Gergely}{ IBXDS0 }{20\%}
+    \ertekelestag{Nagy Patrik}{ C3IJYQ }{20\%}
+    \ertekelestag{Tóth Dávid Pál}{ H9JYWA }{20\%}
 \end{ertekeles}
