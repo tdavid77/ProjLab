@@ -47,4 +47,8 @@ public final class GameEngine {
             actions.error("I/O hiba: " + ex.getMessage());
         }
     }
+
+    public GameState getState() {
+        return state;
+    }
 }

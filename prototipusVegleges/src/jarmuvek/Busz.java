@@ -11,7 +11,7 @@ import terkep.Ut;
  * Baleset esetén mozgásképtelenné válik és eltorlaszolja az utat. * Az onRegistered() hookkal bejelentkezik a GameState buses listajaba,
  * igy a jatekvegezo logika instanceof nelkul tudja szamlalni a buszokat. */
 public final class Busz extends Jarmu {
-    private int completedTrips;
+    public int completedTrips;
 
     public Busz(String name) {
         super(name);

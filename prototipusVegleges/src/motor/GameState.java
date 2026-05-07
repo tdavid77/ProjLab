@@ -1,5 +1,10 @@
 package motor;
 
+import jarmuvek.Busz;
+import jarmuvek.Hokotro;
+import jarmuvek.Jarmu;
+import jatekosok.Jatekos;
+import jatekosok.TakaritoJatekos;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -11,12 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
-import jarmuvek.Busz;
-import jarmuvek.Hokotro;
-import jarmuvek.Jarmu;
-import jatekosok.Jatekos;
-import jatekosok.TakaritoJatekos;
 import terkep.Sav;
 import terkep.Ut;
 
@@ -31,11 +30,11 @@ import terkep.Ut;
  */
 public final class GameState {
     /** Az osszes nevesitett entitas (jatekosok, jarmuvek) nev szerint indexelve. */
-    final Map<String, NamedEntity> entities = new LinkedHashMap<>();
+    public final Map<String, NamedEntity> entities = new LinkedHashMap<>();
     /** Az uthalozat utjai nev szerint indexelve. */
-    final Map<String, Ut> utak = new LinkedHashMap<>();
+    public final Map<String, Ut> utak = new LinkedHashMap<>();
     /** Csomopont -> szomszedos utak neve; a navigaciohoz hasznalt graf. */
-    final Map<String, List<String>> graph = new HashMap<>();
+    public final Map<String, List<String>> graph = new HashMap<>();
     /** Az osszes regisztralt Busz; a jatekvegezo feltetel szamitasahoz. */
     final List<Busz> buses = new ArrayList<>();
     /** Determinisztikus veletlengenerator a baleseti szamitashoz (seed: 42). */
