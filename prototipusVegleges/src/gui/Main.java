@@ -8,10 +8,10 @@ import javax.swing.UIManager;
  *
  * A meglevo SzkeletonProgram (motor csomag) a konzolos parancs-interpretert
  * indítja. Ezen osztály főfeladata: a Swing keretrendszer kepzetes szalan
- * (Event Dispatch Thread) elinditja a Zuzmaravaros foemenut.
+ * (Event Dispatch Thread) elinditja a Zuzmaravaros foemenut
  */
 public final class Main {
-    private Main() {
+    private Main() { 
     }
 
     public static void main(String[] args) {
