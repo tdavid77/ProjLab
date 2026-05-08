@@ -65,6 +65,20 @@ public final class Hokotro extends Jarmu {
             + " | Allapot:" + allapot;
     }
 
+    /** Visszaadja a hokotrora szerelt aktiv fejet (a GUI-nak es a context panelnek hasznos). */
+    public Fej getAktivFej() {
+        return aktivFej;
+    }
+
+    /**
+     * Beallitja a hokotrora szerelt aktiv fejet a megadott tipusra.
+     * Ez kezdeti inicializaciohoz hasznalt (foemnu kezdofej-valasztasa).
+     * Fejcsere logikaja kulon van: lasd fejCsere(Jatekos, FejTipus).
+     */
+    public void setAktivFej(FejTipus tipus) {
+        this.aktivFej = FejFactory.create(tipus);
+    }
+
     /** Visszaadja a hokotro aktualis ut-objektumat, vagy kivetelt dob, ha nincs uton. */
     public Ut aktualisUt(GameState state) {
         if (currentUt == null) {

@@ -89,6 +89,11 @@ public class Jatekos implements NamedEntity {
         }
     }
 
+    /** Visszaadja a jatekos fej-raktarat (modositasra nem szant olvashato lista). */
+    public List<FejTipus> getFejInventory() {
+        return java.util.Collections.unmodifiableList(inventory);
+    }
+
     /** Eltavolitja a megadott fejtipust a raktarbol. Visszaadja, hogy sikeres volt-e. */
     public boolean removeFejFromInventory(FejTipus fejTipus) {
         return inventory.remove(fejTipus);

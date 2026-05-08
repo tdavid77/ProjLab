@@ -2,6 +2,8 @@ package motor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,12 +51,161 @@ public final class GameState {
     public Difficulty difficulty = Difficulty.MEDIUM;
     /** A jelenleg kivalasztott entitas neve (null, ha nincs kivalasztva). */
     String selectedName;
-    /** Jelzi, hogy a jatekmotor tovabb fusson-e. */
-    boolean running = true;
+    /** Jelzi, hogy a jatekmotor tovabb fusson-e (false = jatek vege). */
+    public boolean running = true;
     /** Osszes balesetszam; 5 felett jatekveget okoz. */
     public int accidents;
+    /** Az aktualis kor sorszama (1-tol indul); minden Kor vege gomb-osztanyomas utan novekedik. */
+    public int currentRound = 1;
+    /** A Pass'N'Play modban aktualisan kovetkezo jatekos neve (Takarito1 vagy Buszos1). */
+    public String activePlayerName = "Takarito1";
+    /** Ha a jatek veget ert, itt taroljuk az okot a UI-nak. */
+    public String gameOverReason;
+    /** A legfrissebb esemenyek a UI-nak (a flushEvents nem ti orli ezt). */
+    private final Deque<String> recentEvents = new ArrayDeque<>();
+    /** Hany esemenyt tartson nyilvan a UI szamara. */
+    private static final int MAX_RECENT_EVENTS = 12;
     /** A telephely csomopont neve az ut-halozatban. */
     String depotNode = "Telephely_1";
+
+    /** GUI/view-feliratkozok listaja (push-szeru ertesiteshez). */
+    private final List<GameStateListener> listeners = new ArrayList<>();
+
+    /** Feliratkoztat egy listenert (idempotens: ugyanazt nem regisztrálja kétszer). */
+    public void addListener(GameStateListener listener) {
+        if (listener != null && !listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    /** Leiratkoztat egy listenert. */
+    public void removeListener(GameStateListener listener) {
+        listeners.remove(listener);
+    }
+
+    /**
+     * Ertesiti az osszes feliratkozott listenert, hogy az allapot valtozott.
+     * Egy hibasan visszaado listener nem akadalyozza a tobbiek meghivasat.
+     */
+    public void fireStateChanged() {
+        for (GameStateListener l : new ArrayList<>(listeners)) {
+            try {
+                l.onStateChanged(this);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Beallitja a kivalasztott entitas nevet, majd ertesiti a listenereket.
+     * Ezt a metodust hivja a GUI controller az egerkattintas hatasara.
+     */
+    public void setSelectedName(String name) {
+        this.selectedName = name;
+        fireStateChanged();
+    }
+
+    /** Visszaadja az osszes regisztralt entitast (csak olvashato view). */
+    public Collection<NamedEntity> getAllEntities() {
+        return Collections.unmodifiableCollection(entities.values());
+    }
+
+    /** Visszaadja az osszes regisztralt utat (csak olvashato view). */
+    public Collection<Ut> getAllUtak() {
+        return Collections.unmodifiableCollection(utak.values());
+    }
+
+    /** Visszaadja a telephely csomopont nevet. */
+    public String getDepotNode() {
+        return depotNode;
+    }
+
+    /**
+     * BFS-szel megkeresi a legrovidebb utat ket csomopont kozott.
+     * A graf a putUt() altal hozzaadott utakbol epul fel.
+     *
+     * @return csomopont-nevek listaja from-bol to-ig (mindketto bezarolag),
+     *         vagy ures lista, ha nincs ut.
+     */
+    public List<String> shortestPath(String from, String to) {
+        if (from == null || to == null) {
+            return new ArrayList<>();
+        }
+        String fromKey = from.toLowerCase(Locale.ROOT);
+        String toKey = to.toLowerCase(Locale.ROOT);
+        if (fromKey.equals(toKey)) {
+            List<String> single = new ArrayList<>();
+            single.add(from);
+            return single;
+        }
+        Map<String, String> parent = new HashMap<>();
+        Deque<String> queue = new ArrayDeque<>();
+        Set<String> visited = new HashSet<>();
+        queue.add(fromKey);
+        visited.add(fromKey);
+
+        while (!queue.isEmpty()) {
+            String node = queue.pollFirst();
+            List<String> incidentRoads = graph.get(node);
+            if (incidentRoads == null) continue;
+            for (String roadName : incidentRoads) {
+                Ut ut = utak.get(roadName.toLowerCase(Locale.ROOT));
+                if (ut == null) continue;
+                String other = ut.opposite(node);
+                if (other == null) continue;
+                String otherKey = other.toLowerCase(Locale.ROOT);
+                if (visited.contains(otherKey)) continue;
+                visited.add(otherKey);
+                parent.put(otherKey, node);
+                if (otherKey.equals(toKey)) {
+                    return reconstructPath(parent, fromKey, otherKey);
+                }
+                queue.addLast(otherKey);
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> reconstructPath(Map<String, String> parent, String fromKey, String toKey) {
+        List<String> path = new ArrayList<>();
+        String current = toKey;
+        while (current != null) {
+            path.add(0, current);
+            if (current.equals(fromKey)) break;
+            current = parent.get(current);
+        }
+        return path;
+    }
+
+    /**
+     * Megkeresi a 'from' csomopontbol a 'to' csomopont fele vezeto egyetlen kovetkezo csomopontot.
+     * Hasznos az NPC autok lepteteseshez (egy lepes a legrovidebb uton).
+     *
+     * @return a kovetkezo csomopont neve, vagy null, ha nincs ut vagy mar a celban vagyunk.
+     */
+    public String nextStepToward(String from, String to) {
+        List<String> path = shortestPath(from, to);
+        if (path.size() < 2) return null;
+        return path.get(1);
+    }
+
+    /**
+     * Megkeresi azt az utat, ami ket adott csomopontot kozvetlenul osszekot.
+     * @return az ut, vagy null ha nincs kozvetlen kapcsolat.
+     */
+    public Ut roadBetween(String nodeA, String nodeB) {
+        if (nodeA == null || nodeB == null) return null;
+        List<String> incidents = graph.get(nodeA.toLowerCase(Locale.ROOT));
+        if (incidents == null) return null;
+        for (String roadName : incidents) {
+            Ut ut = utak.get(roadName.toLowerCase(Locale.ROOT));
+            if (ut != null && ut.hasNode(nodeB)) {
+                return ut;
+            }
+        }
+        return null;
+    }
 
     /** Visszaadja a jelenleg kivalasztott entitast, vagy null-t, ha nincs kivalasztva. */
     public NamedEntity selected() {
@@ -147,9 +298,42 @@ public final class GameState {
         return jatekos.vehicles.isEmpty();
     }
 
-    /** Hozzaad egy esemeny-uzenetet az aszinkron esemenysorhoz. */
+    /** Hozzaad egy esemeny-uzenetet az aszinkron esemenysorhoz, es a UI-buffeerbe is. */
     public void enqueueEvent(String line) {
         eventQueue.addLast(line);
+        recentEvents.addLast(line);
+        while (recentEvents.size() > MAX_RECENT_EVENTS) {
+            recentEvents.pollFirst();
+        }
+    }
+
+    /** Visszaadja a legutobbi esemenyeket UI-megjeleniteshez (legfrissebb az utolsoval). */
+    public List<String> getRecentEvents() {
+        return new ArrayList<>(recentEvents);
+    }
+
+    /** Visszavalt a Takarito jatekosra (uj kor inditasahoz). */
+    public void resetActivePlayer() {
+        this.activePlayerName = "Takarito1";
+    }
+
+    /** Atvalt a masik jatekosra (Pass'N'Play handoff). */
+    public void switchActivePlayer() {
+        if ("Takarito1".equalsIgnoreCase(activePlayerName)) {
+            activePlayerName = "Buszos1";
+        } else {
+            activePlayerName = "Takarito1";
+        }
+    }
+
+    /**
+     * Eldonti, hogy a megadott jarmu az aktualis jatekos iranyithatja-e.
+     * NPC autokat (owner == null) senki nem iranyithatja kozvetlenul.
+     */
+    public boolean canControl(jarmuvek.Jarmu vehicle) {
+        if (vehicle == null) return false;
+        if (vehicle.owner == null) return false;
+        return vehicle.owner.equalsIgnoreCase(activePlayerName);
     }
 
     /** Kiirja es torli az osszes varakozo esemenyt a konzolra. */
@@ -182,11 +366,13 @@ public final class GameState {
         long busCount = buses.size();
         long disabledBusCount = buses.stream().filter(b -> !b.canMove()).count();
         if (busCount > 0 && disabledBusCount == busCount) {
+            gameOverReason = "Minden busz mozgaskepetlen lett.";
             enqueueEvent("JATEK VEGE: minden busz mozgaskepetlen.");
             running = false;
             return;
         }
         if (accidents >= 5) {
+            gameOverReason = "Kijárási tilalom — túl sok baleset történt (" + accidents + ").";
             enqueueEvent("JATEK VEGE: kijarasi tilalom, kritikus balesetszam.");
             running = false;
         }

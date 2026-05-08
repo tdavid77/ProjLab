@@ -435,6 +435,47 @@ public final class GameActions {
     }
 
     /**
+     * Vegrehajt egy teljes Kor vegi szimulaciot:
+     *  1. Az osszes NPC auto megpróbál egy lepest tenni a celja fele.
+     *  2. Havazas alkalmazasa minden uton (alagut kivetel).
+     *  3. Idolepteles (sav-vedelmek, baleseti varakozas csokkentese).
+     *  4. Korszamlalo novelese.
+     *  5. Jatekvege ellenorzes.
+     *
+     * Ez a metodus publikus, mert a GUI-ActionController is hivja.
+     */
+    public void endRound() {
+        // 1. NPC autok mozgatasa
+        for (NamedEntity entity : new java.util.ArrayList<>(state.entities.values())) {
+            if (entity instanceof jarmuvek.Auto) {
+                jarmuvek.Auto auto = (jarmuvek.Auto) entity;
+                auto.npcStep(state);
+            }
+        }
+
+        // 2. Havazas
+        for (Ut ut : state.utak.values()) {
+            ut.alkalmazHoEses();
+        }
+
+        // 3. Idolepteles
+        state.tickTime();
+
+        // 4. Korszamlalo
+        state.currentRound += 1;
+        state.enqueueEvent("Uj kor: " + state.currentRound);
+
+        // 5. Jatekvege check
+        state.evaluateGameOver();
+
+        // Esemenyek kiiratasa konzolra
+        state.flushEvents();
+
+        // GUI-ertesites
+        state.fireStateChanged();
+    }
+
+    /**
      * Szimulal egy havazas-kort: minden uton alkalmazHoEses(), majd tickTime(),
      * esemenyek kivaintenese es jatekvegezo ellenorzezes.
      */

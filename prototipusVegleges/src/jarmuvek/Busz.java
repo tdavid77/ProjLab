@@ -18,6 +18,12 @@ public final class Busz extends Jarmu {
         this.completedTrips = 0;
     }
 
+    private static boolean isVegallomasNode(String node) {
+        if (node == null) return false;
+        String lower = node.toLowerCase(java.util.Locale.ROOT);
+        return lower.equals("vegallomas") || lower.startsWith("vegallomas_");
+    }
+
     /** Regisztralas soran bejelentkezik a GameState busz-listajaba a jatekvege-logikához. */
     @Override
     public void onRegistered(GameState state) {
@@ -34,11 +40,12 @@ public final class Busz extends Jarmu {
 
     /**
      * Vegallomas elerese eseten noveli a megtett korok szamat es jovaira a jatekos penzenek.
-     * A vegallomas csomopont neve "Vegallomas", "Vegallomas_1" vagy "Vegallomas_2" lehet.
+     * Barmely olyan csomopont, aminek a neve "Vegallomas" (kis-nagy ber. nem szamit) vagy
+     * "Vegallomas_*" mintazatu, vegallomasnak szamit (pl. Vegallomas_Eszak, Vegallomas_Del).
      */
     @Override
     protected void onCelUtElerve(Ut target, GameState state) {
-        if (target.hasNode("Vegallomas") || target.hasNode("Vegallomas_1") || target.hasNode("Vegallomas_2")) {
+        if (isVegallomasNode(target.nodeA) || isVegallomasNode(target.nodeB)) {
             completedTrips += 1;
             Jatekos ownerEntity = state.getJatekos(owner);
             if (ownerEntity != null) {
