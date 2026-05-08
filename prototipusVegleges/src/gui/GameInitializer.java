@@ -15,8 +15,10 @@ import terkep.UtTipus;
  * Egy uj jatek kezdeti allapotanak felepiteseert felelos segedosztaly.
  *
  * Hardcoded varost epit fel a "Projlab model leiras" PDF-ben latott terkep
- * alapjan: csomopontok, utak, sávok, jatekosok, hokotro a telephelyen,
- * busz az utvonalon, kezdo NPC autok.
+ * alapjan: csomopontok, utak, savok, jatekosok, hokotro a telephelyen,
+ * busz egy vegallomason, kezdo NPC autok az otthon csomopontjukon.
+ *
+ * UJ MODELL: minden jarmu csomoponton kezd (currentNode beallitva, currentUt null).
  *
  * Ez a logika kesobb refaktoralhato lesz egy fajl-betolto rendszerre.
  */
@@ -30,10 +32,6 @@ public final class GameInitializer {
     private GameInitializer() {
     }
 
-    /**
-     * Inicializalja a jatekallapotot a megadott nehezsegi szinttel
-     * es a hokotro kezdo fejtipusaval.
-     */
     public static void initialize(GameState state, Difficulty difficulty, FejTipus startingHead) {
         state.difficulty = difficulty;
 
@@ -57,54 +55,48 @@ public final class GameInitializer {
         return new Ut(name, nodeA, nodeB, DEFAULT_UT_HOSSZ, UtTipus.NORMAL, DEFAULT_SAV_SZAM);
     }
 
-    /** Letrehozza a két jatekost, a hokotrot (telephelyen) es a buszt (kezdo poziciot kap). */
+    /** Letrehozza a ket jatekost, a hokotrot es a buszt; mindketto csomoponton kezd. */
     private static void buildPlayers(GameState state, FejTipus startingHead) {
         TakaritoJatekos takarito = new TakaritoJatekos("Takarito1");
         BuszosJatekos buszos = new BuszosJatekos("Buszos1");
         state.putEntity(takarito);
         state.putEntity(buszos);
 
-        // Hokotro a telephelyen (currentUt == null jelenti, hogy telephelyen van)
+        // Hokotro a Telephely csomoponton
         Hokotro hokotro = new Hokotro("Hokotro1");
         hokotro.setAktivFej(startingHead);
         hokotro.owner = takarito.name();
+        hokotro.currentNode = "Telephely";
         takarito.addVehicle(hokotro.name);
         state.putEntity(hokotro);
 
-        // Busz a Telephely-Foter szakaszon (a model leiras PDF-ben latott elrendezes szerint)
+        // Busz a Vegallomas_Eszak csomoponton (kezdo vegallomas)
         Busz busz = new Busz("Busz1");
         busz.owner = buszos.name();
-        busz.currentUt = "Fout";
-        busz.savIndex = 0;
+        busz.currentNode = "Vegallomas_Eszak";
         buszos.addVehicle(busz.name);
         state.putEntity(busz);
     }
 
     /**
      * Nehany NPC autot helyez el a terkepen otthon es munkahely parokkal.
-     * Az 'utolsoCsomopont' annak a vegpontnak a neve, ami fele a auto eppen halad
-     * (a szomszedos cel csomopont a kezdesnel).
+     * Az autok a setupRoute() segitsegevel inicializalodnak: az 'otthon' csomoponton
+     * kezdenek, eloszor a 'munkahely' fele indulnak.
      */
     private static void buildNpcCars(GameState state) {
-        // Kertvarosbol -> Vegallomas_Eszak (Vasutallomas-on at)
+        // Kertvarosbol -> Vegallomas_Eszak
         Auto auto1 = new Auto("Auto1");
-        auto1.currentUt = "Kert_ut";
-        auto1.savIndex = 0;
-        auto1.setupRoute("Kertvaros", "Vegallomas_Eszak", "Vasutallomas");
+        auto1.setupRoute("Kertvaros", "Vegallomas_Eszak", "Kertvaros");
         state.putEntity(auto1);
 
-        // Vegallomas_Del -> Telephely (Vasut, Foter, Telephely)
+        // Vegallomas_Del -> Telephely
         Auto auto2 = new Auto("Auto2");
-        auto2.currentUt = "Vasut_kelet";
-        auto2.savIndex = 1;
-        auto2.setupRoute("Vegallomas_Del", "Telephely", "Vasutallomas");
+        auto2.setupRoute("Vegallomas_Del", "Telephely", "Vegallomas_Del");
         state.putEntity(auto2);
 
-        // Gyar -> Foter (Gyar -> Vasutallomas -> Foter)
+        // Gyar -> Foter
         Auto auto3 = new Auto("Auto3");
-        auto3.currentUt = "Gyar_vasut";
-        auto3.savIndex = 1;
-        auto3.setupRoute("Gyar", "Foter", "Vasutallomas");
+        auto3.setupRoute("Gyar", "Foter", "Gyar");
         state.putEntity(auto3);
     }
 }

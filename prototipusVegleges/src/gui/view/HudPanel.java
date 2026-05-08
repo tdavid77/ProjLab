@@ -19,17 +19,22 @@ import motor.GameStateListener;
  * Mutatja:
  *  - aktualis kor sorszama
  *  - aktiv jatekos (Pass'N'Play)
- *  - mindkét jatekos vagyona fityingben
+ *  - mindket jatekos vagyona fityingben
  *  - balesetszam
  *
- * Jobb oldalon van a "Kesz vagyok" gomb, ami a Pass'N'Play handoff-ot inditja.
- * A gomb cimkeje az aktiv jatekostol fugg:
- *   - Takarito aktiv: "Takarító kész → Buszos jön"
- *   - Buszos aktiv:   "Buszos kész → Új kör"
+ * Jobb oldalon van a "Kesz vagyok" gomb. Ha az aktiv jatekos mar elhasznalta
+ * az osszes elerheto lepest a korben, a gomb narancssargara emelkedik ki.
  */
 public final class HudPanel extends JPanel implements GameStateListener {
+    private static final Color HIGHLIGHT_BG = new Color(255, 175, 50);
+    private static final Color HIGHLIGHT_FG = new Color(40, 30, 20);
+    private static final Color HIGHLIGHT_BORDER = new Color(220, 130, 30);
+
     private final JLabel info;
     private final JButton doneButton;
+    private final javax.swing.border.Border defaultButtonBorder;
+    private final Color defaultButtonBg;
+    private final Color defaultButtonFg;
 
     public HudPanel(GameState state, ActionController actions) {
         setBackground(new Color(232, 240, 250));
@@ -49,9 +54,14 @@ public final class HudPanel extends JPanel implements GameStateListener {
         right.setOpaque(false);
         this.doneButton = new JButton("Kész vagyok");
         doneButton.setFont(new Font("SansSerif", Font.BOLD, 13));
+        doneButton.setFocusPainted(false);
         doneButton.addActionListener(e -> actions.onPlayerDone());
         right.add(doneButton);
         add(right, BorderLayout.EAST);
+
+        this.defaultButtonBorder = doneButton.getBorder();
+        this.defaultButtonBg = doneButton.getBackground();
+        this.defaultButtonFg = doneButton.getForeground();
     }
 
     @Override
@@ -84,5 +94,21 @@ public final class HudPanel extends JPanel implements GameStateListener {
             doneButton.setText("Buszos kész → Új kör");
         }
         doneButton.setEnabled(state.running);
+
+        // Highlight: ha az aktiv jatekosnak nincs tobb mozgasa
+        boolean shouldHighlight = state.running && !state.activePlayerHasMovesLeft();
+        if (shouldHighlight) {
+            doneButton.setBackground(HIGHLIGHT_BG);
+            doneButton.setForeground(HIGHLIGHT_FG);
+            doneButton.setOpaque(true);
+            doneButton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(HIGHLIGHT_BORDER, 2),
+                    BorderFactory.createEmptyBorder(4, 14, 4, 14)));
+        } else {
+            doneButton.setBackground(defaultButtonBg);
+            doneButton.setForeground(defaultButtonFg);
+            doneButton.setOpaque(false);
+            doneButton.setBorder(defaultButtonBorder);
+        }
     }
 }

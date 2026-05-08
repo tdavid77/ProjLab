@@ -4,10 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import gui.GameLayout;
 import gui.controller.ActionController;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
@@ -29,13 +31,12 @@ import terkep.Ut;
 /**
  * A jobb oldali kontextualis panel (BorderLayout.EAST).
  *
- * Dinamikus tartalom:
- *  - Ha nincs kijelolve semmi: ures uzenetet mutat.
- *  - Ha jarmu van kijelolve: adatok + akciogombok (lepes a szomszedos utakra,
- *    varakozas, takaritas a hokotrok eseten).
- *
- * Az actiongombok az ActionController publikus metodusait hivjak. A model
- * fireStateChanged()-en keresztul ujrarajzolja magat.
+ * UJ MODELL:
+ *  - Mozgas: a kivalasztott jarmu csomopontjabol szomszedos csomopontokba lephet.
+ *    Per szomszedos csomopont egy gomb pl. "→ Foter (Fout)".
+ *  - Takaritas (csak hokotro eseten): per szomszedos ut egy gomb pl.
+ *    "Söprés: Fout (sáv 0)". A fej tipusa szerinti cimke + nyersanyag-ellenorzes alapján enabled/disabled.
+ *  - Telephelyi akciok: ha a hokotro a Telephely csomoponton all.
  */
 public final class ContextPanel extends JPanel implements GameStateListener {
     private final GameState state;
@@ -49,12 +50,11 @@ public final class ContextPanel extends JPanel implements GameStateListener {
         this.state = state;
         this.actions = actions;
 
-        setPreferredSize(new Dimension(300, 0));
+        setPreferredSize(new Dimension(310, 0));
         setBackground(new Color(245, 246, 250));
         setBorder(BorderFactory.createTitledBorder("Információk"));
         setLayout(new BorderLayout());
 
-        // Felso resz: cim + adatok
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
@@ -75,7 +75,6 @@ public final class ContextPanel extends JPanel implements GameStateListener {
         details.setAlignmentX(Component.LEFT_ALIGNMENT);
         topPanel.add(details);
 
-        // Action panel a kozepes reszben (gorgethetoen, ha sok gomb van)
         this.actionPanel = new JPanel();
         actionPanel.setOpaque(false);
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
@@ -118,14 +117,157 @@ public final class ContextPanel extends JPanel implements GameStateListener {
         addMovementButtons(vehicle);
         addCommonActionButtons(vehicle, sel);
 
-        // Telephelyi akciók: csak hokotrohoz, csak telephelyen
-        Hokotro depotHokotro = sel.asHokotro();
-        if (depotHokotro != null && depotHokotro.currentUt == null) {
-            addDepotActionButtons();
+        Hokotro hokotro = sel.asHokotro();
+        if (hokotro != null && hokotro.currentNode != null) {
+            addCleaningButtons(hokotro);
+            if ("Telephely".equalsIgnoreCase(hokotro.currentNode)) {
+                addDepotActionButtons();
+            }
         }
 
         actionPanel.revalidate();
         actionPanel.repaint();
+    }
+
+    private String typeLabel(NamedEntity sel) {
+        switch (sel.type()) {
+            case "Hokotro": return "Hókotró";
+            case "Busz":    return "Busz";
+            case "Auto":    return "Autó";
+            default:        return sel.type();
+        }
+    }
+
+    private String buildVehicleDetails(Jarmu vehicle, NamedEntity sel) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Kijelölve: ").append(vehicle.name).append('\n');
+        sb.append("Típus: ").append(typeLabel(sel)).append('\n');
+
+        if (vehicle.currentNode != null) {
+            sb.append("Csomópont: ").append(GameLayout.displayLabel(vehicle.currentNode)).append('\n');
+        } else if (vehicle.currentUt != null) {
+            sb.append("Elakadt: ").append(vehicle.currentUt).append(" (sáv ").append(vehicle.savIndex).append(")\n");
+        }
+        sb.append("Lépések: ").append(vehicle.movesThisRound).append("/").append(vehicle.getMaxMovesPerTurn()).append('\n');
+        sb.append("Állapot: ")
+          .append(vehicle.canMove() ? "Aktív" : "Baleset (" + vehicle.disabledTime + " kör)")
+          .append('\n');
+
+        Hokotro h = sel.asHokotro();
+        if (h != null) {
+            Fej fej = h.getAktivFej();
+            sb.append("Aktív fej: ").append(fej == null ? "(nincs)" : fejDisplay(fej.tipus())).append('\n');
+            sb.append("Készletek: Só=").append(h.so)
+              .append(", Kerozin=").append(h.kerozin)
+              .append(", Zúzottkő=").append(h.zuzottko);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Mozgas-gombok: a jarmu csomopontjabol elerheto szomszedos csomopontokba.
+     * Elakadt jarmunek (currentNode == null) nincs mozgasgomb (csak takaritas szabaditja).
+     */
+    private void addMovementButtons(Jarmu vehicle) {
+        JLabel header = sectionLabel("Mozgás");
+        actionPanel.add(header);
+
+        if (vehicle.currentNode == null) {
+            JLabel info = new JLabel("(elakadt — takarítás szükséges)");
+            info.setFont(new Font("SansSerif", Font.ITALIC, 11));
+            info.setForeground(new Color(150, 70, 70));
+            info.setAlignmentX(Component.LEFT_ALIGNMENT);
+            info.setBorder(BorderFactory.createEmptyBorder(2, 6, 4, 6));
+            actionPanel.add(info);
+            actionPanel.add(Box.createVerticalStrut(8));
+            return;
+        }
+
+        Map<String, Ut> neighbors = collectNeighborNodes(vehicle.currentNode);
+        if (neighbors.isEmpty()) {
+            JLabel none = new JLabel("(nincs szomszedos csomopont)");
+            none.setFont(new Font("SansSerif", Font.ITALIC, 11));
+            none.setAlignmentX(Component.LEFT_ALIGNMENT);
+            none.setBorder(BorderFactory.createEmptyBorder(2, 6, 4, 6));
+            actionPanel.add(none);
+        } else {
+            for (Map.Entry<String, Ut> entry : neighbors.entrySet()) {
+                String targetNode = entry.getKey();
+                Ut road = entry.getValue();
+                String label = "→ " + GameLayout.displayLabel(targetNode) + "  (" + road.name() + ")";
+                JButton btn = makeButton(label);
+                btn.addActionListener(e -> actions.onMoveTo(targetNode));
+                actionPanel.add(btn);
+            }
+        }
+        actionPanel.add(Box.createVerticalStrut(8));
+    }
+
+    private void addCommonActionButtons(Jarmu vehicle, NamedEntity sel) {
+        JLabel header = sectionLabel("Akciók");
+        actionPanel.add(header);
+
+        JButton waitBtn = makeButton("Várakozás");
+        waitBtn.addActionListener(e -> actions.onWait());
+        actionPanel.add(waitBtn);
+    }
+
+    /**
+     * Takaritas-gombok: per szomszedos ut egy gomb a fej szerinti cimkével (sáv 0).
+     */
+    private void addCleaningButtons(Hokotro h) {
+        actionPanel.add(Box.createVerticalStrut(8));
+        actionPanel.add(sectionLabel("Takarítás (sáv 0)"));
+
+        Fej fej = h.getAktivFej();
+        FejTipus tipus = fej == null ? FejTipus.SOPROFEJ : fej.tipus();
+
+        Map<String, Ut> neighbors = collectNeighborNodes(h.currentNode);
+        if (neighbors.isEmpty()) {
+            JLabel none = new JLabel("(nincs szomszedos ut)");
+            none.setFont(new Font("SansSerif", Font.ITALIC, 11));
+            none.setAlignmentX(Component.LEFT_ALIGNMENT);
+            none.setBorder(BorderFactory.createEmptyBorder(2, 6, 4, 6));
+            actionPanel.add(none);
+            return;
+        }
+
+        for (Map.Entry<String, Ut> entry : neighbors.entrySet()) {
+            Ut road = entry.getValue();
+            JButton btn = buildCleaningButton(h, tipus, road);
+            actionPanel.add(btn);
+        }
+    }
+
+    private JButton buildCleaningButton(Hokotro h, FejTipus tipus, Ut road) {
+        String actionLabel;
+        boolean enoughMaterial = true;
+        switch (tipus) {
+            case SOPROFEJ: actionLabel = "Söprés"; break;
+            case HANYOFEJ: actionLabel = "Hányás"; break;
+            case JEGTOROFEJ: actionLabel = "Jégtörés"; break;
+            case SOSZOROFEJ:
+                actionLabel = "Sózás";
+                if (h.so < 10) enoughMaterial = false;
+                break;
+            case SARKANYFEJ:
+                actionLabel = "Sárkány";
+                if (h.kerozin < 10) enoughMaterial = false;
+                break;
+            case ZUZOTTKOSZOROFEJ:
+                actionLabel = "Zúzottkő";
+                if (h.zuzottko < 10) enoughMaterial = false;
+                break;
+            default: actionLabel = "Takarítás";
+        }
+        String fullLabel = actionLabel + ": " + road.name();
+        JButton btn = makeButton(fullLabel);
+        btn.setEnabled(enoughMaterial);
+        btn.addActionListener(e -> actions.onTakarit(road.name(), 0));
+        if (!enoughMaterial) {
+            btn.setToolTipText("Nincs elég nyersanyag a fej működtetéséhez (10 egység szükséges).");
+        }
+        return btn;
     }
 
     private void addDepotActionButtons() {
@@ -157,168 +299,22 @@ public final class ContextPanel extends JPanel implements GameStateListener {
         actionPanel.add(refZuz);
     }
 
-    private String typeLabel(NamedEntity sel) {
-        switch (sel.type()) {
-            case "Hokotro": return "Hókotró";
-            case "Busz":    return "Busz";
-            case "Auto":    return "Autó";
-            default:        return sel.type();
-        }
-    }
-
-    private String buildVehicleDetails(Jarmu vehicle, NamedEntity sel) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Kijelölve: ").append(vehicle.name).append('\n');
-        sb.append("Típus: ").append(typeLabel(sel)).append('\n');
-
-        if (vehicle.currentUt == null) {
-            sb.append("Pozíció: Telephely\n");
-        } else {
-            sb.append("Pozíció: ").append(vehicle.currentUt).append('\n');
-            sb.append("Sáv: ").append(vehicle.savIndex).append('\n');
-        }
-        sb.append("Állapot: ")
-          .append(vehicle.canMove() ? "Aktív" : "Baleset (" + vehicle.disabledTime + " kör)")
-          .append('\n');
-
-        Hokotro h = sel.asHokotro();
-        if (h != null) {
-            Fej fej = h.getAktivFej();
-            sb.append("Aktív fej: ").append(fej == null ? "(nincs)" : fejDisplay(fej.tipus())).append('\n');
-            sb.append("Készletek: Só=").append(h.so)
-              .append(", Kerozin=").append(h.kerozin)
-              .append(", Zúzottkő=").append(h.zuzottko);
-        }
-        return sb.toString();
-    }
-
-    private void addMovementButtons(Jarmu vehicle) {
-        JLabel header = sectionLabel("Mozgás");
-        actionPanel.add(header);
-
-        List<Ut> targets = collectAdjacentRoads(vehicle);
-        if (targets.isEmpty()) {
-            JLabel none = new JLabel("(nincs szomszedos ut)");
-            none.setFont(new Font("SansSerif", Font.ITALIC, 11));
-            none.setAlignmentX(Component.LEFT_ALIGNMENT);
-            none.setBorder(BorderFactory.createEmptyBorder(2, 6, 4, 6));
-            actionPanel.add(none);
-        } else {
-            for (Ut target : targets) {
-                String label = "→ " + target.name() + " (" + describeOpposite(vehicle, target) + ")";
-                JButton btn = makeButton(label);
-                btn.addActionListener(e -> actions.onMoveTo(target.name()));
-                actionPanel.add(btn);
-            }
-        }
-        actionPanel.add(Box.createVerticalStrut(8));
-    }
-
-    private void addCommonActionButtons(Jarmu vehicle, NamedEntity sel) {
-        JLabel header = sectionLabel("Akciók");
-        actionPanel.add(header);
-
-        // Varakozas mindig van
-        JButton waitBtn = makeButton("Várakozás");
-        waitBtn.addActionListener(e -> actions.onWait());
-        actionPanel.add(waitBtn);
-
-        // Hokotro takaritas
-        Hokotro h = sel.asHokotro();
-        if (h != null) {
-            JButton takBtn = buildTakaritButton(h);
-            actionPanel.add(takBtn);
-        }
-    }
-
     /**
-     * A takaritas-gomb cimkeje es engedélyezett/letiltott állapota az aktiv fejtol fugg.
-     * Hokotrot kell kivalasztani es az kell hogy uton legyen + nyersanyag eleg legyen.
+     * Visszaadja a megadott csomopontbol elerheto szomszedos csomopontokat es az osszekoto utat.
+     * Map: szomszed-csomopont -> ut.
      */
-    private JButton buildTakaritButton(Hokotro h) {
-        Fej fej = h.getAktivFej();
-        FejTipus tipus = fej == null ? FejTipus.SOPROFEJ : fej.tipus();
-
-        String label;
-        boolean enabled = h.currentUt != null && h.canMove();
-        switch (tipus) {
-            case SOPROFEJ:
-                label = "Söprés";
-                break;
-            case HANYOFEJ:
-                label = "Hányás";
-                break;
-            case JEGTOROFEJ:
-                label = "Jégtörés";
-                break;
-            case SOSZOROFEJ:
-                label = "Sózás (10 só)";
-                if (h.so < 10) enabled = false;
-                break;
-            case SARKANYFEJ:
-                label = "Sárkány aktiválás (10 kerozin)";
-                if (h.kerozin < 10) enabled = false;
-                break;
-            case ZUZOTTKOSZOROFEJ:
-                label = "Zúzottkő szórás (10)";
-                if (h.zuzottko < 10) enabled = false;
-                break;
-            default:
-                label = "Takarítás";
-        }
-
-        JButton btn = makeButton(label);
-        btn.setEnabled(enabled);
-        btn.addActionListener(e -> actions.onTakarit());
-        if (h.currentUt == null) {
-            btn.setToolTipText("A hókotró telephelyen van — akciók csak úton.");
-        } else if (!enabled) {
-            btn.setToolTipText("Nincs elég nyersanyag a fej működtetéséhez.");
-        }
-        return btn;
-    }
-
-    /**
-     * Osszegyujti azokat az utakat, amelyek a jelenlegi pozicioBOL elerhetok.
-     * Telephelyen alló jarmu eseten: a Telephely csomopontnak szomszedos utak.
-     * Uton lévő jarmu eseten: a jelenleg utat tartalmazo csomopontok mindkettojebol szomszedos utak,
-     * de a jelenlegi utat kihagyjuk.
-     */
-    private List<Ut> collectAdjacentRoads(Jarmu vehicle) {
-        List<Ut> result = new ArrayList<>();
-        if (vehicle.currentUt == null) {
-            // Telephelyen: minden ut, ami a "Telephely" csomopontot erinti
-            for (Ut ut : state.getAllUtak()) {
-                if (ut.hasNode("Telephely")) {
-                    result.add(ut);
-                }
-            }
-            return result;
-        }
-        Ut current = state.getUt(vehicle.currentUt);
-        if (current == null) return result;
+    private Map<String, Ut> collectNeighborNodes(String fromNode) {
+        Map<String, Ut> result = new LinkedHashMap<>();
+        if (fromNode == null) return result;
         for (Ut ut : state.getAllUtak()) {
-            if (ut.name().equalsIgnoreCase(current.name())) continue;
-            if (ut.hasNode(current.nodeA) || ut.hasNode(current.nodeB)) {
-                result.add(ut);
+            if (ut.hasNode(fromNode)) {
+                String other = ut.opposite(fromNode);
+                if (other != null && !result.containsKey(other)) {
+                    result.put(other, ut);
+                }
             }
         }
         return result;
-    }
-
-    /** Visszaad egy szöveget, ami azt mondja meg, melyik csomopontba érne be a jarmu az adott uton. */
-    private String describeOpposite(Jarmu vehicle, Ut target) {
-        if (vehicle.currentUt == null) {
-            return target.opposite("Telephely");
-        }
-        Ut current = state.getUt(vehicle.currentUt);
-        if (current == null) return target.nodeA + " / " + target.nodeB;
-        // Mely csomoponton osztozik a celut a jelenlegi uttal?
-        String shared = null;
-        if (target.hasNode(current.nodeA)) shared = current.nodeA;
-        else if (target.hasNode(current.nodeB)) shared = current.nodeB;
-        if (shared == null) return target.nodeA + " / " + target.nodeB;
-        return target.opposite(shared);
     }
 
     private JLabel sectionLabel(String text) {

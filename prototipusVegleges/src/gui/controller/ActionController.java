@@ -54,25 +54,15 @@ public final class ActionController {
     // JARMU AKCIOK
     // ===========================================================================
 
-    /** Lepes a kivalasztott jarmuvel a megadott szomszedos utra (savindex marad). */
-    public void onMoveTo(String utName) {
+    /** Lepes a kivalasztott jarmuvel a megadott szomszedos csomopontba. */
+    public void onMoveTo(String targetNode) {
         NamedEntity sel = state.selected();
         if (sel == null) return;
         Jarmu vehicle = sel.asJarmu();
         if (vehicle == null) return;
         if (!ensureControllable(vehicle)) return;
-        if (!vehicle.canMove()) {
-            warn("A jarmu mozgaskeptelen meg " + vehicle.disabledTime + " korig.");
-            return;
-        }
-        Ut target = state.getUt(utName);
-        if (target == null) {
-            warn("Ismeretlen ut: " + utName);
-            return;
-        }
         try {
-            int targetSav = Math.min(vehicle.savIndex, target.savSzam() - 1);
-            vehicle.vegrehajtLepes(target, targetSav, state);
+            vehicle.moveToNode(targetNode, state);
             state.flushEvents();
             state.fireStateChanged();
         } catch (RuntimeException ex) {
@@ -92,8 +82,11 @@ public final class ActionController {
         state.fireStateChanged();
     }
 
-    /** A kivalasztott hokotro takaritja az aktualis savjat az aktiv fej szerint. */
-    public void onTakarit() {
+    /**
+     * A kivalasztott hokotro a megadott szomszedos uton (savIndex sav) takaritast vegez.
+     * A hokotrot a csomoponton kell allnia es az utnak szomszedosnak kell lennie.
+     */
+    public void onTakarit(String utName, int savIndex) {
         NamedEntity sel = state.selected();
         Hokotro h = sel == null ? null : sel.asHokotro();
         if (h == null) {
@@ -101,13 +94,13 @@ public final class ActionController {
             return;
         }
         if (!ensureControllable(h)) return;
-        if (h.currentUt == null) {
-            warn("A hokotro a telephelyen van; az uton lehet csak takaritani.");
+        Ut ut = state.getUt(utName);
+        if (ut == null) {
+            warn("Ismeretlen ut: " + utName);
             return;
         }
         try {
-            Ut ut = h.aktualisUt(state);
-            h.takaritSav(ut, h.savIndex, state);
+            h.takaritSav(ut, savIndex, state);
             state.flushEvents();
             state.fireStateChanged();
         } catch (RuntimeException ex) {
@@ -162,6 +155,7 @@ public final class ActionController {
         try {
             Hokotro h = jatekos.vasarolHokotro(name);
             h.setAktivFej(startingHead);
+            h.currentNode = "Telephely";  // uj hokotro a Telephelyen jon letre
             state.putEntity(h);
             state.enqueueEvent("Új hókotró vásárlása: " + name + " (kezdő fej: " + startingHead.name() + ")");
             state.flushEvents();
@@ -425,8 +419,8 @@ public final class ActionController {
             warn("Ehhez az akcióhoz hókotrót kell kiválasztani.");
             return null;
         }
-        if (h.currentUt != null) {
-            warn("A hókotró nincs telephelyen.");
+        if (!"Telephely".equalsIgnoreCase(h.currentNode)) {
+            warn("A hókotró nincs a Telephelyen.");
             return null;
         }
         return h;

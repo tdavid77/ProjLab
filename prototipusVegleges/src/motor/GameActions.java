@@ -81,7 +81,7 @@ public final class GameActions {
             "sotoltes [hokotro]",
             "kerozintoltes [hokotro]",
             "zuzalektoltes [hokotro]",
-            "takarit [hokotro] [sav]",
+            "takarit [hokotro] [ut] [sav]",
             "allapot [nev|Mind]",
             "terkep",
             "havazas",
@@ -424,12 +424,15 @@ public final class GameActions {
         ok("'" + h.name + "' zuzalekkeszlete feltoltve. Penz levonva: 40");
     }
 
-    /** A megadott Hokotro aktiv fejevel takaritja a megadott savot az aktualis uton. */
+    /**
+     * A megadott Hokotro aktiv fejevel takaritja a megadott szomszedos ut megadott savjat.
+     * Az új modellben a hókotró csomóponton áll, így explicit ut-name + sav kell.
+     */
     void handleCleanSav(CommandContext context, List<String> args) {
-        ensureArgCount(args, 2, 2, "takarit [hokotro] [sav]");
+        ensureArgCount(args, 3, 3, "takarit [hokotro] [ut] [sav]");
         Hokotro h = requireHokotro(args.get(0));
-        Ut ut = h.aktualisUt(state);
-        int savIndex = parseSavIndex(ut, args.get(1));
+        Ut ut = requireUt(args.get(1));
+        int savIndex = parseSavIndex(ut, args.get(2));
         h.takaritSav(ut, savIndex, state);
         ok("'" + h.name + "' takaritasa lefutott a(z) " + ut.name() + " " + savIndex + ". savon.");
     }
@@ -458,14 +461,23 @@ public final class GameActions {
             ut.alkalmazHoEses();
         }
 
-        // 3. Idolepteles
+        // 3. Idolepteles (sav-vedelmek fogynak; a Jarmu.tickTime mar nem decrementálja
+        //    automatikusan a disabledTime-ot, csak takaritás szabadithatja a balesetezetteket - RULE12).
         state.tickTime();
 
-        // 4. Korszamlalo
+        // 4. Mozgaslimit nullazasa minden jarmuhez
+        for (NamedEntity entity : state.entities.values()) {
+            jarmuvek.Jarmu v = entity.asJarmu();
+            if (v != null) {
+                v.movesThisRound = 0;
+            }
+        }
+
+        // 5. Korszamlalo
         state.currentRound += 1;
         state.enqueueEvent("Uj kor: " + state.currentRound);
 
-        // 5. Jatekvege check
+        // 6. Jatekvege check
         state.evaluateGameOver();
 
         // Esemenyek kiiratasa konzolra

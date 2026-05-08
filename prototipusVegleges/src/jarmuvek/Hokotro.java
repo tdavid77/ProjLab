@@ -2,6 +2,7 @@ package jarmuvek;
 
 import jatekosok.Jatekos;
 import motor.GameState;
+import motor.NamedEntity;
 import takaritofejek.Fej;
 import takaritofejek.FejFactory;
 import takaritofejek.FejTipus;
@@ -10,11 +11,14 @@ import terkep.Ut;
 
 /**
  * Takarito jarmu: cserelheto fejjel, so-, kerozin- es zuzottko-keszlettel rendelkezik.
- * A szerelt fej (Fej peldany) donti el, milyen takaritasi muveletet vegez a savon
- * (sopres, jegbontas, olvasztas, sozes, zuzalekszovas).
- * Vasarlas, keszlettoltes es fejcsere csak telephelyen (currentUt == null) engedelyezett,
- * amit az akcio-reteg (GameActions) ellenőriz.
- * A canCrash() false-t ad vissza, igy jeges savon sem szenvedhet balesetet.
+ *
+ * UJ MODELL: a hokotro is csomoponton all alapesetben. Korokent ket lepest tehet
+ * (getMaxMovesPerTurn = 2). Mivel canCrash() es canBeBlockedBySnow() egyarant false-t
+ * ad vissza, a hokotrot semmi nem tudja elakasztani vagy balesetbe keverni.
+ *
+ * A takaritSav() barmely (szomszedos) ut savjan elvegezhető, ha a hokotro a
+ * csomoponton all - utana a sav uj allapota es az esetleg ott elakadt jarmuvek
+ * kiszabadulasa is itt tortenik (RULE12).
  */
 public final class Hokotro extends Jarmu {
     private Fej aktivFej;
@@ -36,13 +40,16 @@ public final class Hokotro extends Jarmu {
     @Override
     protected boolean canCrash() { return false; }
 
-    //A Hókotró nem akad el a nagy hóban sem
     @Override
     protected boolean canBeBlockedBySnow() { return false; }
 
-    // Csak konzolos UI-hoz: statusLine kiírásánál és a 'lista' parancs szűrőjénél
-    // szerepel. Nem viselkedési elágazás alapja. GUI-s verzióban el fog tűnni,
-    // mert ott a típusazonosítás a nézet rétegben, statikus típusinformáció alapján történik.
+    /** Hokotro maximum 2 lepest tehet egy korben. */
+    @Override
+    public int getMaxMovesPerTurn() {
+        return 2;
+    }
+
+    // Csak konzolos UI-hoz; lasd Jarmu osztaly kommentjet.
     @Override
     public String type() {
         return "Hokotro";
@@ -51,61 +58,114 @@ public final class Hokotro extends Jarmu {
     @Override
     public String statusLine(GameState state) {
         String pos;
-        if (currentUt == null) {
-            pos = "Telephely";
+        if (currentNode != null) {
+            pos = "Csomopont:" + currentNode;
+        } else if (currentUt != null) {
+            pos = "Ut:" + currentUt + " sav:" + savIndex;
         } else {
-            pos = currentUt + ", " + savIndex;
+            pos = "(ismeretlen)";
         }
         String allapot = disabledTime > 0 ? "Baleset(" + disabledTime + " kor)" : "Aktiv";
         String fejNev = aktivFej == null ? FejTipus.SOPROFEJ.name() : aktivFej.tipus().name();
         return "Hokotro " + name
-            + " | Poz:" + pos
+            + " | " + pos
             + " | Fej:" + fejNev
             + " | Keszletek:[So:" + so + ", Kerozin:" + kerozin + ", Zuzottko:" + zuzottko + "]"
             + " | Allapot:" + allapot;
     }
 
-    /** Visszaadja a hokotrora szerelt aktiv fejet (a GUI-nak es a context panelnek hasznos). */
+    /** Visszaadja a hokotrora szerelt aktiv fejet. */
     public Fej getAktivFej() {
         return aktivFej;
     }
 
-    /**
-     * Beallitja a hokotrora szerelt aktiv fejet a megadott tipusra.
-     * Ez kezdeti inicializaciohoz hasznalt (foemnu kezdofej-valasztasa).
-     * Fejcsere logikaja kulon van: lasd fejCsere(Jatekos, FejTipus).
-     */
+    /** Beallitja a hokotrora szerelt aktiv fejet a megadott tipusra. */
     public void setAktivFej(FejTipus tipus) {
         this.aktivFej = FejFactory.create(tipus);
     }
 
-    /** Visszaadja a hokotro aktualis ut-objektumat, vagy kivetelt dob, ha nincs uton. */
-    public Ut aktualisUt(GameState state) {
-        if (currentUt == null) {
-            throw new IllegalArgumentException("A hokotro nincs uton, nincs mit takaritani.");
-        }
-        Ut ut = state.getUt(currentUt);
-        if (ut == null) {
-            throw new IllegalArgumentException("Nincs ilyen ut: " + currentUt);
-        }
-        return ut;
-    }
-
     /**
-     * A hokotro aktiv fejevel takaritja a megadott savindexű savot.
-     * Ha nincs aktiv fej beallitva, alapertelmezetten SoproFej-jel dolgozik.
+     * A hokotro aktiv fejevel takaritja a megadott (szomszedos) ut megadott savjat,
+     * majd ATKERUL az ut masik vegpontjara (mert "atutazza" az utat takaritas kozben).
+     *
+     * A takaritas mozgáslepésnek számít: mind a savot megtisztitja, mind a hokotrot
+     * eljuttatja a masik csomopontra. A movesThisRound +1-et kap.
+     *
+     * Felteteli ellenorzesek:
+     *  - Hokotro csomoponton all (currentNode != null)
+     *  - Az ut szomszedos a hokotro csomopontjaval
+     *  - Ervenyes savIndex
+     *  - Van meg lepeskapcaitasa a korben (movesThisRound < max)
+     *
+     * RULE12: takaritas utan kiszabaditja az adott savon elakadt jarmuveket.
      */
     public void takaritSav(Ut ut, int savIndex, GameState state) {
+        if (currentNode == null) {
+            throw new IllegalArgumentException("A hokotro nincs csomoponton, nem tud takaritani.");
+        }
+        if (!ut.hasNode(currentNode)) {
+            throw new IllegalArgumentException("Az ut nem szomszedos a hokotro csomopontjaval.");
+        }
+        if (savIndex < 0 || savIndex >= ut.savSzam()) {
+            throw new IllegalArgumentException("Ervenytelen sav index: " + savIndex);
+        }
+        if (!canMove()) {
+            throw new IllegalArgumentException(name + " mozgaskeptelen.");
+        }
+        if (movesThisRound >= getMaxMovesPerTurn()) {
+            throw new IllegalArgumentException(name + " mar elerte a lepeshatart ebben a korben ("
+                    + getMaxMovesPerTurn() + ").");
+        }
+
         Sav sav = ut.sav(savIndex);
         if (aktivFej == null) {
             aktivFej = FejFactory.create(FejTipus.SOPROFEJ);
         }
+
+        // 1) Takaritasi muvelet (lehet, hogy kivetelt dob, pl. nincs eleg so) -- ekkor a mozgás sem tortenik meg
         aktivFej.takaritHatas(this, sav, ut, savIndex, state);
+
+        // 2) RULE12: az adott savon elakadt jarmuvek kiszabadulnak
+        freeStuckVehiclesOnLane(ut, savIndex, state);
+
+        // 3) Mozgás: a hokotro atvonul a masik csomopontra
+        String targetNode = ut.opposite(currentNode);
+        if (targetNode != null) {
+            String oldNode = currentNode;
+            moveTargetNode = targetNode;
+            currentNode = targetNode;
+            movesThisRound++;
+            state.enqueueEvent(name + " a " + ut.name() + " takaritasaval atvonult " + oldNode + " -> " + targetNode);
+        }
+    }
+
+    /**
+     * Kiszabaditja az adott (ut, savIndex) parmegjeloleshez tartozó balesetezett
+     * jarmuveket: visszaallitja a moveTargetNode-jukre, lenullazza a disabledTime-ot.
+     */
+    private void freeStuckVehiclesOnLane(Ut ut, int savIndex, GameState state) {
+        for (NamedEntity entity : state.getAllEntities()) {
+            Jarmu v = entity.asJarmu();
+            if (v == null) continue;
+            if (v.currentNode != null) continue; // mar csomoponton, nem elakadt
+            if (v.currentUt == null) continue;
+            if (!v.currentUt.equalsIgnoreCase(ut.name())) continue;
+            if (v.savIndex != savIndex) continue;
+            if (v.disabledTime <= 0) continue;
+            // Kiszabaditas
+            String dest = v.moveTargetNode != null ? v.moveTargetNode : ut.nodeA;
+            v.disabledTime = 0;
+            v.currentNode = dest;
+            v.currentUt = null;
+            v.savIndex = 0;
+            v.moveTargetNode = null;
+            state.enqueueEvent(v.name + " kiszabadult a takaritas utan -> " + dest);
+        }
     }
 
     /**
      * Kicsereli a hokotro aktiv fejét a jatekos raktaraban levo ujFej-re.
-     * A regi fejet visszarakja a jatekos raktaraba. Kivetelt dob, ha nincs meg az uj fej.
+     * A regi fejet visszarakja a jatekos raktaraba.
      */
     public void fejCsere(Jatekos jatekos, FejTipus ujFej) {
         if (!jatekos.removeFejFromInventory(ujFej)) {
@@ -127,7 +187,7 @@ public final class Hokotro extends Jarmu {
         so = 100;
     }
 
-    /** Feltolti a kerozin-keszletet 100-ra (ar: 60). Kivetelt dob, ha nincs eleg penz. */
+    /** Feltolti a kerozin-keszletet 100-ra (ar: 60). */
     public void kerozintoltes(Jatekos jatekos) {
         int price = 60;
         if (!jatekos.canAfford(price)) {
@@ -137,7 +197,7 @@ public final class Hokotro extends Jarmu {
         kerozin = 100;
     }
 
-    /** Feltolti a zuzottko-keszletet 100-ra (ar: 40). Kivetelt dob, ha nincs eleg penz. */
+    /** Feltolti a zuzottko-keszletet 100-ra (ar: 40). */
     public void zuzalektoltes(Jatekos jatekos) {
         int price = 40;
         if (!jatekos.canAfford(price)) {

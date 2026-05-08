@@ -285,17 +285,54 @@ public final class GameState {
     }
 
     /**
-     * Igaz, ha a jatekosnak legalabb egy jarmuve telephelyen all (currentUt == null),
+     * Igaz, ha a jatekosnak legalabb egy jarmuve a telephely csomoponton all,
      * vagy ha meg egyaltalan nincs jarmuva.
      */
     public boolean jatekosAtTelephely(Jatekos jatekos) {
         for (String vehicleName : jatekos.vehicles) {
             Jarmu vehicle = getJarmu(vehicleName);
-            if (vehicle != null && vehicle.currentUt == null) {
+            if (vehicle != null && "Telephely".equalsIgnoreCase(vehicle.currentNode)) {
                 return true;
             }
         }
         return jatekos.vehicles.isEmpty();
+    }
+
+    /**
+     * Igaz, ha az adott ut adott savjat egy elakadt (balesetezett) jarmu blokkolja.
+     * A moveToNode hasznalja a sav-valasztashoz.
+     */
+    public boolean isLaneBlocked(Ut ut, int laneIdx) {
+        if (ut == null) return false;
+        for (NamedEntity entity : entities.values()) {
+            Jarmu v = entity.asJarmu();
+            if (v == null) continue;
+            if (v.currentUt == null) continue;
+            if (!v.currentUt.equalsIgnoreCase(ut.name())) continue;
+            if (v.savIndex != laneIdx) continue;
+            if (v.disabledTime > 0) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Igaz, ha az aktualis jatekosnak (activePlayerName) van olyan jarmuve, amelyik
+     * meg lephet ebben a korben (canMove() && movesThisRound < maxMovesPerTurn).
+     * A HUD ezzel emeli ki a "Kesz vagyok" gombot.
+     */
+    public boolean activePlayerHasMovesLeft() {
+        Jatekos jatekos = getJatekos(activePlayerName);
+        if (jatekos == null) return true;
+        if (jatekos.vehicles.isEmpty()) return false;
+        for (String vehicleName : jatekos.vehicles) {
+            Jarmu v = getJarmu(vehicleName);
+            if (v == null) continue;
+            if (!v.canMove()) continue;
+            if (v.movesThisRound < v.getMaxMovesPerTurn()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Hozzaad egy esemeny-uzenetet az aszinkron esemenysorhoz, es a UI-buffeerbe is. */

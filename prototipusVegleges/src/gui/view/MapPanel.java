@@ -10,6 +10,9 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
 import gui.GameLayout;
@@ -26,16 +29,20 @@ import terkep.Ut;
 /**
  * A jatekter rajzolasaert felelos panel (BorderLayout.CENTER).
  *
- * "Pull" oldal: a paintComponent() minden hivasakor a model aktualis
- * allapotabol olvas (csomopontok, sávok, jarmuvek, ho/jeg ertekek).
+ * UJ MODELL:
+ *   - A jarmuvek alapesetben a currentNode csomoponton allnak.
+ *   - Tobb jarmu egy csomoponton: kozepre igazitva, oldalra eltolva (1=kozep,
+ *     2=kozep+jobb, 3=bal+kozep+jobb, ...).
+ *   - Csak a balesetezett jarmuvek (currentNode==null, currentUt!=null) kerulnek
+ *     kirajzolasra a savon.
  *
- * "Push" oldal: a GameStateListener-en keresztul jelzi a model, hogy
- * frissulnie kell -- ezt egyszeruen egy repaint() hivassal kezeljuk.
- *
- * Tartalmaz egy public vehicleAt() metodust, amit a MapController hasznal a
- * kattintas-talalatok feloldasara (find-by-coordinate).
+ * UJ SAVSZINEZES: 5 fokozatu gradiens hora (feher) es jegre (vilagoskek);
+ * sima ut fekete, sozott szurke, zuzottko barna.
  */
 public final class MapPanel extends JPanel implements GameStateListener {
+    /** Tobb jarmu egy csomoponton vízszintes sávolasa (pixelben). */
+    private static final int VEHICLE_SPACING = 30;
+
     private final GameState state;
 
     public MapPanel(GameState state) {
@@ -56,80 +63,25 @@ public final class MapPanel extends JPanel implements GameStateListener {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        // Eloszor utak (sávokkal), aztan csomopontok, vegul jarmuvek -- ez biztositja
-        // a helyes Z-rendet (jarmu mindig latszik a csomopont es ut tetejen)
+        // Eloszor utak (savokkal), aztan csomopontok, vegul jarmuvek
         for (Ut ut : state.getAllUtak()) {
             drawRoad(g2, ut);
         }
         for (Map.Entry<String, Point> entry : GameLayout.allNodes().entrySet()) {
             drawNode(g2, entry.getKey(), entry.getValue());
         }
-        for (NamedEntity entity : state.getAllEntities()) {
-            Jarmu v = entity.asJarmu();
-            if (v == null) continue;
-            Point pos = computeVehiclePosition(v);
-            if (pos == null) continue;
-            drawVehicle(g2, v, pos, isSelected(v));
-        }
 
-        // Jelmagyarazat a jobb felso sarokban
+        // Jarmuvek kettesszer: csomoponton allok (csoportositva), aztan az uton elakadt balesetezettek
+        drawVehiclesAtNodes(g2);
+        drawStuckVehiclesOnRoads(g2);
+
+        // Jelmagyarazat
         drawLegend(g2);
 
         g2.dispose();
     }
 
-    private void drawLegend(Graphics2D g2) {
-        int x = getWidth() - 175;
-        int y = 12;
-        int w = 165;
-        int h = 88;
-        g2.setColor(new Color(255, 255, 255, 200));
-        g2.fillRoundRect(x, y, w, h, 8, 8);
-        g2.setColor(new Color(120, 130, 150));
-        g2.setStroke(new BasicStroke(1));
-        g2.drawRoundRect(x, y, w, h, 8, 8);
-
-        g2.setFont(new Font("SansSerif", Font.BOLD, 11));
-        g2.setColor(new Color(40, 40, 60));
-        g2.drawString("Jelmagyarázat", x + 10, y + 14);
-
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 10));
-        int rowY = y + 30;
-
-        // Hokotro
-        int[] hxs = { x + 18, x + 12, x + 24 };
-        int[] hys = { rowY - 6, rowY + 4, rowY + 4 };
-        g2.setColor(new Color(50, 95, 220));
-        g2.fillPolygon(hxs, hys, 3);
-        g2.setColor(Color.BLACK);
-        g2.drawString("Hókotró", x + 32, rowY + 2);
-
-        // Busz
-        rowY += 16;
-        g2.setColor(new Color(220, 60, 60));
-        g2.fillRect(x + 12, rowY - 4, 14, 8);
-        g2.setColor(Color.BLACK);
-        g2.drawRect(x + 12, rowY - 4, 14, 8);
-        g2.drawString("Busz", x + 32, rowY + 2);
-
-        // Auto
-        rowY += 16;
-        g2.setColor(new Color(245, 220, 70));
-        g2.fillRect(x + 12, rowY - 4, 14, 8);
-        g2.setColor(Color.BLACK);
-        g2.drawRect(x + 12, rowY - 4, 14, 8);
-        g2.drawString("Autó (NPC)", x + 32, rowY + 2);
-
-        // Kijelolt
-        rowY += 16;
-        g2.setColor(new Color(255, 110, 0));
-        g2.setStroke(new BasicStroke(2));
-        g2.drawOval(x + 11, rowY - 7, 16, 14);
-        g2.setColor(Color.BLACK);
-        g2.drawString("Kijelölt", x + 32, rowY + 2);
-    }
-
-    // ----- Rajzolasi segedmetodusok -----
+    // ----- Sav/csomopont rajzolas -----
 
     private void drawRoad(Graphics2D g2, Ut ut) {
         Point a = GameLayout.nodePosition(ut.nodeA);
@@ -160,7 +112,7 @@ public final class MapPanel extends JPanel implements GameStateListener {
         }
         g2.setStroke(originalStroke);
 
-        // Felirat a kozepre
+        // Felirat
         int mx = (a.x + b.x) / 2;
         int my = (a.y + b.y) / 2;
         g2.setFont(new Font("SansSerif", Font.PLAIN, 9));
@@ -168,15 +120,42 @@ public final class MapPanel extends JPanel implements GameStateListener {
         g2.drawString(ut.name(), mx + 6, my - 6);
     }
 
+    /**
+     * Sav-szin meghatarozasa 5 fokozatu gradiens szerint:
+     *   - Sima ut (semmi nincs rajta): fekete
+     *   - Hovas: feher, 5 fokozat (1=halvany ... 5=teljes)
+     *   - Jeges: vilagoskek, 5 fokozat
+     *   - Sozott: szurke
+     *   - Zuzottkos: barna
+     */
     private Color laneColor(Sav sav) {
-        // A model leirasban definialt szinrend:
-        // jeges = vilagoskek, havas = feher, sozott = szurke,
-        // zuzottko = barna, sima = fekete
-        if (sav.ice > 0) return new Color(170, 205, 235);
-        if (sav.ho > 0) return new Color(245, 245, 245);
+        Color base = new Color(40, 40, 45);
+        if (sav.ice > 0) {
+            int level = Math.min(5, sav.ice);
+            return blendLevel(base, new Color(170, 205, 235), level);
+        }
+        if (sav.ho > 0) {
+            int level = Math.min(5, sav.ho);
+            return blendLevel(base, new Color(245, 245, 245), level);
+        }
         if (sav.soHatralevoIdeje > 0) return new Color(170, 170, 175);
         if (sav.zuzalekHatralevoIdeje > 0) return new Color(140, 90, 50);
-        return new Color(40, 40, 45);
+        return base;
+    }
+
+    /**
+     * 5-fokozatu szin-keverest hajt vegre a base es target szinek kozott a 'level' alapjan.
+     * A level=1 ertekhez nem nullarol indulunk: minimum 55% kevereshez ugorhat azonnal,
+     * hogy az elso egysegnyi ho/jeg is egyertelmuen megkulonboztetheto legyen a sima uttol.
+     * level=5 (es felette) eseten a target szin 100%-ban latszik.
+     */
+    private Color blendLevel(Color base, Color target, int level) {
+        int clamped = Math.max(1, Math.min(5, level));
+        double t = 0.55 + (clamped - 1) * (1.0 - 0.55) / 4.0;
+        int r = (int) (base.getRed() + t * (target.getRed() - base.getRed()));
+        int g = (int) (base.getGreen() + t * (target.getGreen() - base.getGreen()));
+        int b = (int) (base.getBlue() + t * (target.getBlue() - base.getBlue()));
+        return new Color(r, g, b);
     }
 
     private void drawNode(Graphics2D g2, String name, Point pos) {
@@ -204,26 +183,66 @@ public final class MapPanel extends JPanel implements GameStateListener {
         g2.drawString(label, tx, ty);
     }
 
-    private Point computeVehiclePosition(Jarmu v) {
-        if (v.currentUt == null) {
-            // Telephelyen all -- a Telephely csomopont kozepere rajzoljuk
-            return GameLayout.nodePosition("Telephely");
+    // ----- Jarmu rajzolas (csomoponton + uton elakadt) -----
+
+    /**
+     * Csomopont szerint csoportositja a csomoponton allo jarmuveket,
+     * majd kirajzolja oket az "1=kozep, 2=kozep+jobb, 3=bal+kozep+jobb, ..." mintaban.
+     */
+    private void drawVehiclesAtNodes(Graphics2D g2) {
+        Map<String, List<Jarmu>> grouped = groupVehiclesByNode();
+        for (Map.Entry<String, List<Jarmu>> entry : grouped.entrySet()) {
+            Point center = GameLayout.nodePosition(entry.getKey());
+            if (center == null) continue;
+            List<Jarmu> vehicles = entry.getValue();
+            int n = vehicles.size();
+            int offsetBase = (int) Math.floor((n - 1) / 2.0);
+            for (int i = 0; i < n; i++) {
+                int relOffset = i - offsetBase;
+                Point pos = new Point(center.x + relOffset * VEHICLE_SPACING, center.y);
+                Jarmu v = vehicles.get(i);
+                drawVehicle(g2, v, pos, isSelected(v));
+            }
         }
+    }
+
+    /** Az uton elakadt balesetezett jarmuveket az adott savjuk kozepere rajzolja. */
+    private void drawStuckVehiclesOnRoads(Graphics2D g2) {
+        for (NamedEntity entity : state.getAllEntities()) {
+            Jarmu v = entity.asJarmu();
+            if (v == null) continue;
+            if (v.currentNode != null) continue; // csomoponton, mar rajzoltuk
+            if (v.currentUt == null) continue;   // valami inkonzisztens
+            Point pos = computeStuckVehiclePosition(v);
+            if (pos == null) continue;
+            drawVehicle(g2, v, pos, isSelected(v));
+        }
+    }
+
+    private Map<String, List<Jarmu>> groupVehiclesByNode() {
+        Map<String, List<Jarmu>> map = new LinkedHashMap<>();
+        for (NamedEntity entity : state.getAllEntities()) {
+            Jarmu v = entity.asJarmu();
+            if (v == null) continue;
+            if (v.currentNode == null) continue;
+            map.computeIfAbsent(v.currentNode, k -> new ArrayList<>()).add(v);
+        }
+        return map;
+    }
+
+    private Point computeStuckVehiclePosition(Jarmu v) {
         Ut ut = state.getUt(v.currentUt);
         if (ut == null) return null;
         Point a = GameLayout.nodePosition(ut.nodeA);
         Point b = GameLayout.nodePosition(ut.nodeB);
         if (a == null || b == null) return null;
-
         double dx = b.x - a.x;
         double dy = b.y - a.y;
         double len = Math.hypot(dx, dy);
         if (len == 0) return new Point(a);
         double nx = -dy / len;
         double ny = dx / len;
-        double offset = (v.savIndex - (ut.savSzam() - 1) / 2.0)
-                * (GameLayout.LANE_WIDTH + GameLayout.LANE_GAP);
-
+        double offset = (v.savIndex - (ut.savSzam() - 1) / 2.0) * (GameLayout.LANE_WIDTH + GameLayout.LANE_GAP);
         int x = (int) ((a.x + b.x) / 2.0 + nx * offset);
         int y = (int) ((a.y + b.y) / 2.0 + ny * offset);
         return new Point(x, y);
@@ -232,7 +251,6 @@ public final class MapPanel extends JPanel implements GameStateListener {
     private void drawVehicle(Graphics2D g2, Jarmu v, Point pos, boolean selected) {
         int size = 12;
         if (v instanceof Hokotro) {
-            // KEK HAROMSZOG
             int[] xs = { pos.x, pos.x - size, pos.x + size };
             int[] ys = { pos.y - size, pos.y + size, pos.y + size };
             g2.setColor(new Color(50, 95, 220));
@@ -241,19 +259,25 @@ public final class MapPanel extends JPanel implements GameStateListener {
             g2.setStroke(new BasicStroke(1.5f));
             g2.drawPolygon(xs, ys, 3);
         } else if (v instanceof Busz) {
-            // PIROS TEGLALAP
             g2.setColor(new Color(220, 60, 60));
             g2.fillRect(pos.x - size, pos.y - size / 2, size * 2, size);
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(1.5f));
             g2.drawRect(pos.x - size, pos.y - size / 2, size * 2, size);
         } else if (v instanceof Auto) {
-            // SARGA TEGLALAP
             g2.setColor(new Color(245, 220, 70));
             g2.fillRect(pos.x - size, pos.y - size / 2, size * 2, size);
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(1.5f));
             g2.drawRect(pos.x - size, pos.y - size / 2, size * 2, size);
+        }
+
+        // Balesetes jelzo (X)
+        if (v.disabledTime > 0) {
+            g2.setColor(new Color(255, 50, 50));
+            g2.setStroke(new BasicStroke(2.5f));
+            g2.drawLine(pos.x - size + 2, pos.y - size + 2, pos.x + size - 2, pos.y + size - 2);
+            g2.drawLine(pos.x + size - 2, pos.y - size + 2, pos.x - size + 2, pos.y + size - 2);
         }
 
         if (selected) {
@@ -264,7 +288,7 @@ public final class MapPanel extends JPanel implements GameStateListener {
                     (size + pad) * 2, (size + pad) * 2);
         }
 
-        // Felirat a jarmu mellett
+        // Felirat
         g2.setColor(new Color(20, 20, 30));
         g2.setFont(new Font("SansSerif", Font.BOLD, 10));
         g2.drawString(v.name, pos.x + size + 3, pos.y + 4);
@@ -279,22 +303,89 @@ public final class MapPanel extends JPanel implements GameStateListener {
 
     /**
      * Megkeresi, hogy a megadott pixel-koordinatan van-e jarmu, es ha igen,
-     * visszaadja. A talalati zona kicsit nagyobb, mint a rajzolt forma,
-     * hogy konnyebb legyen rakattintani.
+     * visszaadja. Mind csomoponton allo, mind uton elakadt jarmuveket figyel.
      */
     public Jarmu vehicleAt(int x, int y) {
-        // Forditott rendben iteralunk, hogy ha tobb egymason, a felso nyerjen
         Jarmu hit = null;
+        // Csomoponton allok
+        Map<String, List<Jarmu>> grouped = groupVehiclesByNode();
+        for (Map.Entry<String, List<Jarmu>> entry : grouped.entrySet()) {
+            Point center = GameLayout.nodePosition(entry.getKey());
+            if (center == null) continue;
+            List<Jarmu> vehicles = entry.getValue();
+            int n = vehicles.size();
+            int offsetBase = (int) Math.floor((n - 1) / 2.0);
+            for (int i = 0; i < n; i++) {
+                int relOffset = i - offsetBase;
+                int vx = center.x + relOffset * VEHICLE_SPACING;
+                int vy = center.y;
+                if (Math.abs(x - vx) <= 16 && Math.abs(y - vy) <= 16) {
+                    hit = vehicles.get(i);
+                }
+            }
+        }
+        // Uton elakadt balesetezettek
         for (NamedEntity entity : state.getAllEntities()) {
             Jarmu v = entity.asJarmu();
             if (v == null) continue;
-            Point pos = computeVehiclePosition(v);
+            if (v.currentNode != null) continue;
+            if (v.currentUt == null) continue;
+            Point pos = computeStuckVehiclePosition(v);
             if (pos == null) continue;
-            int hitRadius = 16;
-            if (Math.abs(x - pos.x) <= hitRadius && Math.abs(y - pos.y) <= hitRadius) {
-                hit = v; // tovabbiteralunk -- a kesobbi (felulvont) nyer
+            if (Math.abs(x - pos.x) <= 16 && Math.abs(y - pos.y) <= 16) {
+                hit = v;
             }
         }
         return hit;
+    }
+
+    // ----- Jelmagyarazat -----
+
+    private void drawLegend(Graphics2D g2) {
+        int x = getWidth() - 175;
+        int y = 12;
+        int w = 165;
+        int h = 88;
+        g2.setColor(new Color(255, 255, 255, 200));
+        g2.fillRoundRect(x, y, w, h, 8, 8);
+        g2.setColor(new Color(120, 130, 150));
+        g2.setStroke(new BasicStroke(1));
+        g2.drawRoundRect(x, y, w, h, 8, 8);
+
+        g2.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g2.setColor(new Color(40, 40, 60));
+        g2.drawString("Jelmagyarázat", x + 10, y + 14);
+
+        g2.setFont(new Font("SansSerif", Font.PLAIN, 10));
+        int rowY = y + 30;
+
+        // Hokotro
+        int[] hxs = { x + 18, x + 12, x + 24 };
+        int[] hys = { rowY - 6, rowY + 4, rowY + 4 };
+        g2.setColor(new Color(50, 95, 220));
+        g2.fillPolygon(hxs, hys, 3);
+        g2.setColor(Color.BLACK);
+        g2.drawString("Hókotró", x + 32, rowY + 2);
+
+        rowY += 16;
+        g2.setColor(new Color(220, 60, 60));
+        g2.fillRect(x + 12, rowY - 4, 14, 8);
+        g2.setColor(Color.BLACK);
+        g2.drawRect(x + 12, rowY - 4, 14, 8);
+        g2.drawString("Busz", x + 32, rowY + 2);
+
+        rowY += 16;
+        g2.setColor(new Color(245, 220, 70));
+        g2.fillRect(x + 12, rowY - 4, 14, 8);
+        g2.setColor(Color.BLACK);
+        g2.drawRect(x + 12, rowY - 4, 14, 8);
+        g2.drawString("Autó (NPC)", x + 32, rowY + 2);
+
+        rowY += 16;
+        g2.setColor(new Color(255, 110, 0));
+        g2.setStroke(new BasicStroke(2));
+        g2.drawOval(x + 11, rowY - 7, 16, 14);
+        g2.setColor(Color.BLACK);
+        g2.drawString("Kijelölt", x + 32, rowY + 2);
     }
 }

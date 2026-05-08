@@ -49,8 +49,11 @@ public final class Sav {
     }
 
     /**
-     * Egykor-nyi havazas hatasat alkalmazza a savra (ho += 1).
+     * Egykor-nyi havazas hatasat alkalmazza a savra.
      * Alagut-vedelem vagy aktiv so-vedelem (soHatralevoIdeje > 0) eseten nem novel.
+     *
+     * Ha a savon mar van jeg (ice > 0), akkor a leesett ho azonnal jegre tomorul:
+     * ice += 1. Egyebkent a ho a normal hopanyat noveli: ho += 1.
      */
     public void hoingOneUnit(boolean protectedByTunnel) {
         if (protectedByTunnel) {
@@ -59,7 +62,11 @@ public final class Sav {
         if (soHatralevoIdeje > 0) {
             return;
         }
-        ho += 1;
+        if (ice > 0) {
+            ice += 1;
+        } else {
+            ho += 1;
+        }
     }
 
     /** Minden kor vegekor csokkenti a so- es zuzalek-vedelem hátralevo idejet. */
