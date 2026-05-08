@@ -18,23 +18,233 @@
 \comment{Az új osztályok felsorolása. Az régi osztályok közül azoknak a felsorolása, ahol változás volt. Ezek esetén csak a változásokat kell leírni.}
 
 \subsection{Új osztályok}
-\subsubsection{Osztály1}
+
+%------------ÚJ OSZTÁLYOK----------------
+
+\subsubsection{GameStateListener}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    Push-event interfész a model $\rightarrow$ view kommunikáció megvalósításához. Lehetővé teszi, hogy a modell értesítse a feliratkozott nézeteket (view-kat) az állapotváltozásról, így azok frissíthetik a megjelenített adatokat.
 \end{class-template-responsibility}
 \begin{class-template-interface}
-    Megvalósított interfészek felsorolása
+    -
 \end{class-template-interface}
 \begin{class-template-baseclass}
-    Ős-Ősosztály \baseclass Ősosztály... 
+    -
 \end{class-template-baseclass}
 \begin{class-template-attribute}
-    \classitem{+A [0..*]}{adattag A}
+    -
 \end{class-template-attribute}
-\comment{Milyen publikus, protected és privát  metódusokkal rendelkezik. Metódusonként precíz leírás, ha szükséges, activity diagram is a metódusban megvalósítandó algoritmusról. Minden olyan metódusnak szerepelnie kell, amelyiket az osztály megvalósít vagy felüldefiniál.}
 \begin{class-template-method}
-    \classitem{+B(A a) : void}{metódus B}
+    \classitem{+onStateChanged() : void}{A modell hívja meg, amikor az állapota megváltozik, jelezve a nézetnek a grafikus frissítés szükségességét.}
+\end{class-template-method} 
+
+\subsubsection{Main}
+\begin{class-template-responsibility}
+    A GUI alapú alkalmazás belépési pontja. Feladata a rendszerszintű megjelenés (Look & Feel) beállítása és a főmenü elindítása az Event Dispatch Thread-en (EDT).
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    -
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    -
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+main(args : String[]) : void}{A program belépési metódusa.}
+\end{class-template-method} 
+
+\subsubsection{MainMenu}
+\begin{class-template-responsibility}
+    A játék indítóképernyője. Lehetővé teszi a nehézségi szint és a kezdő hókotrófej kiválasztását, majd elindítja a játékablakot.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    JFrame
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-difficultyCombo : JComboBox}{Nehézség választó (Könnyű, Közepes, Nehéz).}
+    \classitem{-headRadioGroup : ButtonGroup}{Rádiógomb csoport a kezdő fej kiválasztásához (Söprő/Jégtörő).}
+    \classitem{-startButton : JButton}{A játék indítását kiváltó gomb.}
+\end{class-template-attribute}\begin{class-template-method}
+    \classitem{+MainMenu()}{Konstruktor, felépíti a menü grafikus felületét.}
+    \classitem{-onStartGame() : void}{Eseménykezelő, amely létrehozza a GameWindow-t a választott paraméterekkel, majd bezárja a főmenüt.}
 \end{class-template-method}
+
+\subsubsection{GameWindow}
+\begin{class-template-responsibility}
+    A játék fő ablaka, amely összefogja a különböző nézeteket és kontrollereket. Összeállítja a játék kezdeti állapotát és kezeli a panelek elrendezését.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    JFrame
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-state : GameState}{A játék aktuális modell-állapota.}
+    \classitem{-mapPanel : MapPanel}{A térkép megjelenítő panel.}
+    \classitem{-hudPanel : HudPanel}{A felső információs sáv.}
+    \classitem{-contextPanel : ContextPanel}{A jobb oldali interakciós panel.}
+    \classitem{-eventLogPanel : EventLogPanel}{Az alsó eseménynapló panel.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+GameWindow(diff : Difficulty, head : HeadType)}{Létrehozza az ablakot, inicializálja a modellt és a nézeteket, majd feliratkoztatja a paneleket a modell eseményeire.}
+\end{class-template-method}
+
+\subsubsection{GameInitializer}
+\begin{class-template-responsibility}
+    Statikus segédosztály, amely a specifikáció szerinti várostérképet és a kezdő objektumokat (csomópontok, utak, járművek, NPC-k) hozza létre a memóriában.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    -
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    -
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+createCity(state : GameState) : void}{Feltölti a kapott állapotot a hardcoded adatokkal: Telephely, Főtér, Vasútállomás, stb., valamint a játékosok és NPC-k kezdőhelyzeteivel.}
+\end{class-template-method}
+
+\subsubsection{GameLayout}
+\begin{class-template-responsibility}
+    A térkép statikus elhelyezkedéséért felelős segédosztály. Tárolja a koordinátákat és a megjelenítéshez szükséges konstansokat.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    -
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{+NODE_RADIUS : int}{Csomópontok rajzolási sugara.}
+    \classitem{+LANE_WIDTH : int}{Sávok szélessége pixelben.}
+    \classitem{-nodePositions : Map<String, Point>}{Csomópont azonosítóhoz rendelt koordináták.}
+    \classitem{-displayNames : Map<String, String>}{Belső azonosítók magyar megfelelői.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+getPosition(nodeId : String) : Point}{Visszaadja egy adott csomópont koordinátáját.}
+    \classitem{+getDisplayName(id : String) : String}{Visszaadja az azonosító magyar nevét.}
+\end{class-template-method}
+
+\subsubsection{MapPanel}
+\begin{class-template-responsibility}
+    A város térképének és a rajta lévő egységeknek a vizuális megjelenítése. Kirajzolja a csomópontokat, az utak állapotát és a járművek aktuális pozícióját.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    GameStateListener
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    JPanel
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-state : GameState}{Referencia a modellre az adatok lekéréséhez.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{#paintComponent(g : Graphics) : void}{Kirajzolja a térképet: sárga/zöld/szürke csomópontok, utak a színkódolt állapotuk szerint, és a járművek ikonjai.}
+    \classitem{+vehicleAt(p : Point) : String}{Visszaadja a megadott koordinátán található jármű nevét, ha nincs ott semmi, null-t.}
+    \classitem{+onStateChanged() : void}{A modell jelzésére újrarajzolja a panelt (repaint).}
+\end{class-template-method}
+
+\subsubsection{HudPanel}
+\begin{class-template-responsibility}
+    A játék felső állapotsávja, amely az általános információkat (kör, aktív játékos, vagyon, balesetek) jeleníti meg.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    GameStateListener
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    JPanel
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-roundLabel : JLabel}{Kör sorszámát mutató felirat.}
+    \classitem{-wealthLabel : JLabel}{A játékosok vagyonát mutató felirat.}
+    \classitem{-doneButton : JButton}{A kört befejező "Kész vagyok" gomb.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+onStateChanged() : void}{Frissíti a feliratokat és a gomb szövegét az aktív játékos neve alapján.}
+\end{class-template-method}
+
+\subsubsection{ContextPanel}
+\begin{class-template-responsibility}
+    A kiválasztott jármű részleteit és a rajta végezhető akciókat (mozgás, takarítás, telephelyi műveletek) megjelenítő panel.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    GameStateListener
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    JPanel
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-actionContainer : JPanel}{Dinamikusan változó gombok tárolója.}
+    \classitem{-infoArea : JTextArea}{Jármű adatainak (üzemanyag, töltet) megjelenítése.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+onStateChanged() : void}{A kijelölt jármű típusa és helyzete alapján újragenerálja az akciógombokat.}
+\end{class-template-method}
+
+\subsubsection{EventLogPanel}
+\begin{class-template-responsibility}
+    A játék eseményeinek szöveges naplózása és a jelmagyarázat megjelenítése.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    GameStateListener
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    JPanel
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-logArea : JTextArea}{Az eseményeket listázó szövegdoboz.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+onStateChanged() : void}{Lekéri a modell legfrissebb eseményeit és megjeleníti azokat.}
+\end{class-template-method}
+
+\subsubsection{MapController}
+\begin{class-template-responsibility}
+    A térképen történő egérkattintások kezelése, a járművek kijelölésének és deszelektálásának vezérlése.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    MouseListener
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    MouseAdapter
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-mapPanel : MapPanel}{A megfigyelt térkép panel.}
+    \classitem{-state : GameState}{A modell, ahol a kijelölést állítja.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+mouseClicked(e : MouseEvent) : void}{Kattintáskor a vehicleAt segédmetódussal lekérdezi, van-e ott jármű, és frissíti a modellben a kijelölt objektumot.}
+\end{class-template-method}
+
+\subsubsection{ActionController}
+\begin{class-template-responsibility}
+    A felhasználói felületről érkező gombnyomásokat fordítja le konkrét modell-műveletekre, kezeli a körök közötti váltást és a játék végének logikáját.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    -
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{-state : GameState}{A játék modell-állapota.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+onMoveTo(roadId : String) : void}{A kijelölt jármű mozgatása a kiválasztott útra.}
+    \classitem{+onTakarit() : void}{A takarítási akció elindítása a felszerelt fejnek megfelelően.}
+    \classitem{+onBuyHokotro() : void}{Új hókotró vásárlása a telephelyen.}
+    \classitem{+onPlayerDone() : void}{Az aktív játékos körének lezárása, váltás a következő játékosra, vagy NPC körök futtatása.}
+    \classitem{-ensureControllable() : boolean}{Ellenőrzi, hogy a kijelölt jármű az aktív játékosé-e.}
+    \classitem{-showGameOver(winner : String) : void}{Megjeleníti a játék vége dialógust a győztessel.}
+\end{class-template-method}  
 
 \subsection{Megváltozott osztályok}
 \subsubsection{Osztály2}
