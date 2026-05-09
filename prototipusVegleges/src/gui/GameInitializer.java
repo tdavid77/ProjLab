@@ -47,7 +47,7 @@ public final class GameInitializer {
         state.putUt(road("Kozpont_ut",  "Foter",         "Vasutallomas"));
         state.putUt(road("Gyari_ut",    "Telephely",     "Gyar"));
         state.putUt(road("Gyar_vasut",  "Gyar",          "Vasutallomas"));
-        state.putUt(road("Vasut_kelet", "Vasutallomas",  "Vegallomas_Del"));
+        state.putUt(road("LazarJanos_ut", "Vasutallomas",  "Vegallomas_Del"));
         state.putUt(road("Kert_ut",     "Vasutallomas",  "Kertvaros"));
     }
 
