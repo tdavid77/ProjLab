@@ -175,9 +175,15 @@ public class Jarmu implements NamedEntity {
             throw new IllegalArgumentException("A " + road.name() + " " + laneIdx + ". savja jarhatatlan a magas ho miatt.");
         }
 
-        // Mozgas vegrehajtas
-        moveTargetNode = targetNode;
-        currentNode = targetNode;
+        // Mozgas vegrehajtas — proper-case csomopont-nevet a road-tol kerunk
+        // (igy biztosan az eredeti irasmoddal kerul a currentNode-ba, fuggetlenul attol,
+        // hogy a hivo milyen kis/nagy betus formaban adta at a targetNode-ot)
+        String properTargetNode = road.opposite(currentNode);
+        if (properTargetNode == null) {
+            properTargetNode = targetNode; // fallback
+        }
+        moveTargetNode = properTargetNode;
+        currentNode = properTargetNode;
         movesThisRound++;
 
         // Forgalmi hatas (autok/buszok tomoritik a havat)

@@ -142,24 +142,29 @@ public final class GameState {
         Map<String, String> parent = new HashMap<>();
         Deque<String> queue = new ArrayDeque<>();
         Set<String> visited = new HashSet<>();
+        // properCase: a kis-betus kulcsbol az eredeti, nagybetus csomopont-nevre val mappinget tarol
+        Map<String, String> properCase = new HashMap<>();
+        properCase.put(fromKey, from);
         queue.add(fromKey);
         visited.add(fromKey);
 
         while (!queue.isEmpty()) {
-            String node = queue.pollFirst();
-            List<String> incidentRoads = graph.get(node);
+            String nodeKey = queue.pollFirst();
+            String nodeName = properCase.getOrDefault(nodeKey, nodeKey);
+            List<String> incidentRoads = graph.get(nodeKey);
             if (incidentRoads == null) continue;
             for (String roadName : incidentRoads) {
                 Ut ut = utak.get(roadName.toLowerCase(Locale.ROOT));
                 if (ut == null) continue;
-                String other = ut.opposite(node);
+                String other = ut.opposite(nodeName);
                 if (other == null) continue;
                 String otherKey = other.toLowerCase(Locale.ROOT);
                 if (visited.contains(otherKey)) continue;
                 visited.add(otherKey);
-                parent.put(otherKey, node);
+                properCase.put(otherKey, other);
+                parent.put(otherKey, nodeKey);
                 if (otherKey.equals(toKey)) {
-                    return reconstructPath(parent, fromKey, otherKey);
+                    return reconstructPath(parent, properCase, fromKey, otherKey);
                 }
                 queue.addLast(otherKey);
             }
@@ -167,13 +172,20 @@ public final class GameState {
         return new ArrayList<>();
     }
 
-    private List<String> reconstructPath(Map<String, String> parent, String fromKey, String toKey) {
+    /**
+     * Visszafele bejarja a parent-mapet a celtol a kiindulopontig, es az eredeti
+     * (proper-case) csomopont-neveket adja vissza, hogy a hivok (pl. UI-rajzolas)
+     * a GameLayout-ban megfelelo kulcsokat kapjanak.
+     */
+    private List<String> reconstructPath(Map<String, String> parent,
+                                         Map<String, String> properCase,
+                                         String fromKey, String toKey) {
         List<String> path = new ArrayList<>();
-        String current = toKey;
-        while (current != null) {
-            path.add(0, current);
-            if (current.equals(fromKey)) break;
-            current = parent.get(current);
+        String currentKey = toKey;
+        while (currentKey != null) {
+            path.add(0, properCase.getOrDefault(currentKey, currentKey));
+            if (currentKey.equals(fromKey)) break;
+            currentKey = parent.get(currentKey);
         }
         return path;
     }
