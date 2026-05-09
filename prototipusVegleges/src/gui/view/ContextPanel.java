@@ -114,8 +114,13 @@ public final class ContextPanel extends JPanel implements GameStateListener {
         title.setText(typeLabel(sel) + ": " + vehicle.name);
         details.setText(buildVehicleDetails(vehicle, sel));
 
-        addMovementButtons(vehicle);
-        addCommonActionButtons(vehicle, sel);
+        // NPC autoknal sem mozgas-, sem akciogomb nem latszik - a jatekos nem
+        // tudja vezerelni oket, igy ezek a kontrollok feleslegesek.
+        boolean isNpcAuto = "Auto".equals(sel.type());
+        if (!isNpcAuto) {
+            addMovementButtons(vehicle);
+            addCommonActionButtons(vehicle, sel);
+        }
 
         Hokotro hokotro = sel.asHokotro();
         if (hokotro != null && hokotro.currentNode != null) {
@@ -148,7 +153,12 @@ public final class ContextPanel extends JPanel implements GameStateListener {
         } else if (vehicle.currentUt != null) {
             sb.append("Elakadt: ").append(vehicle.currentUt).append(" (sáv ").append(vehicle.savIndex).append(")\n");
         }
-        sb.append("Lépések: ").append(vehicle.movesThisRound).append("/").append(vehicle.getMaxMovesPerTurn()).append('\n');
+        // NPC autoknal nem releváns a lepeshatar (Integer.MAX_VALUE-ra van allitva),
+        // ezert a lepesek-sort csak a jatekos altal vezerelt jarmuveknel mutatjuk.
+        if (!"Auto".equals(sel.type())) {
+            sb.append("Lépések: ").append(vehicle.movesThisRound)
+              .append("/").append(vehicle.getMaxMovesPerTurn()).append('\n');
+        }
         sb.append("Állapot: ")
           .append(vehicle.canMove() ? "Aktív" : "Baleset (" + vehicle.disabledTime + " kör)")
           .append('\n');
