@@ -1,12 +1,10 @@
 \chapter{Grafikus felület specifikációja}
 
 \section{A grafikus interfész}
-\comment{A menürendszer, a kezelői felület grafikus képe. A grafikus felület megjelenését, a használt ikonokat, stb screenshot-szerű képekkel kell bemutatni. Az építészetben ez a homlokzati terv.}
-\diagram{docs/img/BMElogo}{Példa kép}{3cm}
+\diagram{docs/img/mainmenu}{Főmenü}{15cm}
+\diagram{docs/img/ingame}{Játékban}{15cm}
 
 \section{A grafikus rendszer architektúrája}
-\comment{A felület működésének elve, a grafikus rendszer architektúrája (struktúra diagramok). A struktúra diagramokon a prototípus azon és csak azon osztályainak is szerepelnie kell, amelyekhez a grafikus felületet létrehozó osztályok kapcsolódnak.}
-
 \subsection{A felület működési elve}
 A grafikus felület a meglévő üzleti logikát (\texttt{motor}, \texttt{jarmuvek}, \texttt{jatekosok}, \texttt{takaritofejek}, \texttt{terkep} csomagok) változtatás nélkül használja fel — a modell rétegben a GUI miatt csak additív bővítések történtek (új interfész, új getterek, új mezők), egyetlen meglévő metódus viselkedése sem módosult. Így a korábbi parancssoros prototípus ugyanúgy működik, mint korábban.
 
@@ -25,15 +23,10 @@ Push oldal — eseményalapú értesítés. A motor csomagba felvettünk egy \te
 
 Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onStateChanged} implementációja nem ad át adatot magával az eseménnyel; egyszerűen kiváltja a saját frissítését (\texttt{repaint()} a \texttt{MapPanel}-en, vagy a label-ek és gombok újraépítése a \texttt{ContextPanel}-ben). A tényleges állapotot a panel a saját rajzolási vagy frissítési ciklusában közvetlenül olvassa le a modellből: a \texttt{MapPanel.paintComponent} például a \texttt{state.getAllUtak()}, \texttt{state.getAllEntities()}, \texttt{Sav.ho}, \texttt{Sav.ice} értékeit kérdezi le, a \texttt{ContextPanel} pedig a kiválasztott entitást a \texttt{state.selected()}-en keresztül. Így a megjelenítés mindig az aktuális, friss állapotot tükrözi anélkül, hogy a model-eseménynek bármilyen tartalmat kéne hordoznia.
 
-
-
 \subsection{A felület osztály-struktúrája}
-\comment{Osztálydiagram. Minden új osztály, és azon régiek, akik az újakhoz közvetlenül kapcsolódnak.}
-\diagram{docs/img/BMElogo}{Példa kép}{3cm}
+\diagram{docs/img/uml_class/view_vegleges}{Osztálydiagram}{16cm}
 
 \section{A grafikus objektumok felsorolása}
-\comment{Az új osztályok felsorolása. Az régi osztályok közül azoknak a felsorolása, ahol változás volt. Ezek esetén csak a változásokat kell leírni.}
-
 \subsection{Új osztályok}
 
 %------------ÚJ OSZTÁLYOK----------------
@@ -264,26 +257,140 @@ Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onSt
 \end{class-template-method}  
 
 \subsection{Megváltozott osztályok}
-\subsubsection{Osztály2}
+\subsubsection{GameState}
 \begin{class-template-responsibility}
-    Felelősség leírása
+    A játék teljes állapotát reprezentáló osztály, amely a módosítások során kibővült a nézetek értesítéséért felelős push-mechanizmussal (Listener minta), BFS alapú útvonalkereséssel az NPC-k számára, valamint a Pass'N'Play körökre bontott vezérléshez szükséges állapotokkal és a UI eseménynapló kezelésével.
 \end{class-template-responsibility}
 \begin{class-template-interface}
-    Megvalósított interfészek felsorolása
+    -
 \end{class-template-interface}
 \begin{class-template-baseclass}
-    Ős-Ősosztály \baseclass Ősosztály... 
+    -
 \end{class-template-baseclass}
 \begin{class-template-attribute}
-    \classitem{+A [0..*]}{adattag A}
+    \classitem{+currentRound}{Körszámláló, értéke 1-től indul.}
+    \classitem{+activePlayerName}{A Pass'N'Play módban éppen aktív játékos neve.}
+    \classitem{+gameOverReason}{Magyar nyelvű szöveges üzenet a játék végének okáról.}
+    \classitem{+running}{Jelzi, hogy a játék fut-e még (korábban package-private, most publikus a HUD és ActionController miatt).}
+    \classitem{-recentEvents}{A legutóbbi UI eseményeket tároló adatstruktúra (maximum 12 esemény, FIFO).}
 \end{class-template-attribute}
-\comment{Milyen publikus, protected és privát  metódusokkal rendelkezik. Metódusonként precíz leírás, ha szükséges, activity diagram is a metódusban megvalósítandó algoritmusról. Minden olyan metódusnak szerepelnie kell, amelyiket az osztály megvalósít vagy felüldefiniál.}
 \begin{class-template-method}
-    \classitem{+B(A a) : void}{metódus B}
+    \classitem{+addListener(l : GameStateListener) : void}{Feliratkoztat egy új nézetet az állapotváltozásokra.}
+    \classitem{+removeListener(l : GameStateListener) : void}{Eltávolít egy feliratkozott nézetet a listából.}
+    \classitem{+fireStateChanged() : void}{Hibatűrő módon (kivételkezeléssel) push-értesítést küld minden feliratkozott listenernek a változásokról.}
+    \classitem{+setSelectedName(name : String) : void}{Beállítja a kiválasztott entitást, és automatikusan meghívja a fireStateChanged() metódust.}
+    \classitem{+getAllUtak() : Collection}{Publikus getter, amely a GUI számára olvashatóvá teszi az utakat.}
+    \classitem{+getAllEntities() : Collection}{Publikus getter az összes entitás lekérdezéséhez.}
+    \classitem{+getDepotNode() : String}{Visszaadja a telephely csomópontjának azonosítóját.}
+    \classitem{+shortestPath(from : String, to : String) : List}{BFS alapú útvonalkereső, visszaadja a legrövidebb utat két csomópont között.}
+    \classitem{+nextStepToward(from : String, to : String) : String}{A BFS algoritmus alapján meghatározza a következő lépéshez szükséges csomópontot a cél felé.}
+    \classitem{+roadBetween(nodeA : String, nodeB : String) : Ut}{Visszaadja a megadott két csomópontot összekötő utat.}
+    \classitem{+switchActivePlayer() : void}{Átvált a következő játékosra a Pass'N'Play logikának megfelelően.}
+    \classitem{+resetActivePlayer() : void}{Visszaállítja a kezdő játékost aktívnak.}
+    \classitem{+canControl(j : Jarmu) : boolean}{Segédmetódus, eldönti, hogy az aktuálisan aktív játékos irányíthatja-e a kapott járművet.}
+    \classitem{+getRecentEvents() : Deque}{Publikusan elérhetővé teszi az eseménynapló tartalmát a UI számára.}
+    \classitem{+enqueueEvent(msg : String) : void}{Beleteszi az új eseményt a recentEvents tárolóba is (max. 12 elem, FIFO elv alapján).}
+\end{class-template-method}
+
+\subsubsection{GameActions}
+\begin{class-template-responsibility}
+    A játék logikai műveleteit összefogó osztály, amely kiegészült a körök lezárását és az NPC-k automatikus mozgatását végző logikával.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    -
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    -
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+endRound() : void}{Lezárja a kört: végrehajtja az összes NPC autó npcStep() lépését, minden úton alkalmaz egy egységnyi havazást, növeli a körszámlálót (currentRound), frissíti az időt, kiértékeli a játékvége feltételeket, és végül frissíti a nézeteket a fireStateChanged() hívásával.}
+\end{class-template-method}
+
+\subsubsection{Auto}
+\begin{class-template-responsibility}
+    Az utakon közlekedő NPC autókat reprezentáló osztály, amely megkapta a legrövidebb úton (BFS) történő önálló navigációhoz szükséges célpontokat és döntési logikát.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    Jarmu
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    \classitem{+otthon}{Az NPC autó otthonát jelentő csomópont.}
+    \classitem{+munkahely}{Az NPC autó munkahelyét jelentő csomópont.}
+    \classitem{-aktualisCel}{Az autó éppen aktuális úticélja (otthon vagy munkahely).}
+    \classitem{-utolsoCsomopont}{A legutóbb elhagyott csomópont azonosítója a belső állapottartáshoz.}
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+setupRoute(otthon : String, munkahely : String, startNode : String) : void}{Inicializálja az autó kezdő paramétereit és útvonalát a létrehozáskor.}
+    \classitem{+getAktualisCel() : String}{Visszaadja az autó jelenlegi célállomását.}
+    \classitem{+npcStep(state : GameState) : void}{Az NPC autó tesz egy lépést a célja felé a legrövidebb úton. Tartalmazza a hibakezelést: ha a kinézett sáv járhatatlan, az autó a csomóponton várakozik.}
+    \classitem{-closerNodeToward(node1 : String, node2 : String, target : String) : String}{Privát segédmetódus, amely egy adott út két végpontja közül kiválasztja a célhoz közelebb esőt.}
+\end{class-template-method}
+
+\subsubsection{Busz}
+\begin{class-template-responsibility}
+    A busz specifikus viselkedését megvalósító osztály. A módosítások a rugalmasabb (RegEx / minta alapú) végállomás-felismerést vezették be a statikus string egyezés helyett.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    Jarmu
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    -
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{-isVegallomasNode(nodeName : String) : boolean}{Statikus segédmetódus, amely ellenőrzi, hogy a megadott csomópont neve „Vegallomas" vagy „Vegallomas_" mintázatú-e.}
+    \classitem{+onCelUtElerve(target : String, state : GameState) : void}{Felüldefiniált eseménykezelő. Most már az isVegallomasNode helper alapján bármely „Vegallomas_" csomópontnál sikeresen regisztrálja a busz körét.}
+\end{class-template-method}
+
+\subsubsection{Hokotro}
+\begin{class-template-responsibility}
+    A játékos által irányított hókotrót reprezentáló osztály. A változtatások a fej (Söprő/Jégtörő) közvetlen lekérdezését és beállítását teszik lehetővé a grafikus felület és a kezdeti beállítások számára.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    Jarmu
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    -
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+getAktivFej() : FejTipus}{Visszaadja a hókotróra jelenleg felszerelt aktív fejet (a ContextPanel és ActionController használja).}
+    \classitem{+setAktivFej(fej : FejTipus) : void}{Beállítja a hókotró aktív fejét (a főmenü kezdő beállításához és az új hókotró vásárlásához szükséges).}
+\end{class-template-method}
+
+\subsubsection{Jatekos}
+\begin{class-template-responsibility}
+    A játékost és a hozzá tartozó erőforrásokat (vagyon, raktár) reprezentáló osztály. Új funkciója a raktárkészlet biztonságos expozíciója a nézet réteg felé.
+\end{class-template-responsibility}
+\begin{class-template-interface}
+    -
+\end{class-template-interface}
+\begin{class-template-baseclass}
+    -
+\end{class-template-baseclass}
+\begin{class-template-attribute}
+    -
+\end{class-template-attribute}
+\begin{class-template-method}
+    \classitem{+getFejInventory() : List}{Módosíthatatlan (read-only) nézetet ad vissza a játékos birtokában lévő hókotró fejekről, amelyet a GUI (pl. fejcsere dialógus) olvas.}
 \end{class-template-method}
 
 \section{Kapcsolat az alkalmazói rendszerrel}
-\comment{Szekvencia-diagramokon ábrázolni kell a grafikus rendszer működését. Konzisztens kell legyen az előző alfejezetekkel. Minden metódus, ami ott szerepel, fel kell tűnjön valamelyik szekvenciában. Minden metódusnak, ami szekvenciában szerepel, szereplnie kell a valamelyik osztálydiagramon.}
-
-
-
+\clearpage
+\diagram{docs/img/uml_sequence/hokotrotakaritasview}{Hókotró takarítás}{16cm}
+\diagram{docs/img/uml_sequence/jarmukijelolview}{Jármű kijelölés}{16cm}
+\diagram{docs/img/uml_sequence/jarmumozgatview}{Jármű mozgatás}{16cm}
+\diagram{docs/img/uml_sequence/jatekinditview}{Játék indítás}{16cm}
+\diagram{docs/img/uml_sequence/passNPlayhandoffview}{Hand off}{16cm}
+\diagram{docs/img/uml_sequence/ujhokotroviewpng}{Új hókotró}{16cm}
+\diagram{docs/img/uml_sequence/ujkorview}{Új kör}{16cm}
