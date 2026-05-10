@@ -23,8 +23,11 @@ Push oldal — eseményalapú értesítés. A motor csomagba felvettünk egy \te
 
 Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onStateChanged} implementációja nem ad át adatot magával az eseménnyel; egyszerűen kiváltja a saját frissítését (\texttt{repaint()} a \texttt{MapPanel}-en, vagy a label-ek és gombok újraépítése a \texttt{ContextPanel}-ben). A tényleges állapotot a panel a saját rajzolási vagy frissítési ciklusában közvetlenül olvassa le a modellből: a \texttt{MapPanel.paintComponent} például a \texttt{state.getAllUtak()}, \texttt{state.getAllEntities()}, \texttt{Sav.ho}, \texttt{Sav.ice} értékeit kérdezi le, a \texttt{ContextPanel} pedig a kiválasztott entitást a \texttt{state.selected()}-en keresztül. Így a megjelenítés mindig az aktuális, friss állapotot tükrözi anélkül, hogy a model-eseménynek bármilyen tartalmat kéne hordoznia.
 
+\pagebreak
 \subsection{A felület osztály-struktúrája}
-\diagram{docs/img/uml_class/view_vegleges}{Osztálydiagram}{16cm}
+\diagram{docs/img/uml_class/uml_vegleges_fektetve}{Osztálydiagram}{12cm}
+\pagebreak
+
 
 \section{A grafikus objektumok felsorolása}
 \subsection{Új osztályok}
@@ -50,7 +53,7 @@ Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onSt
 
 \subsubsection{Main}
 \begin{class-template-responsibility}
-    A GUI alapú alkalmazás belépési pontja. Feladata a rendszerszintű megjelenés (Look & Feel) beállítása és a főmenü elindítása az Event Dispatch Thread-en (EDT).
+    A GUI alapú alkalmazás belépési pontja. Feladata a rendszerszintű megjelenés (Look \& Feel) beállítása és a főmenü elindítása az Event Dispatch Thread-en (EDT).
 \end{class-template-responsibility}
 \begin{class-template-interface}
     -
@@ -133,8 +136,8 @@ Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onSt
     -
 \end{class-template-baseclass}
 \begin{class-template-attribute}
-    \classitem{+NODE_RADIUS : int}{Csomópontok rajzolási sugara.}
-    \classitem{+LANE_WIDTH : int}{Sávok szélessége pixelben.}
+    \classitem{+NODE\_RADIUS : int}{Csomópontok rajzolási sugara.}
+    \classitem{+LANE\_WIDTH : int}{Sávok szélessége pixelben.}
     \classitem{-nodePositions : Map<String, Point>}{Csomópont azonosítóhoz rendelt koordináták.}
     \classitem{-displayNames : Map<String, String>}{Belső azonosítók magyar megfelelői.}
 \end{class-template-attribute}
@@ -157,7 +160,7 @@ Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onSt
     \classitem{-state : GameState}{Referencia a modellre az adatok lekéréséhez.}
 \end{class-template-attribute}
 \begin{class-template-method}
-    \classitem{#paintComponent(g : Graphics) : void}{Kirajzolja a térképet: sárga/zöld/szürke csomópontok, utak a színkódolt állapotuk szerint, és a járművek ikonjai.}
+    \classitem{\#paintComponent(g : Graphics) : void}{Kirajzolja a térképet: sárga/zöld/szürke csomópontok, utak a színkódolt állapotuk szerint, és a járművek ikonjai.}
     \classitem{+vehicleAt(p : Point) : String}{Visszaadja a megadott koordinátán található jármű nevét, ha nincs ott semmi, null-t.}
     \classitem{+onStateChanged() : void}{A modell jelzésére újrarajzolja a panelt (repaint).}
 \end{class-template-method}
@@ -346,8 +349,8 @@ Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onSt
     -
 \end{class-template-attribute}
 \begin{class-template-method}
-    \classitem{-isVegallomasNode(nodeName : String) : boolean}{Statikus segédmetódus, amely ellenőrzi, hogy a megadott csomópont neve „Vegallomas" vagy „Vegallomas_" mintázatú-e.}
-    \classitem{+onCelUtElerve(target : String, state : GameState) : void}{Felüldefiniált eseménykezelő. Most már az isVegallomasNode helper alapján bármely „Vegallomas_" csomópontnál sikeresen regisztrálja a busz körét.}
+    \classitem{-isVegallomasNode(nodeName : String) : boolean}{Statikus segédmetódus, amely ellenőrzi, hogy a megadott csomópont neve „Vegallomas" vagy „Vegallomas\_" mintázatú-e.}
+    \classitem{+onCelUtElerve(target : String, state : GameState) : void}{Felüldefiniált eseménykezelő. Most már az isVegallomasNode helper alapján bármely „Vegallomas\_" csomópontnál sikeresen regisztrálja a busz körét.}
 \end{class-template-method}
 
 \subsubsection{Hokotro}
