@@ -8,7 +8,24 @@
 \comment{A felület működésének elve, a grafikus rendszer architektúrája (struktúra diagramok). A struktúra diagramokon a prototípus azon és csak azon osztályainak is szerepelnie kell, amelyekhez a grafikus felületet létrehozó osztályok kapcsolódnak.}
 
 \subsection{A felület működési elve}
-\comment{Le kell írni, hogy a grafikai megjelenésért felelős osztályok, objektumok hogyan kapcsolódnak a meglevő rendszerhez, a megjelenítés során mi volt az alapelv. Törekedni kell az MVC megvalósításra. Alapelvek lehetnek: \textbf{push} alapú: a modell értesíti a felületet, hogy változott; \textbf{pull} alapú: a felület kérdezi le a modellt, hogy változott-e; \textbf{kevert}: a kettő kombinációja.}
+A grafikus felület a meglévő üzleti logikát (\texttt{motor}, \texttt{jarmuvek}, \texttt{jatekosok}, \texttt{takaritofejek}, \texttt{terkep} csomagok) változtatás nélkül használja fel — a modell rétegben a GUI miatt csak additív bővítések történtek (új interfész, új getterek, új mezők), egyetlen meglévő metódus viselkedése sem módosult. Így a korábbi parancssoros prototípus ugyanúgy működik, mint korábban.
+
+A három réteg felelőssége
+
+A felület tiszta MVC elrendezést követ, három különálló csomagra bontva:
+\begin{itemize}
+    \item Modell (\texttt{motor}, \texttt{jarmuvek}, \texttt{jatekosok}, \texttt{takaritofejek}, \texttt{terkep}) — az állapot és a játékszabályok.
+    \item Nézet (\texttt{gui.view}) — a Swing-panelek (\texttt{MapPanel}, \texttt{HudPanel}, \texttt{ContextPanel}, \texttt{EventLogPanel}), amelyek a modell aktuális állapotát rajzolják. A nézet csak olvas a modellből, soha, sehol nem módosítja közvetlenül.
+    \item Vezérlő (\texttt{gui.controller}) — a \texttt{MapController} és az \texttt{ActionController}. Ezek a felhasználói inputot fordítják le model-hívásokká (pl. \texttt{Hokotro.takaritSav}, \texttt{Jarmu.moveToNode}, \texttt{GameActions.endRound}).
+\end{itemize}
+
+A megjelenítés alapelve: kevert (push + pull)
+
+Push oldal — eseményalapú értesítés. A motor csomagba felvettünk egy \texttt{GameStateListener} interfészt egyetlen \texttt{onStateChanged(GameState state)} metódussal. A \texttt{GameState} egy \texttt{addListener} / \texttt{fireStateChanged} páros segítségével tartja számon a feliratkozott listenereket. Amikor a játékállapot ténylegesen változik (jármű kijelölése, lépés, takarítás, kör vége, vásárlás), egy magasabb szintű művelet végén — jellemzően az \texttt{ActionController}-ben vagy a \texttt{GameActions.endRound}-ban — a vezérlő meghívja a \texttt{state.fireStateChanged()}-et. A \texttt{GameWindow} minden view-panelt feliratkoztat listenerként, tehát az értesítés minden megjelenítendő komponensnek kézbesítődik.
+
+Pull oldal — közvetlen lekérdezés rajzoláskor. A view-panelek \texttt{onStateChanged} implementációja nem ad át adatot magával az eseménnyel; egyszerűen kiváltja a saját frissítését (\texttt{repaint()} a \texttt{MapPanel}-en, vagy a label-ek és gombok újraépítése a \texttt{ContextPanel}-ben). A tényleges állapotot a panel a saját rajzolási vagy frissítési ciklusában közvetlenül olvassa le a modellből: a \texttt{MapPanel.paintComponent} például a \texttt{state.getAllUtak()}, \texttt{state.getAllEntities()}, \texttt{Sav.ho}, \texttt{Sav.ice} értékeit kérdezi le, a \texttt{ContextPanel} pedig a kiválasztott entitást a \texttt{state.selected()}-en keresztül. Így a megjelenítés mindig az aktuális, friss állapotot tükrözi anélkül, hogy a model-eseménynek bármilyen tartalmat kéne hordoznia.
+
+
 
 \subsection{A felület osztály-struktúrája}
 \comment{Osztálydiagram. Minden új osztály, és azon régiek, akik az újakhoz közvetlenül kapcsolódnak.}
