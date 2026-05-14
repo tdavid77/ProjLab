@@ -175,8 +175,8 @@ public final class ContextPanel extends JPanel implements GameStateListener {
     }
 
     /**
-     * Mozgas-gombok: a jarmu csomopontjabol elerheto szomszedos csomopontokba.
-     * Elakadt jarmunek (currentNode == null) nincs mozgasgomb (csak takaritas szabaditja).
+     * Mozgas-gombok: a jarmu csomopontjabol elerheto szomszedos csomopontokba,
+     * minden savhoz kulon gomb (a player explicit modon valasztja ki a savot).
      */
     private void addMovementButtons(Jarmu vehicle) {
         JLabel header = sectionLabel("Mozgás");
@@ -204,10 +204,15 @@ public final class ContextPanel extends JPanel implements GameStateListener {
             for (Map.Entry<String, Ut> entry : neighbors.entrySet()) {
                 String targetNode = entry.getKey();
                 Ut road = entry.getValue();
-                String label = "→ " + GameLayout.displayLabel(targetNode) + "  (" + road.name() + ")";
-                JButton btn = makeButton(label);
-                btn.addActionListener(e -> actions.onMoveTo(targetNode));
-                actionPanel.add(btn);
+                // Minden savhoz kulon gomb
+                for (int laneIdx = 0; laneIdx < road.savSzam(); laneIdx++) {
+                    final int lane = laneIdx;
+                    String label = "→ " + GameLayout.displayLabel(targetNode)
+                            + " (" + road.name() + ", sáv " + lane + ")";
+                    JButton btn = makeButton(label);
+                    btn.addActionListener(e -> actions.onMoveTo(targetNode, lane));
+                    actionPanel.add(btn);
+                }
             }
         }
         actionPanel.add(Box.createVerticalStrut(8));
@@ -223,11 +228,12 @@ public final class ContextPanel extends JPanel implements GameStateListener {
     }
 
     /**
-     * Takaritas-gombok: per szomszedos ut egy gomb a fej szerinti cimkével (sáv 0).
+     * Takaritas-gombok: per szomszedos ut, MINDEN savhoz kulon gomb a fej szerinti cimkével.
+     * A player explicit modon valasztja ki, hogy melyik savot akarja takaritani.
      */
     private void addCleaningButtons(Hokotro h) {
         actionPanel.add(Box.createVerticalStrut(8));
-        actionPanel.add(sectionLabel("Takarítás (sáv 0)"));
+        actionPanel.add(sectionLabel("Takarítás"));
 
         Fej fej = h.getAktivFej();
         FejTipus tipus = fej == null ? FejTipus.SOPROFEJ : fej.tipus();
@@ -244,12 +250,14 @@ public final class ContextPanel extends JPanel implements GameStateListener {
 
         for (Map.Entry<String, Ut> entry : neighbors.entrySet()) {
             Ut road = entry.getValue();
-            JButton btn = buildCleaningButton(h, tipus, road);
-            actionPanel.add(btn);
+            for (int laneIdx = 0; laneIdx < road.savSzam(); laneIdx++) {
+                JButton btn = buildCleaningButton(h, tipus, road, laneIdx);
+                actionPanel.add(btn);
+            }
         }
     }
 
-    private JButton buildCleaningButton(Hokotro h, FejTipus tipus, Ut road) {
+    private JButton buildCleaningButton(Hokotro h, FejTipus tipus, Ut road, int laneIdx) {
         String actionLabel;
         boolean enoughMaterial = true;
         switch (tipus) {
@@ -270,10 +278,11 @@ public final class ContextPanel extends JPanel implements GameStateListener {
                 break;
             default: actionLabel = "Takarítás";
         }
-        String fullLabel = actionLabel + ": " + road.name();
+        String fullLabel = actionLabel + ": " + road.name() + " (sáv " + laneIdx + ")";
         JButton btn = makeButton(fullLabel);
         btn.setEnabled(enoughMaterial);
-        btn.addActionListener(e -> actions.onTakarit(road.name(), 0));
+        final int chosenLane = laneIdx;
+        btn.addActionListener(e -> actions.onTakarit(road.name(), chosenLane));
         if (!enoughMaterial) {
             btn.setToolTipText("Nincs elég nyersanyag a fej működtetéséhez (10 egység szükséges).");
         }

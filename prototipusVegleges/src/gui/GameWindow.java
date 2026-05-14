@@ -32,12 +32,16 @@ public final class GameWindow extends JFrame {
     public GameWindow(Difficulty difficulty, FejTipus startingHead) {
         super("Zúzmaraváros - Hóeltakarító Szimulátor");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1200, 820);
-        setLocationRelativeTo(null);
 
-        // Model
+        // Model — eloszor inicializaljuk, mert a GameLayout meretei alapjan
+        // szamoljuk az ablak meretet (a Hard terkep ~960px szeles)
         this.state = new GameState();
         GameInitializer.initialize(state, difficulty, startingHead);
+
+        int windowWidth = Math.max(1200, gui.GameLayout.mapWidth() + 360);  // +300 ContextPanel + sav
+        int windowHeight = Math.max(820, gui.GameLayout.mapHeight() + 220); // +HUD +EventLog
+        setSize(windowWidth, windowHeight);
+        setLocationRelativeTo(null);
 
         // Akciok + controller
         GameActions gameActions = new GameActions(state);

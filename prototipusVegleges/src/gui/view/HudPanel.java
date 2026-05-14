@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import gui.controller.ActionController;
-import jatekosok.Jatekos;
 import motor.GameState;
 import motor.GameStateListener;
 
@@ -66,9 +65,6 @@ public final class HudPanel extends JPanel implements GameStateListener {
 
     @Override
     public void onStateChanged(GameState state) {
-        Jatekos takarito = state.getJatekos("Takarito1");
-        Jatekos buszos = state.getJatekos("Buszos1");
-
         boolean takaritoAktiv = "Takarito1".equalsIgnoreCase(state.activePlayerName);
         String activeLabel = takaritoAktiv ? "Takarító" : "Buszos";
 
@@ -77,12 +73,8 @@ public final class HudPanel extends JPanel implements GameStateListener {
         sb.append(" &nbsp;|&nbsp; Aktív: <b><font color='#A03000'>")
           .append(activeLabel).append("</font></b>");
         sb.append(" &nbsp;|&nbsp; Nehézség: <b>").append(state.difficulty.name()).append("</b>");
-        if (takarito != null) {
-            sb.append(" &nbsp;|&nbsp; Takarító: <b>").append(takarito.money).append("</b> fitying");
-        }
-        if (buszos != null) {
-            sb.append(" &nbsp;|&nbsp; Buszos: <b>").append(buszos.money).append("</b> fitying");
-        }
+        sb.append(" &nbsp;|&nbsp; Közös kassza: <b><font color='#0A6622'>")
+          .append(state.kassza).append("</font></b> fitying");
         sb.append(" &nbsp;|&nbsp; Balesetek: <b>").append(state.accidents).append("</b>");
         sb.append("</html>");
         info.setText(sb.toString());

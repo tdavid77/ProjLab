@@ -136,13 +136,22 @@ public class Jarmu implements NamedEntity {
     }
 
     /**
+     * Csomopontrol csomopontra mozgas — automatikus sav-valasztassal (NPC autokhoz, CLI-hoz).
+     * A laneIdx == -1 jelzi, hogy az elso nem-blokkolt sav valasztodjon ki.
+     */
+    public void moveToNode(String targetNode, GameState state) {
+        moveToNode(targetNode, -1, state);
+    }
+
+    /**
      * UJ ELSODLEGES MOZGASI METODUS: csomopontrol csomopontra mozgas.
-     * Megkeresi az osszekotó utat es az elso szabad savot, atvezeti a jarmuvet,
-     * ervenyesiti a forgalmi hatast es a balesetkalkulaciot.
+     * A laneIdx parameter megadja, hogy melyik savot kell hasznalni az atutazashoz:
+     *   - laneIdx >= 0: a megadott sav (ervenyesseget, blokkoltsagat ellenorzi)
+     *   - laneIdx == -1: az elso nem-blokkolt sav valasztodik (NPC-knek hasznos)
      *
      * @throws IllegalArgumentException ha a mozgas nem hajthato vegre.
      */
-    public void moveToNode(String targetNode, GameState state) {
+    public void moveToNode(String targetNode, int laneIdxRequested, GameState state) {
         if (!canMove()) {
             throw new IllegalArgumentException(name + " mozgaskeptelen meg " + disabledTime + " korig.");
         }
@@ -158,16 +167,27 @@ public class Jarmu implements NamedEntity {
             throw new IllegalArgumentException("Nincs kozvetlen ut '" + currentNode + "' es '" + targetNode + "' kozott.");
         }
 
-        // Elso nem-elzart sav megkeresese
-        int laneIdx = -1;
-        for (int i = 0; i < road.savSzam(); i++) {
-            if (!state.isLaneBlocked(road, i)) {
-                laneIdx = i;
-                break;
+        // Sav megkeresese (explicit vagy auto-pick)
+        int laneIdx;
+        if (laneIdxRequested >= 0) {
+            if (laneIdxRequested >= road.savSzam()) {
+                throw new IllegalArgumentException("Ervenytelen sav index: " + laneIdxRequested);
             }
-        }
-        if (laneIdx < 0) {
-            throw new IllegalArgumentException("Az ut osszes savja le van zarva baleset miatt.");
+            if (state.isLaneBlocked(road, laneIdxRequested)) {
+                throw new IllegalArgumentException("A " + laneIdxRequested + ". sav le van zarva baleset miatt.");
+            }
+            laneIdx = laneIdxRequested;
+        } else {
+            laneIdx = -1;
+            for (int i = 0; i < road.savSzam(); i++) {
+                if (!state.isLaneBlocked(road, i)) {
+                    laneIdx = i;
+                    break;
+                }
+            }
+            if (laneIdx < 0) {
+                throw new IllegalArgumentException("Az ut osszes savja le van zarva baleset miatt.");
+            }
         }
 
         Sav sav = road.sav(laneIdx);

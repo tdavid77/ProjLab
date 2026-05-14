@@ -40,15 +40,16 @@ import terkep.Ut;
  * sima ut fekete, sozott szurke, zuzottko barna.
  */
 public final class MapPanel extends JPanel implements GameStateListener {
-    /** Tobb jarmu egy csomoponton vízszintes sávolasa (pixelben). */
-    private static final int VEHICLE_SPACING = 30;
+    /** Tobb jarmu egy csomoponton vízszintes sávolasa (pixelben) — kicsit nagyobb mint az ikon-meret. */
+    private static final int VEHICLE_SPACING = 40;
 
     private final GameState state;
 
     public MapPanel(GameState state) {
         this.state = state;
-        setBackground(new Color(225, 238, 248));
-        setPreferredSize(new Dimension(GameLayout.MAP_WIDTH, GameLayout.MAP_HEIGHT));
+        // Sotetebb kek hatter — a feher feliratok jol latszanak rajta
+        setBackground(new Color(55, 85, 125));
+        setPreferredSize(new Dimension(GameLayout.mapWidth(), GameLayout.mapHeight()));
     }
 
     @Override
@@ -63,9 +64,17 @@ public final class MapPanel extends JPanel implements GameStateListener {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        // Eloszor utak (savokkal), aztan csomopontok, vegul jarmuvek
+        // Eloszor a normal utak (savokkal), aztan a feluljarok (HID) hogy a kereszteszeknel
+        // vizualisan felulre kerüljenek, vegul csomopontok, vegul jarmuvek.
         for (Ut ut : state.getAllUtak()) {
-            drawRoad(g2, ut);
+            if (ut.type != terkep.UtTipus.HID) {
+                drawRoad(g2, ut);
+            }
+        }
+        for (Ut ut : state.getAllUtak()) {
+            if (ut.type == terkep.UtTipus.HID) {
+                drawRoad(g2, ut);
+            }
         }
         for (Map.Entry<String, Point> entry : GameLayout.allNodes().entrySet()) {
             drawNode(g2, entry.getKey(), entry.getValue());
@@ -96,7 +105,22 @@ public final class MapPanel extends JPanel implements GameStateListener {
         double ny = dx / len;
 
         int laneCount = ut.savSzam();
+        boolean isOverpass = (ut.type == terkep.UtTipus.HID);
         Stroke originalStroke = g2.getStroke();
+
+        // Feluljaro: az osszes sav alá rajzolunk egy sotet keretet, igy
+        // egyertelmuen "emelt szerkezet" hatas keletkezik
+        if (isOverpass) {
+            int totalWidth = laneCount * GameLayout.LANE_WIDTH + (laneCount - 1) * GameLayout.LANE_GAP;
+            g2.setStroke(new BasicStroke(totalWidth + 8, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
+            g2.setColor(new Color(45, 45, 60));
+            g2.drawLine(a.x, a.y, b.x, b.y);
+            // Sotetszurke keret a savok ala
+            g2.setStroke(new BasicStroke(totalWidth + 4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
+            g2.setColor(new Color(105, 105, 120));
+            g2.drawLine(a.x, a.y, b.x, b.y);
+        }
+
         g2.setStroke(new BasicStroke(GameLayout.LANE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         for (int i = 0; i < laneCount; i++) {
@@ -110,14 +134,50 @@ public final class MapPanel extends JPanel implements GameStateListener {
             g2.setColor(laneColor(sav));
             g2.drawLine(ax, ay, bx, by);
         }
+
+        // Feluljaro: kicsi sotet "hidlab" jelek mindket vegen, hogy lassuk hol kezdodik az emelet
+        if (isOverpass) {
+            int rampLen = 14;
+            int rampThick = laneCount * (GameLayout.LANE_WIDTH + GameLayout.LANE_GAP) + 6;
+            g2.setColor(new Color(50, 50, 60));
+            g2.setStroke(new BasicStroke(2));
+            // A pont vegen ket rovid feher vonal a savok keresztiranyaban
+            drawRampMark(g2, a, nx, ny, rampThick / 2);
+            drawRampMark(g2, b, nx, ny, rampThick / 2);
+        }
+
         g2.setStroke(originalStroke);
 
-        // Felirat
+        // Felirat - feher szinnel a sotet hatteren, perpendicular eltolassal + pilula-hatterrel
+        // hogy a feliratok ne fedjek egymast es mindenkeppen olvashatoak legyenek
         int mx = (a.x + b.x) / 2;
         int my = (a.y + b.y) / 2;
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        g2.setColor(new Color(60, 60, 80));
-        g2.drawString(ut.name(), mx + 6, my - 6);
+        // perpendicular eltolas: a (nx, ny) iranyaba toljuk a feliratot, hogy a utvonalon kivulre kerüljon
+        int perpOffset = 14;
+        int labelX = (int) (mx + nx * perpOffset);
+        int labelY = (int) (my + ny * perpOffset);
+
+        g2.setFont(new Font("SansSerif", Font.BOLD, 11));
+        String label = isOverpass ? ut.name() + " (felülj.)" : ut.name();
+        java.awt.FontMetrics fm = g2.getFontMetrics();
+        int textW = fm.stringWidth(label);
+        int textH = fm.getAscent();
+
+        // Sotet, felig atlatszó pilula-hatter a szoveg moge
+        g2.setColor(new Color(0, 0, 0, 160));
+        g2.fillRoundRect(labelX - 4, labelY - textH + 1, textW + 8, textH + 3, 8, 8);
+
+        g2.setColor(isOverpass ? new Color(255, 200, 130) : Color.WHITE);
+        g2.drawString(label, labelX, labelY);
+    }
+
+    /** Rovid keresztiranyu fehér vonal a sav-szélességnek megfelelően a feluljaro veginez. */
+    private void drawRampMark(Graphics2D g2, Point p, double nx, double ny, int halfThick) {
+        int x1 = (int) (p.x + nx * halfThick);
+        int y1 = (int) (p.y + ny * halfThick);
+        int x2 = (int) (p.x - nx * halfThick);
+        int y2 = (int) (p.y - ny * halfThick);
+        g2.drawLine(x1, y1, x2, y2);
     }
 
     /**
@@ -171,15 +231,23 @@ public final class MapPanel extends JPanel implements GameStateListener {
 
         g2.setColor(fill);
         g2.fillOval(pos.x - r, pos.y - r, r * 2, r * 2);
-        g2.setColor(new Color(40, 40, 60));
+        g2.setColor(new Color(20, 20, 35));
         g2.setStroke(new BasicStroke(2));
         g2.drawOval(pos.x - r, pos.y - r, r * 2, r * 2);
 
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        // Csomopont-felirat — feherrel, vastagon, sotet pilula-hatterrel hogy biztosan olvashato legyen
+        g2.setFont(new Font("SansSerif", Font.BOLD, 12));
         FontMetrics fm = g2.getFontMetrics();
         String label = GameLayout.displayLabel(name);
-        int tx = pos.x - fm.stringWidth(label) / 2;
+        int textW = fm.stringWidth(label);
+        int textH = fm.getAscent();
+        int tx = pos.x - textW / 2;
         int ty = pos.y - r - 6;
+
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRoundRect(tx - 5, ty - textH + 1, textW + 10, textH + 4, 8, 8);
+
+        g2.setColor(Color.WHITE);
         g2.drawString(label, tx, ty);
     }
 
@@ -249,49 +317,71 @@ public final class MapPanel extends JPanel implements GameStateListener {
     }
 
     private void drawVehicle(Graphics2D g2, Jarmu v, Point pos, boolean selected) {
-        int size = 12;
-        if (v instanceof Hokotro) {
-            int[] xs = { pos.x, pos.x - size, pos.x + size };
-            int[] ys = { pos.y - size, pos.y + size, pos.y + size };
-            g2.setColor(new Color(50, 95, 220));
-            g2.fillPolygon(xs, ys, 3);
-            g2.setColor(Color.BLACK);
-            g2.setStroke(new BasicStroke(1.5f));
-            g2.drawPolygon(xs, ys, 3);
-        } else if (v instanceof Busz) {
-            g2.setColor(new Color(220, 60, 60));
-            g2.fillRect(pos.x - size, pos.y - size / 2, size * 2, size);
-            g2.setColor(Color.BLACK);
-            g2.setStroke(new BasicStroke(1.5f));
-            g2.drawRect(pos.x - size, pos.y - size / 2, size * 2, size);
-        } else if (v instanceof Auto) {
-            g2.setColor(new Color(245, 220, 70));
-            g2.fillRect(pos.x - size, pos.y - size / 2, size * 2, size);
-            g2.setColor(Color.BLACK);
-            g2.setStroke(new BasicStroke(1.5f));
-            g2.drawRect(pos.x - size, pos.y - size / 2, size * 2, size);
+        // Ikon-meret: a csomopontra ferjen (NODE_RADIUS=22, atmero=44) -> 32px ikon ferjen
+        int iconSize = 32;
+        int half = iconSize / 2;
+
+        java.awt.image.BufferedImage img = null;
+        if (v instanceof Hokotro) img = VehicleIcons.getHokotro();
+        else if (v instanceof Busz) img = VehicleIcons.getBusz();
+        else if (v instanceof Auto) img = VehicleIcons.getAuto();
+
+        if (img != null) {
+            // Ikon kirajzolasa skálazva
+            g2.drawImage(img, pos.x - half, pos.y - half, iconSize, iconSize, null);
+        } else {
+            // Fallback: a regi geometrikus alakzatok, ha az ikon-fajl hianyzik
+            drawFallbackShape(g2, v, pos);
         }
 
         // Balesetes jelzo (X)
         if (v.disabledTime > 0) {
             g2.setColor(new Color(255, 50, 50));
             g2.setStroke(new BasicStroke(2.5f));
-            g2.drawLine(pos.x - size + 2, pos.y - size + 2, pos.x + size - 2, pos.y + size - 2);
-            g2.drawLine(pos.x + size - 2, pos.y - size + 2, pos.x - size + 2, pos.y + size - 2);
+            g2.drawLine(pos.x - half + 4, pos.y - half + 4, pos.x + half - 4, pos.y + half - 4);
+            g2.drawLine(pos.x + half - 4, pos.y - half + 4, pos.x - half + 4, pos.y + half - 4);
         }
 
         if (selected) {
             g2.setColor(new Color(255, 110, 0));
             g2.setStroke(new BasicStroke(3));
-            int pad = 5;
-            g2.drawOval(pos.x - size - pad, pos.y - size - pad,
-                    (size + pad) * 2, (size + pad) * 2);
+            int pad = 3;
+            g2.drawOval(pos.x - half - pad, pos.y - half - pad,
+                    iconSize + 2 * pad, iconSize + 2 * pad);
         }
 
-        // Felirat
-        g2.setColor(new Color(20, 20, 30));
-        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
-        g2.drawString(v.name, pos.x + size + 3, pos.y + 4);
+        // Felirat a jarmu nev mellett — feher, jol latszik a sotet hatteren
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g2.drawString(v.name, pos.x + half + 3, pos.y + 4);
+    }
+
+    /**
+     * Fallback rajzolas: ha nincs ikon-fajl, a regi geometrikus alakzatokat hasznaljuk.
+     */
+    private void drawFallbackShape(Graphics2D g2, Jarmu v, Point pos) {
+        int size = 12;
+        if (v instanceof Hokotro) {
+            int[] xs = { pos.x, pos.x - size, pos.x + size };
+            int[] ys = { pos.y - size, pos.y + size, pos.y + size };
+            g2.setColor(new Color(245, 130, 30)); // narancs (mint a feltoltott ikon)
+            g2.fillPolygon(xs, ys, 3);
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawPolygon(xs, ys, 3);
+        } else if (v instanceof Busz) {
+            g2.setColor(new Color(250, 200, 60));
+            g2.fillRect(pos.x - size, pos.y - size / 2, size * 2, size);
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawRect(pos.x - size, pos.y - size / 2, size * 2, size);
+        } else if (v instanceof Auto) {
+            g2.setColor(new Color(220, 60, 60));
+            g2.fillRect(pos.x - size, pos.y - size / 2, size * 2, size);
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawRect(pos.x - size, pos.y - size / 2, size * 2, size);
+        }
     }
 
     private boolean isSelected(Jarmu v) {
@@ -319,7 +409,7 @@ public final class MapPanel extends JPanel implements GameStateListener {
                 int relOffset = i - offsetBase;
                 int vx = center.x + relOffset * VEHICLE_SPACING;
                 int vy = center.y;
-                if (Math.abs(x - vx) <= 16 && Math.abs(y - vy) <= 16) {
+                if (Math.abs(x - vx) <= 18 && Math.abs(y - vy) <= 18) {
                     hit = vehicles.get(i);
                 }
             }
@@ -332,7 +422,7 @@ public final class MapPanel extends JPanel implements GameStateListener {
             if (v.currentUt == null) continue;
             Point pos = computeStuckVehiclePosition(v);
             if (pos == null) continue;
-            if (Math.abs(x - pos.x) <= 16 && Math.abs(y - pos.y) <= 16) {
+            if (Math.abs(x - pos.x) <= 18 && Math.abs(y - pos.y) <= 18) {
                 hit = v;
             }
         }
@@ -358,27 +448,47 @@ public final class MapPanel extends JPanel implements GameStateListener {
 
         g2.setFont(new Font("SansSerif", Font.PLAIN, 10));
         int rowY = y + 30;
+        int iconBox = 16;
 
         // Hokotro
-        int[] hxs = { x + 18, x + 12, x + 24 };
-        int[] hys = { rowY - 6, rowY + 4, rowY + 4 };
-        g2.setColor(new Color(50, 95, 220));
-        g2.fillPolygon(hxs, hys, 3);
+        java.awt.image.BufferedImage hokotroImg = VehicleIcons.getHokotro();
+        if (hokotroImg != null) {
+            g2.drawImage(hokotroImg, x + 10, rowY - 10, iconBox, iconBox, null);
+        } else {
+            int[] hxs = { x + 18, x + 12, x + 24 };
+            int[] hys = { rowY - 6, rowY + 4, rowY + 4 };
+            g2.setColor(new Color(245, 130, 30));
+            g2.fillPolygon(hxs, hys, 3);
+            g2.setColor(Color.BLACK);
+            g2.drawPolygon(hxs, hys, 3);
+        }
         g2.setColor(Color.BLACK);
         g2.drawString("Hókotró", x + 32, rowY + 2);
 
-        rowY += 16;
-        g2.setColor(new Color(220, 60, 60));
-        g2.fillRect(x + 12, rowY - 4, 14, 8);
+        rowY += 18;
+        java.awt.image.BufferedImage buszImg = VehicleIcons.getBusz();
+        if (buszImg != null) {
+            g2.drawImage(buszImg, x + 10, rowY - 10, iconBox, iconBox, null);
+        } else {
+            g2.setColor(new Color(250, 200, 60));
+            g2.fillRect(x + 12, rowY - 4, 14, 8);
+            g2.setColor(Color.BLACK);
+            g2.drawRect(x + 12, rowY - 4, 14, 8);
+        }
         g2.setColor(Color.BLACK);
-        g2.drawRect(x + 12, rowY - 4, 14, 8);
         g2.drawString("Busz", x + 32, rowY + 2);
 
-        rowY += 16;
-        g2.setColor(new Color(245, 220, 70));
-        g2.fillRect(x + 12, rowY - 4, 14, 8);
+        rowY += 18;
+        java.awt.image.BufferedImage autoImg = VehicleIcons.getAuto();
+        if (autoImg != null) {
+            g2.drawImage(autoImg, x + 10, rowY - 10, iconBox, iconBox, null);
+        } else {
+            g2.setColor(new Color(220, 60, 60));
+            g2.fillRect(x + 12, rowY - 4, 14, 8);
+            g2.setColor(Color.BLACK);
+            g2.drawRect(x + 12, rowY - 4, 14, 8);
+        }
         g2.setColor(Color.BLACK);
-        g2.drawRect(x + 12, rowY - 4, 14, 8);
         g2.drawString("Autó (NPC)", x + 32, rowY + 2);
 
         rowY += 16;

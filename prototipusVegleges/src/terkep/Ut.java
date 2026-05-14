@@ -22,7 +22,7 @@ public final class Ut {
     /** Az ut hossza (tetszoleges egyseg, terkep-megjeleníteshez). */
     final int length;
     /** Az ut tipusa (NORMAL, HID, ALAGUT); befolyasolja a havazas hatasat. */
-    final UtTipus type;
+    public final UtTipus type;
     /** Az ut savjainak listaja (index: 0-tol savSzam-1-ig). */
     public final List<Sav> savok;
 

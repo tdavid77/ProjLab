@@ -19,12 +19,27 @@ import takaritofejek.FejTipus;
  */
 public class Jatekos implements NamedEntity {
     protected String name;
+    /**
+     * A jatekos szamara megjelenitett vagyon — a kozos kassza tukre.
+     * Az ertek a GameState.kassza-bol szinkronizalodik (lasd GameState.setKassza).
+     * Ne irj kozvetlenul ide; mindig a GameState.chargeKassza/creditKassza-t hivd.
+     */
     public int money = 1000;
     public final List<String> vehicles = new ArrayList<>();
     protected final List<FejTipus> inventory = new ArrayList<>();
+    /** A GameState back-reference, hogy a vasarlasi metodusok a kozos kasszahoz nyuljanak. */
+    protected GameState boundState;
 
     protected Jatekos(String name) {
         this.name = name;
+    }
+
+    @Override
+    public void onRegistered(GameState state) {
+        this.boundState = state;
+        // induloskor a kassza erteket vesszuk fel (GameInitializer beallithatja a kasszat
+        // a Jatekos regisztracioja elott vagy utan; mindketto eseten szinkron lesz)
+        this.money = state.kassza;
     }
 
     @Override
@@ -68,18 +83,30 @@ public class Jatekos implements NamedEntity {
         return type() + " " + name + " | Penz:" + money + " | Jarmuvek:" + vehicles + " | Raktar:" + inventory;
     }
 
+    /** A kozos kasszat allitja a megadott ertekre (test/admin celra). */
     public void setPenz(int amount) {
-        this.money = amount;
+        if (boundState != null) {
+            boundState.setKassza(amount);
+        } else {
+            this.money = amount;
+        }
     }
 
-    /** Igaz, ha a jatekos egyenlege eleg a megadott osszeg kifizetesere. */
+    /** Igaz, ha a kozos kasszaban van eleg penz a megadott osszeg kifizetesere. */
     public boolean canAfford(int amount) {
+        if (boundState != null) {
+            return boundState.canAffordKassza(amount);
+        }
         return money >= amount;
     }
 
-    /** Levonja a megadott osszeget a jatekos penzegyenlegeről. */
+    /** Levonja a megadott osszeget a kozos kasszabol (es szinkronizalja a megjelenitest). */
     public void charge(int amount) {
-        money -= amount;
+        if (boundState != null) {
+            boundState.chargeKassza(amount);
+        } else {
+            money -= amount;
+        }
     }
 
     /** Hozzaadja a megadott jarmu nevet a jarmuparkhoz, ha meg nem szerepel benne. */

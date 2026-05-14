@@ -1,6 +1,5 @@
 package jarmuvek;
 
-import jatekosok.Jatekos;
 import motor.GameState;
 import terkep.Sav;
 import terkep.Ut;
@@ -57,11 +56,9 @@ public final class Busz extends Jarmu {
         // Vegallomas-bonus: ha a celcsomopont vegallomas
         if (isVegallomasNode(currentNode)) {
             completedTrips += 1;
-            Jatekos ownerEntity = state.getJatekos(owner);
-            if (ownerEntity != null) {
-                ownerEntity.money += 40;
-                state.enqueueEvent("Busz kor teljesitve: " + name + ", jovairas +40.");
-            }
+            // A jutalom a kozos kasszaba kerul (ahonnan a takarito is fizet)
+            state.creditKassza(40);
+            state.enqueueEvent("Busz kor teljesitve: " + name + ", kozos kassza +40.");
         }
 
         // Forgalmi hatas: hot tomoriti

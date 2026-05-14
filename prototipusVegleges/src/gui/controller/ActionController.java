@@ -54,15 +54,15 @@ public final class ActionController {
     // JARMU AKCIOK
     // ===========================================================================
 
-    /** Lepes a kivalasztott jarmuvel a megadott szomszedos csomopontba. */
-    public void onMoveTo(String targetNode) {
+    /** Lepes a kivalasztott jarmuvel a megadott szomszedos csomopontba, explicit savvalasztassal. */
+    public void onMoveTo(String targetNode, int laneIdx) {
         NamedEntity sel = state.selected();
         if (sel == null) return;
         Jarmu vehicle = sel.asJarmu();
         if (vehicle == null) return;
         if (!ensureControllable(vehicle)) return;
         try {
-            vehicle.moveToNode(targetNode, state);
+            vehicle.moveToNode(targetNode, laneIdx, state);
             state.flushEvents();
             state.fireStateChanged();
         } catch (RuntimeException ex) {

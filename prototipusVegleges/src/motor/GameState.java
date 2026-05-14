@@ -68,6 +68,12 @@ public final class GameState {
     /** A telephely csomopont neve az ut-halozatban. */
     String depotNode = "Telephely_1";
 
+    /**
+     * Kozos kassza: a Takarito es a Buszos jatekos egyutt gyujtik a penzt.
+     * A kassza forrasa minden penzmuveletnek (vasarlas, fizetes).
+     */
+    public int kassza = 1000;
+
     /** GUI/view-feliratkozok listaja (push-szeru ertesiteshez). */
     private final List<GameStateListener> listeners = new ArrayList<>();
 
@@ -119,6 +125,40 @@ public final class GameState {
     /** Visszaadja a telephely csomopont nevet. */
     public String getDepotNode() {
         return depotNode;
+    }
+
+    /**
+     * Igaz, ha a kozos kasszaban van eleg penz a megadott osszeg kifizetesere.
+     */
+    public boolean canAffordKassza(int amount) {
+        return kassza >= amount;
+    }
+
+    /**
+     * Levonja a megadott osszeget a kozos kasszabol, es a megjelenites-mezoket szinkronizalja
+     * (minden Jatekos.money fielden ugyanaz a kassza-ertek lesz).
+     */
+    public void chargeKassza(int amount) {
+        setKassza(kassza - amount);
+    }
+
+    /** Hozzaadja a megadott osszeget a kozos kasszahoz (pl. buszos kor-jutalom). */
+    public void creditKassza(int amount) {
+        setKassza(kassza + amount);
+    }
+
+    /**
+     * Beallitja a kozos kasszaban levo penzosszeget, es szinkronizalja minden
+     * Jatekos.money mezojet, hogy a megjelenites azonnal helyes legyen.
+     */
+    public void setKassza(int amount) {
+        this.kassza = amount;
+        for (NamedEntity entity : entities.values()) {
+            Jatekos j = entity.asJatekos();
+            if (j != null) {
+                j.money = amount;
+            }
+        }
     }
 
     /**
