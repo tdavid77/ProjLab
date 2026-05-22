@@ -57,8 +57,8 @@ public final class Busz extends Jarmu {
         if (isVegallomasNode(currentNode)) {
             completedTrips += 1;
             // A jutalom a kozos kasszaba kerul (ahonnan a takarito is fizet)
-            state.creditKassza(40);
-            state.enqueueEvent("Busz kor teljesitve: " + name + ", kozos kassza +40.");
+            state.creditKassza(50);
+            state.enqueueEvent("Busz kor teljesitve: " + name + ", kozos kassza +50.");
         }
 
         // Forgalmi hatas: hot tomoriti

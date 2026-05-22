@@ -8,6 +8,7 @@ import takaritofejek.FejFactory;
 import takaritofejek.FejTipus;
 import terkep.Sav;
 import terkep.Ut;
+import motor.GameState;
 
 /**
  * Takarito jarmu: cserelheto fejjel, so-, kerozin- es zuzottko-keszlettel rendelkezik.
@@ -128,6 +129,7 @@ public final class Hokotro extends Jarmu {
         // 2) RULE12: az adott savon elakadt jarmuvek kiszabadulnak
         freeStuckVehiclesOnLane(ut, savIndex, state);
 
+
         // 3) Mozgás: a hokotro atvonul a masik csomopontra
         String targetNode = ut.opposite(currentNode);
         if (targetNode != null) {
@@ -135,8 +137,11 @@ public final class Hokotro extends Jarmu {
             moveTargetNode = targetNode;
             currentNode = targetNode;
             movesThisRound++;
+            state.creditKassza(5);
             state.enqueueEvent(name + " a " + ut.name() + " takaritasaval atvonult " + oldNode + " -> " + targetNode);
         }
+
+        
     }
 
     /**
