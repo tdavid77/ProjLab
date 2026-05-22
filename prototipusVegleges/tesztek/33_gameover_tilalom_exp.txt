@@ -8,22 +8,16 @@ OK: Auto 'a3' sikeresen letrehozva.
 OK: Auto 'a4' sikeresen letrehozva.
 OK: Auto 'a5' sikeresen letrehozva.
 OK: Kivalasztva: Auto a1
-OK: 'a1' a(z) 'Jeges_Ut' 0. savjaba lepett.
-[ESEMENY] a1 megcsuszott jeges savon, 2 korre kiesett.
+ERROR: a1 jelenleg balesetes, nem lephet.
 OK: Kivalasztva: Auto a2
-OK: 'a2' a(z) 'Jeges_Ut' 0. savjaba lepett.
-[ESEMENY] a2 megcsuszott jeges savon, 2 korre kiesett.
+ERROR: a2 jelenleg balesetes, nem lephet.
 OK: Kivalasztva: Auto a3
-OK: 'a3' a(z) 'Jeges_Ut' 0. savjaba lepett.
-[ESEMENY] a3 megcsuszott jeges savon, 2 korre kiesett.
+ERROR: a3 jelenleg balesetes, nem lephet.
 OK: Kivalasztva: Auto a4
-OK: 'a4' a(z) 'Jeges_Ut' 0. savjaba lepett.
-[ESEMENY] a4 megcsuszott jeges savon, 2 korre kiesett.
+ERROR: a4 jelenleg balesetes, nem lephet.
 OK: Kivalasztva: Auto a5
-OK: 'a5' a(z) 'Jeges_Ut' 0. savjaba lepett.
-[ESEMENY] a5 megcsuszott jeges savon, 2 korre kiesett.
+ERROR: a5 jelenleg balesetes, nem lephet.
 OK: Havazas szimulacio elinditva.
-[ESEMENY] Jeges_Ut savjain a ho +1 egyseggel nott.
-[ESEMENY] JATEK VEGE: kijarasi tilalom, kritikus balesetszam.
+[ESEMENY] Jeges_Ut savjain nem valtozott a horetag.
 OK: A jatek leall.
 OK: Betoltes kesz. Lefuttatott parancsok szama: 20
