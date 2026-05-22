@@ -1,0 +1,33 @@
+# EASY Map - 7 csomopont, 7 út
+# Format: nodeId|displayName|x|y vagy roadName|nodeA|nodeB|length|type|lanes stb.
+
+[MAPSIZE]
+820|580
+
+[NODES]
+Telephely|Telephely|150|110
+Foter|Főtér|410|110
+Vegallomas_Eszak|Végállomás_Észak|680|110
+Gyar|Gyár|150|290
+Vasutallomas|Vasútállomás|410|290
+Vegallomas_Del|Végállomás_Dél|680|290
+Kertvaros|Kertváros|410|480
+
+[ROADS]
+Fout|Telephely|Foter|4|NORMAL|2
+FoutKelet|Foter|Vegallomas_Eszak|4|NORMAL|3
+KozpontUt|Foter|Vasutallomas|4|NORMAL|2
+GyariUt|Telephely|Gyar|4|NORMAL|1
+GyarVasut|Gyar|Vasutallomas|4|NORMAL|2
+LazarJanosUt|Vasutallomas|Vegallomas_Del|4|NORMAL|2
+KertUt|Vasutallomas|Kertvaros|4|NORMAL|1
+GyarEszak|Gyar|Vegallomas_Eszak|4|HID|1
+
+[PLAYERS]
+TAKARITO|Takarito1|Telephely
+BUSZOS|Buszos1|Vegallomas_Eszak
+
+[NPCS]
+Auto1|Kertvaros|Vegallomas_Eszak|Kertvaros
+Auto2|Vegallomas_Del|Telephely|Vegallomas_Del
+Auto3|Gyar|Foter|Gyar

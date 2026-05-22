@@ -10,6 +10,11 @@ import motor.GameState;
 import takaritofejek.FejTipus;
 import terkep.Ut;
 import terkep.UtTipus;
+import gui.MapLoader.MapConfig;
+import gui.MapLoader.NodeInfo;
+import gui.MapLoader.RoadInfo;
+import gui.MapLoader.PlayerInfo;
+import gui.MapLoader.NpcInfo;
 
 /**
  * Egy uj jatek kezdeti allapotanak felepiteseert felelos segedosztaly.
@@ -37,24 +42,25 @@ public final class GameInitializer {
         state.difficulty = difficulty;
         GameLayout.clear();
 
+        // Map fájl betöltése a difficulty alapján
+        MapConfig mapConfig;
         switch (difficulty) {
             case MEDIUM:
-                buildMediumMap(state);
-                buildPlayersMedium(state, startingHead);
-                buildNpcCarsMedium(state);
+                mapConfig = MapLoader.loadMap("medium");
                 break;
             case HARD:
-                buildHardMap(state);
-                buildPlayersHard(state, startingHead);
-                buildNpcCarsHard(state);
+                mapConfig = MapLoader.loadMap("hard");
                 break;
             case EASY:
             default:
-                buildEasyMap(state);
-                buildPlayersEasy(state, startingHead);
-                buildNpcCarsEasy(state);
+                mapConfig = MapLoader.loadMap("easy");
                 break;
         }
+
+        // Map felépítése a fileból
+        buildMapFromConfig(state, mapConfig);
+        buildPlayersFromConfig(state, mapConfig, startingHead);
+        buildNpcCarsFromConfig(state, mapConfig);
     }
 
     private static Ut road(String name, String nodeA, String nodeB) {
@@ -76,271 +82,98 @@ public final class GameInitializer {
     }
 
     // ============================================================
-    // EASY (7 csomopont, 7 ut) - eredeti Projlab terkep
+    // Map felépítés fileból
     // ============================================================
-    private static void buildEasyMap(GameState state) {
-        GameLayout.setMapSize(820, 580);
 
-        GameLayout.register("Telephely",        "Telephely",          150, 110);
-        GameLayout.register("Foter",            "Főtér",              410, 110);
-        GameLayout.register("Vegallomas_Eszak", "Végállomás_Észak",   680, 110);
-        GameLayout.register("Gyar",             "Gyár",               150, 290);
-        GameLayout.register("Vasutallomas",     "Vasútállomás",       410, 290);
-        GameLayout.register("Vegallomas_Del",   "Végállomás_Dél",     680, 290);
-        GameLayout.register("Kertvaros",        "Kertváros",          410, 480);
+    /**
+     * Felépíti a map-et a betöltött konfigurációból.
+     */
+    private static void buildMapFromConfig(GameState state, MapConfig config) {
+        // Map méretének beállítása
+        GameLayout.setMapSize(config.mapWidth, config.mapHeight);
 
-        state.putUt(road("Fout",          "Telephely",     "Foter",            2));
-        state.putUt(road("FoutKelet",     "Foter",         "Vegallomas_Eszak", 3));  // foeut: 3 sav
-        state.putUt(road("KozpontUt",     "Foter",         "Vasutallomas",     2));
-        state.putUt(road("GyariUt",       "Telephely",     "Gyar",             1));  // kis sikator
-        state.putUt(road("GyarVasut",     "Gyar",          "Vasutallomas",     2));
-        state.putUt(road("LazarJanosUt",  "Vasutallomas",  "Vegallomas_Del",   2));
-        state.putUt(road("KertUt",        "Vasutallomas",  "Kertvaros",        1));  // kis sikator
+        // Csomópontok regisztrálása
+        for (NodeInfo node : config.nodes.values()) {
+            GameLayout.register(node.id, node.displayName, node.x, node.y);
+        }
 
-        // Feluljaro: Gyar -> Vegallomas_Eszak diagonalisan, atvezeti KozpontUt folott
-        state.putUt(overpass("GyarEszak",  "Gyar", "Vegallomas_Eszak", 1));
+        // Utak létrehozása
+        for (RoadInfo road : config.roads.values()) {
+            UtTipus roadType = "HID".equals(road.type) ? UtTipus.HID : UtTipus.NORMAL;
+            Ut ut = new Ut(road.name, road.nodeA, road.nodeB, road.length, roadType, road.lanes);
+            state.putUt(ut);
+        }
     }
 
-    private static void buildPlayersEasy(GameState state, FejTipus startingHead) {
-        TakaritoJatekos takarito = new TakaritoJatekos("Takarito1");
-        BuszosJatekos buszos = new BuszosJatekos("Buszos1");
-        state.putEntity(takarito);
-        state.putEntity(buszos);
+    /**
+     * Felépíti a játékosokat a betöltött konfigurációból.
+     */
+    private static void buildPlayersFromConfig(GameState state, MapConfig config, FejTipus startingHead) {
+        TakaritoJatekos takarito = null;
+        BuszosJatekos buszos = null;
 
-        Hokotro hokotro = new Hokotro("Hokotro1");
-        hokotro.setAktivFej(startingHead);
-        hokotro.owner = takarito.name();
-        hokotro.currentNode = "Telephely";
-        takarito.addVehicle(hokotro.name);
-        state.putEntity(hokotro);
+        // Játékosok létrehozása
+        for (PlayerInfo player : config.players.values()) {
+            if ("TAKARITO".equals(player.type)) {
+                takarito = new TakaritoJatekos(player.name);
+                state.putEntity(takarito);
+            } else if ("BUSZOS".equals(player.type)) {
+                buszos = new BuszosJatekos(player.name);
+                state.putEntity(buszos);
+            }
+        }
 
-        Busz busz = new Busz("Busz1");
-        busz.owner = buszos.name();
-        busz.currentNode = "Vegallomas_Eszak";
-        buszos.addVehicle(busz.name);
-        state.putEntity(busz);
+        // Jármű szöveg alapú konfigurációjára vagyunk szükség (vehicle type, name, startNode)
+        // mivel a fileban nem írjuk ki az autó típusát. Ezért manuálisan beálltjuk az alábbi alapértelmezett
+        // konfiguráció alapján, amit a játékosok tárolnak.
+
+        if (takarito != null) {
+            // Hokotro meghatározása
+            Hokotro hokotro = new Hokotro("Hokotro1");
+            hokotro.setAktivFej(startingHead);
+            hokotro.owner = takarito.name();
+            
+            // StartNode a config-ból való keresés: az első TAKARITO játékos startNode-ja
+            for (PlayerInfo player : config.players.values()) {
+                if ("TAKARITO".equals(player.type)) {
+                    hokotro.currentNode = player.startNode;
+                    break;
+                }
+            }
+            
+            takarito.addVehicle(hokotro.name);
+            state.putEntity(hokotro);
+        }
+
+        if (buszos != null) {
+            // Busz meghatározása
+            Busz busz = new Busz("Busz1");
+            busz.owner = buszos.name();
+            
+            // StartNode a config-ból való keresés: az első BUSZOS játékos startNode-ja
+            for (PlayerInfo player : config.players.values()) {
+                if ("BUSZOS".equals(player.type)) {
+                    busz.currentNode = player.startNode;
+                    break;
+                }
+            }
+            
+            buszos.addVehicle(busz.name);
+            state.putEntity(busz);
+        }
     }
 
-    private static void buildNpcCarsEasy(GameState state) {
-        Auto auto1 = new Auto("Auto1");
-        auto1.setupRoute("Kertvaros", "Vegallomas_Eszak", "Kertvaros");
-        state.putEntity(auto1);
-
-        Auto auto2 = new Auto("Auto2");
-        auto2.setupRoute("Vegallomas_Del", "Telephely", "Vegallomas_Del");
-        state.putEntity(auto2);
-
-        Auto auto3 = new Auto("Auto3");
-        auto3.setupRoute("Gyar", "Foter", "Gyar");
-        state.putEntity(auto3);
-    }
-
-    // ============================================================
-    // MEDIUM (14 csomopont, 16 ut) - ~2x eredeti
-    // ============================================================
-    private static void buildMediumMap(GameState state) {
-        GameLayout.setMapSize(900, 670);
-
-        GameLayout.register("Telephely",        "Telephely",          150, 90);
-        GameLayout.register("Foter",            "Főtér",              330, 90);
-        GameLayout.register("Park",             "Park",               520, 90);
-        GameLayout.register("Vegallomas_Eszak", "Végállomás_Észak",   720, 90);
-
-        GameLayout.register("Gyar",             "Gyár",               150, 240);
-        GameLayout.register("Vasutallomas",     "Vasútállomás",       330, 240);
-        GameLayout.register("Piac",             "Piac",               520, 240);
-        GameLayout.register("Templom",          "Templom",            720, 240);
-
-        GameLayout.register("Iskola",           "Iskola",             150, 400);
-        GameLayout.register("Kertvaros",        "Kertváros",          330, 400);
-        GameLayout.register("Strand",           "Strand",             520, 400);
-        GameLayout.register("Korhaz",           "Kórház",             720, 400);
-
-        GameLayout.register("Sportter",         "Sporttér",           520, 560);
-        GameLayout.register("Vegallomas_Del",   "Végállomás_Dél",     720, 560);
-
-        state.putUt(road("Fout",          "Telephely",     "Foter",            2));
-        state.putUt(road("ParkUt",        "Foter",         "Park",             2));
-        state.putUt(road("EszakiUt",      "Park",          "Vegallomas_Eszak", 3));  // foeut
-        state.putUt(road("TemplomUt",     "Vegallomas_Eszak", "Templom",       2));
-
-        state.putUt(road("GyariUt",       "Telephely",     "Gyar",             1));
-        state.putUt(road("KozpontUt",     "Foter",         "Vasutallomas",     2));
-        state.putUt(road("PiacUt",        "Park",          "Piac",             1));
-        state.putUt(road("PiacTemplom",   "Piac",          "Templom",          1));
-
-        state.putUt(road("GyarVasut",     "Gyar",          "Vasutallomas",     2));
-        state.putUt(road("VasutPiac",     "Vasutallomas",  "Piac",             2));
-        state.putUt(road("IskolaUt",      "Gyar",          "Iskola",           1));
-        state.putUt(road("IskolaKert",    "Iskola",        "Kertvaros",        2));
-
-        state.putUt(road("VasutKert",     "Vasutallomas",  "Kertvaros",        2));
-        state.putUt(road("StrandUt",      "Kertvaros",     "Strand",           2));
-        state.putUt(road("StrandKorhaz",  "Strand",        "Korhaz",           1));
-
-        state.putUt(road("SportUt",       "Strand",        "Sportter",         1));
-        state.putUt(road("KorhazDel",     "Korhaz",        "Vegallomas_Del",   3));  // foeut
-
-        // Feluljaro: Foter -> Korhaz hosszu atloban, atvezeti ParkUt, PiacUt, TemplomUt folott
-        state.putUt(overpass("FoterKorhaz", "Foter", "Korhaz", 2));
-    }
-
-    private static void buildPlayersMedium(GameState state, FejTipus startingHead) {
-        TakaritoJatekos takarito = new TakaritoJatekos("Takarito1");
-        BuszosJatekos buszos = new BuszosJatekos("Buszos1");
-        state.putEntity(takarito);
-        state.putEntity(buszos);
-
-        Hokotro hokotro = new Hokotro("Hokotro1");
-        hokotro.setAktivFej(startingHead);
-        hokotro.owner = takarito.name();
-        hokotro.currentNode = "Telephely";
-        takarito.addVehicle(hokotro.name);
-        state.putEntity(hokotro);
-
-        Busz busz = new Busz("Busz1");
-        busz.owner = buszos.name();
-        busz.currentNode = "Vegallomas_Eszak";
-        buszos.addVehicle(busz.name);
-        state.putEntity(busz);
-    }
-
-    private static void buildNpcCarsMedium(GameState state) {
-        Auto a1 = new Auto("Auto1");
-        a1.setupRoute("Kertvaros", "Vegallomas_Eszak", "Kertvaros");
-        state.putEntity(a1);
-
-        Auto a2 = new Auto("Auto2");
-        a2.setupRoute("Vegallomas_Del", "Foter", "Vegallomas_Del");
-        state.putEntity(a2);
-
-        Auto a3 = new Auto("Auto3");
-        a3.setupRoute("Gyar", "Piac", "Gyar");
-        state.putEntity(a3);
-
-        Auto a4 = new Auto("Auto4");
-        a4.setupRoute("Iskola", "Templom", "Iskola");
-        state.putEntity(a4);
-
-        Auto a5 = new Auto("Auto5");
-        a5.setupRoute("Sportter", "Foter", "Sportter");
-        state.putEntity(a5);
+    /**
+     * Felépíti az NPC-ket (autókat) a betöltött konfigurációból.
+     */
+    private static void buildNpcCarsFromConfig(GameState state, MapConfig config) {
+        for (NpcInfo npc : config.npcs.values()) {
+            Auto auto = new Auto(npc.name);
+            auto.setupRoute(npc.otthon, npc.munkahely, npc.startNode);
+            state.putEntity(auto);
+        }
     }
 
     // ============================================================
-    // HARD (18 csomopont, 24 ut) - ~3x eredeti
-    // ============================================================
-    private static void buildHardMap(GameState state) {
-        GameLayout.setMapSize(960, 640);
-
-        // 0. sor
-        GameLayout.register("Posta",            "Posta",              110, 70);
-        GameLayout.register("Telephely",        "Telephely",          265, 70);
-        GameLayout.register("Foter",            "Főtér",              420, 70);
-        GameLayout.register("Park",             "Park",               580, 70);
-        GameLayout.register("Vegallomas_Eszak", "Végállomás_Észak",   750, 70);
-
-        // 1. sor
-        GameLayout.register("Polgarmesteri",    "Polgármesteri",      110, 215);
-        GameLayout.register("Gyar",             "Gyár",               265, 215);
-        GameLayout.register("Vasutallomas",     "Vasútállomás",       420, 215);
-        GameLayout.register("Piac",             "Piac",               580, 215);
-        GameLayout.register("Templom",          "Templom",            750, 215);
-
-        // 2. sor
-        GameLayout.register("Konyvtar",         "Könyvtár",           110, 360);
-        GameLayout.register("Iskola",           "Iskola",             265, 360);
-        GameLayout.register("Kertvaros",        "Kertváros",          420, 360);
-        GameLayout.register("Strand",           "Strand",             580, 360);
-        GameLayout.register("Korhaz",           "Kórház",             750, 360);
-
-        // 3. sor
-        GameLayout.register("Mozi",             "Mozi",               265, 510);
-        GameLayout.register("Sportter",         "Sporttér",           420, 510);
-        GameLayout.register("Vegallomas_Del",   "Végállomás_Dél",     750, 510);
-
-        // Felso sor utak
-        state.putUt(road("PostaUt",       "Posta",         "Telephely",        1));
-        state.putUt(road("Fout",          "Telephely",     "Foter",            2));
-        state.putUt(road("ParkUt",        "Foter",         "Park",             2));
-        state.putUt(road("EszakiUt",      "Park",          "Vegallomas_Eszak", 3));  // foeut
-
-        // Kozepso sor utak
-        state.putUt(road("PolgarUt",      "Polgarmesteri", "Gyar",             1));
-        state.putUt(road("GyarVasut",     "Gyar",          "Vasutallomas",     2));
-        state.putUt(road("VasutPiac",     "Vasutallomas",  "Piac",             2));
-        state.putUt(road("PiacTemplom",   "Piac",          "Templom",          1));
-
-        // 2. sor utak
-        state.putUt(road("KonyvtarUt",    "Konyvtar",      "Iskola",           1));
-        state.putUt(road("IskolaKert",    "Iskola",        "Kertvaros",        2));
-        state.putUt(road("KertStrand",    "Kertvaros",     "Strand",           2));
-        state.putUt(road("StrandKorhaz",  "Strand",        "Korhaz",           1));
-
-        // Vertikalis utak
-        state.putUt(road("PostaPolgar",   "Posta",         "Polgarmesteri",    1));
-        state.putUt(road("TelGyarUt",     "Telephely",     "Gyar",             1));
-        state.putUt(road("KozpontUt",     "Foter",         "Vasutallomas",     2));
-        state.putUt(road("ParkPiac",      "Park",          "Piac",             2));
-        state.putUt(road("EszakTemplom",  "Vegallomas_Eszak", "Templom",       2));
-        state.putUt(road("PolgarKonyvtar","Polgarmesteri", "Konyvtar",         1));
-        state.putUt(road("GyarIskola",    "Gyar",          "Iskola",           1));
-        state.putUt(road("PiacStrand",    "Piac",          "Strand",           2));
-
-        // 3. sor utak
-        state.putUt(road("IskolaMozi",    "Iskola",        "Mozi",             1));
-        state.putUt(road("MoziSport",     "Mozi",          "Sportter",         1));
-        state.putUt(road("SportDel",      "Sportter",      "Vegallomas_Del",   2));
-        state.putUt(road("KorhazDel",     "Korhaz",        "Vegallomas_Del",   3));  // foeut
-
-        // Feluljarok (2 darab a Hard terkepen)
-        state.putUt(overpass("TelKert",   "Telephely", "Kertvaros", 2));
-        state.putUt(overpass("ParkKorhaz", "Park", "Korhaz", 1));
-    }
-
-    private static void buildPlayersHard(GameState state, FejTipus startingHead) {
-        TakaritoJatekos takarito = new TakaritoJatekos("Takarito1");
-        BuszosJatekos buszos = new BuszosJatekos("Buszos1");
-        state.putEntity(takarito);
-        state.putEntity(buszos);
-
-        Hokotro hokotro = new Hokotro("Hokotro1");
-        hokotro.setAktivFej(startingHead);
-        hokotro.owner = takarito.name();
-        hokotro.currentNode = "Telephely";
-        takarito.addVehicle(hokotro.name);
-        state.putEntity(hokotro);
-
-        Busz busz = new Busz("Busz1");
-        busz.owner = buszos.name();
-        busz.currentNode = "Vegallomas_Eszak";
-        buszos.addVehicle(busz.name);
-        state.putEntity(busz);
-    }
-
-    private static void buildNpcCarsHard(GameState state) {
-        Auto a1 = new Auto("Auto1");
-        a1.setupRoute("Posta", "Vegallomas_Del", "Posta");
-        state.putEntity(a1);
-
-        Auto a2 = new Auto("Auto2");
-        a2.setupRoute("Kertvaros", "Templom", "Kertvaros");
-        state.putEntity(a2);
-
-        Auto a3 = new Auto("Auto3");
-        a3.setupRoute("Gyar", "Strand", "Gyar");
-        state.putEntity(a3);
-
-        Auto a4 = new Auto("Auto4");
-        a4.setupRoute("Konyvtar", "Park", "Konyvtar");
-        state.putEntity(a4);
-
-        Auto a5 = new Auto("Auto5");
-        a5.setupRoute("Mozi", "Vegallomas_Eszak", "Mozi");
-        state.putEntity(a5);
-
-        Auto a6 = new Auto("Auto6");
-        a6.setupRoute("Sportter", "Foter", "Sportter");
-        state.putEntity(a6);
-    }
+    // Egykori hardkódolt metódusok (már nem használt, de hagyunk itt egy megjegyzést)
 }
