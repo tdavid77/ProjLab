@@ -14,24 +14,31 @@
 \end{fajllista}
 
 \subsection{Fordítás}
-\comment{A fenti listában szereplő forrásfájlokból milyen műveletekkel lehet a bináris, futtatható kódot előállítani. Az előállításhoz csak a 2. Követelmények c. dokumentumban leírt környezetet szabad előírni.}
-
 \begin{verbatim}
-javac -d bin *.java
+A projekt fő mappájában kell ezt a parancsot egyben futtatni(NAGYON FONTOS: a parancsot egyben kell futtatni, különben nem fog működni! Másold ki txt-be és töröld ki a sortöréseket!):
+javac -d bin prototipusVegleges/src/jarmuvek/*java 
+prototipusVegleges/src/jatekosok/*.java 
+prototipusVegleges/src/motor/*.java 
+prototipusVegleges/src/takaritofejek/*.java 
+prototipusVegleges/src/terkep/*.java 
+prototipusVegleges/src/gui/*.java 
+prototipusVegleges/src/gui/controller/*.java 
+prototipusVegleges/src/gui/view/*.java
 \end{verbatim}
 
 \subsection{Futtatás}
-\comment{A futtatható kód elindításával kapcsolatos teendők leírása. Az indításhoz csak a 2. Követelmények c. dokumentumban leírt környezetet szabad előírni.}
-
 \begin{verbatim}
 cd bin
-java Main.java
+java gui.Main
 \end{verbatim}
 
 \clearpage
 \section{Értékelés}
-\comment{A projekt kezdete óta az értékelésig eltelt időben tagokra bontva, százalékban.}
 \begin{ertekeles}
-    \ertekelestag{Teszt János}{ ?????? }{100\%}
+    \ertekelestag{Görgényi András Levente}{ GSQEM0 }{20\%}
+    \ertekelestag{Dulcz Bence}{ Y9LPT9 }{20\%}
+    \ertekelestag{Varga Gergely}{ IBXDS0 }{20\%}
+    \ertekelestag{Nagy Patrik}{ C3IJYQ }{20\%}
+    \ertekelestag{Tóth Dávid Pál}{ H9JYWA }{20\%}
 \end{ertekeles}
 

@@ -90,8 +90,9 @@ public class MapLoader {
         
         // Próbáljuk meg megtalálni a map fájlt különböző helyekről
         String[] possiblePaths = {
-            "src/maps/" + mapName + ".map",
-            "prototipusVegleges/src/maps/" + mapName + ".map",
+            "maps/" + mapName + ".map",
+            "prototipusVegleges/maps/" + mapName + ".map",
+            "../prototipusVegleges/maps/" + mapName + ".map",
             "maps/" + mapName + ".map",
             mapName + ".map"
         };
